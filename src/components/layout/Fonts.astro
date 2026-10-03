@@ -1,36 +1,35 @@
 ---
 /**
- * Emits @font-face only for font files that exist in /public/fonts.
- * Missing files get a local()-only rule (uses the font if the visitor has it
- * installed, never 404s), and the CSS stacks fall back to the Google Fonts.
+ * @font-face for the brand fonts in /public/fonts (see src/content/fonts.json
+ * for accepted file names). Missing files get a local()-only rule (used if
+ * the visitor has the font installed, never 404s) and the CSS stacks fall
+ * back to the Google Fonts.
  */
-import fs from 'node:fs';
-import path from 'node:path';
 import fontData from '../../content/fonts.json';
-
-const fontsDir = path.join(process.cwd(), 'public', 'fonts');
+import { findFontFile, hasDisplayFont } from '../../lib/fonts';
 
 const faces = fontData.fonts
   .filter((f) => !f.google)
-  .flatMap((f) =>
-    f.files.map((file) => {
-      const exists = fs.existsSync(path.join(fontsDir, file.file));
-      const src = exists
-        ? `url('/fonts/${file.file}') format('woff2'), local('${f.family}')`
-        : `local('${f.family}')`;
+  .flatMap((f) => {
+    const locals = ((f as { localNames?: string[] }).localNames ?? [f.family]).map((n) => `local('${n}')`).join(', ');
+    return f.files.map((file) => {
+      const found = findFontFile(file.names);
+      const src = found ? `url('${found.url}') format('${found.format}'), ${locals}` : locals;
       return `@font-face{font-family:'${f.family}';src:${src};font-weight:${file.weight};font-style:${file.style};font-display:swap;}`;
-    }),
-  )
-  .join('\n');
+    });
+  });
+
+// The real Rushford is already distressed, so turn off the ink-wear stand-in.
+if (hasDisplayFont()) faces.push(':root{--display-wear:none}');
 
 const preloads = fontData.fonts
   .filter((f) => f.cssVar === '--ff-display' || f.cssVar === '--ff-body')
-  .flatMap((f) => f.files.slice(0, 1))
-  .filter((file) => fs.existsSync(path.join(fontsDir, file.file)));
+  .map((f) => findFontFile(f.files[0]?.names ?? []))
+  .filter((f) => f && f.format === 'woff2');
 ---
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href={fontData.googleFontsUrl} />
-{preloads.map((file) => <link rel="preload" href={`/fonts/${file.file}`} as="font" type="font/woff2" crossorigin />)}
-<style is:inline set:html={faces}></style>
+{preloads.map((f) => <link rel="preload" href={f!.url} as="font" type="font/woff2" crossorigin />)}
+<style is:inline set:html={faces.join('\n')}></style>

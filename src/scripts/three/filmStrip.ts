@@ -49,8 +49,11 @@ const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 export async function mountFilmStrip(host: HTMLElement, data: StripData): Promise<SceneHandle> {
   const stage = (host.querySelector('[data-strip-stage]') as HTMLElement) ?? host;
-  const { renderer, canvas, dpr } = createRenderer(stage, { maxDpr: 1.25 });
-  const pass = createHalftonePass(renderer, dpr, { dotSize: 6, keyStrength: 0.7 });
+  // Full device resolution (up to 2x) so it's crisp on retina; drops if frames run slow.
+  const { renderer, canvas, dpr: maxDpr } = createRenderer(stage, { maxDpr: 2 });
+  let dpr = maxDpr;
+  const BASE_DOT = 4.5;
+  const pass = createHalftonePass(renderer, dpr, { dotSize: BASE_DOT, keyStrength: 0.55 });
   const { uniforms } = pass;
 
   const scene = new Scene();
@@ -137,8 +140,9 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData): Promis
   const resize = () => {
     const { width, height } = stage.getBoundingClientRect();
     if (!width || !height) return;
+    renderer.setPixelRatio(dpr);
     renderer.setSize(width, height, false);
-    pass.setSize(width, height);
+    pass.setSize(width, height, dpr);
     camera.aspect = width / height;
     // Keep roughly the same strip width on narrow (tablet) screens.
     camera.position.z = camera.aspect < 1.2 ? 7.2 : 5.4;
@@ -199,8 +203,8 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData): Promis
     uniforms.uInk.value.lerp(inks[ev].ink, 0.08);
     uniforms.uKey.value.lerp(inks[ev].key, 0.08);
 
-    uniforms.uDotSize.value = 6 * dpr * (1 + speed * 0.9);
-    uniforms.uMisregister.value.set((3 + speed * 9) * dpr, (-2 - speed * 6) * dpr);
+    uniforms.uDotSize.value = BASE_DOT * dpr * (1 + speed * 0.9);
+    uniforms.uMisregister.value.set((1.5 + speed * 9) * dpr, (-1 - speed * 6) * dpr);
     uniforms.uTime.value = t;
 
     // HUD: per-event progress bars and a running timecode (24 fps).
@@ -220,8 +224,19 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData): Promis
     pass.render(scene, camera);
   };
 
+  // Adaptive resolution: if frames average over ~22ms, step the pixel ratio down.
+  let slowFrames = 0;
+  let lastFrame = performance.now();
   const loop = () => {
     if (!active) return;
+    const now = performance.now();
+    slowFrames = now - lastFrame > 22 ? slowFrames + 1 : Math.max(0, slowFrames - 1);
+    lastFrame = now;
+    if (slowFrames > 40 && dpr > 1) {
+      dpr = Math.max(1, dpr - 0.5);
+      slowFrames = 0;
+      resize();
+    }
     render();
     frame = requestAnimationFrame(loop);
   };
@@ -232,7 +247,10 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData): Promis
       if (next === active) return;
       active = next;
       videos.forEach((v) => (active ? v.play().catch(() => {}) : v.pause()));
-      if (active) loop();
+      if (active) {
+        lastFrame = performance.now();
+        loop();
+      }
       else {
         cancelAnimationFrame(frame);
         if (document.body.dataset.theme !== pageTheme) document.body.dataset.theme = pageTheme;

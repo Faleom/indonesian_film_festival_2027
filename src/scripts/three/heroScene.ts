@@ -92,7 +92,7 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
   geometry.setAttribute('aScript', new BufferAttribute(script, 1));
   geometry.setAttribute('aRand', new BufferAttribute(rand, 1));
 
-  const { renderer, canvas, dpr } = createRenderer(stage);
+  const { renderer, canvas, dpr } = createRenderer(stage, { maxDpr: 2 });
   const uniforms = {
     uRot: { value: new Matrix3() },
     uCamScale: { value: 1 },

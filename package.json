@@ -5,14 +5,15 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "predev": "node scripts/halftone.mjs",
+    "predev": "node scripts/halftone.mjs && node scripts/favicons.mjs",
     "build": "astro build",
-    "prebuild": "node scripts/halftone.mjs",
+    "prebuild": "node scripts/halftone.mjs && node scripts/favicons.mjs",
     "preview": "astro preview",
     "halftone": "node scripts/halftone.mjs",
     "placeholders": "node scripts/placeholders.mjs",
     "astro": "astro",
-    "render:3d-fallback": "node scripts/render-3d-fallback.mjs"
+    "render:3d-fallback": "node scripts/render-3d-fallback.mjs",
+    "favicons": "node scripts/favicons.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

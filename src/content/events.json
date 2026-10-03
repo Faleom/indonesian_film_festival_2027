@@ -1,5 +1,5 @@
 {
-  "$comment": "The four festival events, in journey order (SFC -> Under the Stars -> Educational Screening -> Main Screening). `id` is used in films/schedule; `theme` is the colour theme (sfc | uts | main | base). `title` lines build the big display title; `script` (optional) is a word that is genuinely part of the name, drawn in script between the lines (e.g. Under *the* Stars). Media keys refer to media.json.",
+  "$comment": "The four festival events, in journey order (SFC -> Under the Stars -> Educational Screening -> Main Screening). `id` is used in films/schedule; `theme` is the colour theme (sfc | uts | main | base). `title` lines build the big display title; `script` (optional) is a word that is genuinely part of the name, drawn in script between the lines (e.g. Under *the* Stars). Media keys refer to media.json. `strip` is the list of media keys shown on that event's frames in the home film strip (video or image, any number); add keys to media.json first.",
   "items": [
     {
       "id": "sfc",
@@ -26,7 +26,13 @@
       "hero": "hero-sfc",
       "trailer": "trailer-sfc",
       "ticketUrl": "#",
-      "lineupTitle": "The finalists"
+      "lineupTitle": "The finalists",
+      "strip": [
+        "broll-sfc",
+        "still-sfc-1",
+        "still-sfc-2",
+        "still-sfc-3"
+      ]
     },
     {
       "id": "uts",
@@ -54,7 +60,13 @@
       "hero": "hero-uts",
       "trailer": null,
       "ticketUrl": "#",
-      "lineupTitle": "The film"
+      "lineupTitle": "The film",
+      "strip": [
+        "broll-uts",
+        "still-uts-1",
+        "still-uts-2",
+        "still-uts-3"
+      ]
     },
     {
       "id": "edu",
@@ -81,7 +93,13 @@
       "venue": "Venue TBC",
       "hero": "hero-edu-screening",
       "trailer": null,
-      "ticketUrl": "#"
+      "ticketUrl": "#",
+      "strip": [
+        "broll-edu",
+        "still-edu-1",
+        "still-edu-2",
+        "still-edu-3"
+      ]
     },
     {
       "id": "main",
@@ -108,7 +126,13 @@
       "hero": "hero-main-screening",
       "trailer": "trailer-main",
       "ticketUrl": "#",
-      "lineupTitle": "The lineup"
+      "lineupTitle": "The lineup",
+      "strip": [
+        "broll-main",
+        "still-main-1",
+        "still-main-2",
+        "still-main-3"
+      ]
     }
   ]
 }

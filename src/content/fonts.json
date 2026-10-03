@@ -1,5 +1,5 @@
 {
-  "$comment": "Font registry. Drop the .woff2 files into /public/fonts with these exact names. Missing files fall back to the stack in src/styles/typography.css. Rushford, Military Script, Etna and Futura need a web licence before launch.",
+  "$comment": "Font registry. Drop the licensed font files into /public/fonts using one of the `names` listed (any of .woff2, .woff, .otf, .ttf; woff2 is smallest). Missing files fall back to the stack in src/styles/typography.css. Rushford, Military Script/Scribe, Etna and Futura need a web licence before launch.",
   "googleFontsUrl": "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:wght@400;500;700&family=Oswald:wght@400;600&family=Special+Elite&display=swap",
   "fonts": [
     {
@@ -7,21 +7,60 @@
       "role": "Display / big titles",
       "cssVar": "--ff-display",
       "fallback": "Bebas Neue, Oswald, sans-serif",
-      "files": [{ "file": "RushfordPrinted.woff2", "weight": 400, "style": "normal" }]
+      "files": [
+        {
+          "weight": 400,
+          "style": "normal",
+          "names": [
+            "RushfordPrinted",
+            "Rushford-Printed",
+            "Rushford Printed",
+            "Rushford"
+          ]
+        }
+      ]
     },
     {
       "family": "Military Script",
       "role": "Script accent",
       "cssVar": "--ff-script",
       "fallback": "cursive",
-      "files": [{ "file": "MilitaryScript.woff2", "weight": 400, "style": "normal" }]
+      "files": [
+        {
+          "weight": 400,
+          "style": "normal",
+          "names": [
+            "MilitaryScript",
+            "MilitaryScribe",
+            "Military Script",
+            "Military Scribe",
+            "Military-Script",
+            "Military-Scribe"
+          ]
+        }
+      ],
+      "localNames": [
+        "Military Script",
+        "Military Scribe"
+      ]
     },
     {
       "family": "Etna Condensed",
       "role": "Condensed headings",
       "cssVar": "--ff-condensed",
       "fallback": "Oswald, sans-serif",
-      "files": [{ "file": "EtnaCondensed.woff2", "weight": 400, "style": "normal" }]
+      "files": [
+        {
+          "weight": 400,
+          "style": "normal",
+          "names": [
+            "EtnaCondensed",
+            "Etna-Condensed",
+            "Etna Condensed",
+            "Etna"
+          ]
+        }
+      ]
     },
     {
       "family": "Special Elite",
@@ -37,9 +76,34 @@
       "cssVar": "--ff-body",
       "fallback": "Jost, sans-serif",
       "files": [
-        { "file": "Futura-Book.woff2", "weight": 400, "style": "normal" },
-        { "file": "Futura-Medium.woff2", "weight": 500, "style": "normal" },
-        { "file": "Futura-Bold.woff2", "weight": 700, "style": "normal" }
+        {
+          "weight": 400,
+          "style": "normal",
+          "names": [
+            "Futura-Book",
+            "FuturaBook",
+            "Futura Book",
+            "Futura"
+          ]
+        },
+        {
+          "weight": 500,
+          "style": "normal",
+          "names": [
+            "Futura-Medium",
+            "FuturaMedium",
+            "Futura Medium"
+          ]
+        },
+        {
+          "weight": 700,
+          "style": "normal",
+          "names": [
+            "Futura-Bold",
+            "FuturaBold",
+            "Futura Bold"
+          ]
+        }
       ]
     }
   ]

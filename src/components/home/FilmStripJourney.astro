@@ -2,7 +2,7 @@
 /**
  * The festival journey. Static cards by default; on desktop with motion on,
  * a pinned 3D film strip (scripts/three/filmStrip.ts) slides each event's
- * title card, b-roll and posters past the camera and re-inks the site in
+ * title card and its frames (events.json `strip`) past the camera and re-inks the site in
  * that event's colours as it passes the centre.
  */
 import SectionHead from '../ui/SectionHead.astro';
@@ -13,13 +13,17 @@ import { media, textureFor } from '../../lib/media';
 
 const page = pages.home;
 const events = await getEvents();
-const POSTERS_PER_EVENT = 2;
 
 const frames: { event: number; kind: 'title' | 'media'; label?: string; type?: string; src?: string | null }[] = [];
 for (const [i, e] of events.entries()) {
   frames.push({ event: i, kind: 'title' });
-  const keys = [`broll-${e.id}`, ...(await getFilms(e.id as EventId)).slice(0, POSTERS_PER_EVENT).map((f) => f.data.poster)];
-  for (const key of keys.filter((k) => media[k])) {
+  // Frames come from events.json `strip`; without one, the b-roll plus two film posters.
+  const keys = e.data.strip ?? [`broll-${e.id}`, ...(await getFilms(e.id as EventId)).slice(0, 2).map((f) => f.data.poster)];
+  for (const key of keys) {
+    if (!media[key]) {
+      console.warn(`[film-strip] Unknown media key "${key}" in events.json strip.`);
+      continue;
+    }
     const tex = textureFor(key);
     frames.push({ event: i, kind: 'media', type: tex.type, src: tex.src, label: `[${tex.type === 'video' ? 'VIDEO' : 'IMG'}: ${key}]` });
   }

@@ -30,6 +30,8 @@ const events = defineCollection({
     hero: mediaKey,
     trailer: mediaKey.nullable(),
     ticketUrl: z.string(),
+    /** Media keys for this event's frames in the home film strip. */
+    strip: z.array(mediaKey).optional(),
   }),
 });
 

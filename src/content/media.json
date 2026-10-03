@@ -293,6 +293,102 @@
       "alt": "B-roll from the Main Screening",
       "location": "Home: 3D film strip (journey)",
       "recommended": "1280x720 H.264, 8-15 s silent loop, under 6 MB"
+    },
+    "still-sfc-1": {
+      "type": "image",
+      "src": "/images/stills/sfc-1.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Short Film Competition",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-sfc-2": {
+      "type": "image",
+      "src": "/images/stills/sfc-2.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Short Film Competition",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-sfc-3": {
+      "type": "image",
+      "src": "/images/stills/sfc-3.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Short Film Competition",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-uts-1": {
+      "type": "image",
+      "src": "/images/stills/uts-1.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Under the Stars",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-uts-2": {
+      "type": "image",
+      "src": "/images/stills/uts-2.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Under the Stars",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-uts-3": {
+      "type": "image",
+      "src": "/images/stills/uts-3.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Under the Stars",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-edu-1": {
+      "type": "image",
+      "src": "/images/stills/edu-1.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Educational Screening",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-edu-2": {
+      "type": "image",
+      "src": "/images/stills/edu-2.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Educational Screening",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-edu-3": {
+      "type": "image",
+      "src": "/images/stills/edu-3.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Educational Screening",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-main-1": {
+      "type": "image",
+      "src": "/images/stills/main-1.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Main Screening",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-main-2": {
+      "type": "image",
+      "src": "/images/stills/main-2.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Main Screening",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-main-3": {
+      "type": "image",
+      "src": "/images/stills/main-3.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Main Screening",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
     }
   }
 }

@@ -8,6 +8,21 @@
   --ff-condensed: 'Etna Condensed', 'Oswald', sans-serif;
   --ff-typewriter: 'Special Elite', monospace;
   --ff-body: 'Futura', 'Jost', sans-serif;
+
+  /* Ink-wear stand-in for Rushford Printed's distressed letterforms: speckled
+     holes knocked out of the fallback display font. Fonts.astro sets this to
+     none once the real Rushford file is in /public/fonts. */
+  --display-wear: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.16' numOctaves='4' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -34 0 0 0 24'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23w)'/%3E%3C/svg%3E");
+}
+
+/* Distressed print texture on the big display type. */
+.display-title,
+.font-display,
+.strip3d__name {
+  -webkit-mask-image: var(--display-wear);
+  mask-image: var(--display-wear);
+  -webkit-mask-size: 260px 260px;
+  mask-size: 260px 260px;
 }
 
 /* ---------- DisplayTitle ---------- */

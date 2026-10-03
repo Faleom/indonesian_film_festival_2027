@@ -1,0 +1,91 @@
+// Generates the site icons from the festival logo.
+// Source: src/assets/brand/logo.svg or logo.png (square-ish, dark on light).
+// Output (public/): favicon.ico (16/32/48), icon-192.png, icon-512.png,
+// apple-touch-icon.png (180), icon.svg (if the source is SVG), site.webmanifest.
+// Runs before dev/build; skips if there's no logo yet.
+import fs from 'node:fs';
+import path from 'node:path';
+import sharp from 'sharp';
+
+const root = process.cwd();
+const brandDir = path.join(root, 'src/assets/brand');
+const out = path.join(root, 'public');
+const source = ['logo.svg', 'logo.png', 'logo.jpg', 'logo.webp'].map((f) => path.join(brandDir, f)).find((f) => fs.existsSync(f));
+
+if (!source) {
+  console.log('[favicons] No src/assets/brand/logo.(svg|png), skipping.');
+  process.exit(0);
+}
+
+const stampFile = path.join(out, '.favicons-stamp');
+const stamp = `${path.basename(source)}:${fs.statSync(source).mtimeMs}`;
+if (fs.existsSync(stampFile) && fs.readFileSync(stampFile, 'utf8') === stamp && fs.existsSync(path.join(out, 'favicon.ico'))) {
+  console.log('[favicons] Up to date.');
+  process.exit(0);
+}
+
+const BG = { r: 255, g: 255, b: 255, alpha: 1 };
+/** Logo centred on a white square with padding (keeps it visible on dark tabs). */
+async function icon(size, padding = 0.1) {
+  const inner = Math.round(size * (1 - padding * 2));
+  const logo = await sharp(source, { density: 600 })
+    .flatten({ background: BG })
+    .trim({ background: '#ffffff', threshold: 10 })
+    .resize(inner, inner, { fit: 'contain', background: BG })
+    .png()
+    .toBuffer();
+  return sharp({ create: { width: size, height: size, channels: 4, background: BG } })
+    .composite([{ input: logo, gravity: 'center' }])
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+}
+
+/** ICO container holding PNG images (supported by every current browser). */
+function ico(pngs) {
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(pngs.length, 4);
+  let offset = 6 + pngs.length * 16;
+  const dir = pngs.map(({ size, data }) => {
+    const e = Buffer.alloc(16);
+    e.writeUInt8(size >= 256 ? 0 : size, 0);
+    e.writeUInt8(size >= 256 ? 0 : size, 1);
+    e.writeUInt16LE(1, 4);
+    e.writeUInt16LE(32, 6);
+    e.writeUInt32LE(data.length, 8);
+    e.writeUInt32LE(offset, 12);
+    offset += data.length;
+    return e;
+  });
+  return Buffer.concat([header, ...dir, ...pngs.map((p) => p.data)]);
+}
+
+const small = await Promise.all([16, 32, 48].map(async (size) => ({ size, data: await icon(size, 0.04) })));
+fs.writeFileSync(path.join(out, 'favicon.ico'), ico(small));
+fs.writeFileSync(path.join(out, 'icon-192.png'), await icon(192));
+fs.writeFileSync(path.join(out, 'icon-512.png'), await icon(512));
+fs.writeFileSync(path.join(out, 'apple-touch-icon.png'), await icon(180, 0.12));
+if (source.endsWith('.svg')) fs.copyFileSync(source, path.join(out, 'icon.svg'));
+else fs.rmSync(path.join(out, 'icon.svg'), { force: true });
+
+fs.writeFileSync(
+  path.join(out, 'site.webmanifest'),
+  JSON.stringify(
+    {
+      name: '21st Indonesian Film Festival',
+      short_name: 'IFF 21',
+      icons: [
+        { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+        { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+      ],
+      theme_color: '#7200b8',
+      background_color: '#eae4d8',
+      display: 'standalone',
+    },
+    null,
+    2,
+  ) + '\n',
+);
+fs.writeFileSync(stampFile, stamp);
+console.log(`[favicons] Generated icons from ${path.basename(source)}.`);

@@ -72,9 +72,9 @@ export function createHalftonePass(renderer: WebGLRenderer, dpr: number, opts: H
 
   return {
     uniforms,
-    setSize(width: number, height: number) {
-      target.setSize(Math.round(width * dpr), Math.round(height * dpr));
-      uniforms.uResolution.value.set(width * dpr, height * dpr);
+    setSize(width: number, height: number, pixelRatio = dpr) {
+      target.setSize(Math.round(width * pixelRatio), Math.round(height * pixelRatio));
+      uniforms.uResolution.value.set(width * pixelRatio, height * pixelRatio);
     },
     render(scene: Object3D, camera: Camera) {
       renderer.setRenderTarget(target);

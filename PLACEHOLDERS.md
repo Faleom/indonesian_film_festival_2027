@@ -9,7 +9,7 @@ Until the real file exists, `<Media id="key" />` renders a halftone placeholder 
 
 Then run `npm run placeholders` to refresh this list. To use a different filename, change `src` for that key in `media.json`.
 
-_36 of 36 still pending. Generated from media.json; don't edit by hand._
+_48 of 48 still pending. Generated from media.json; don't edit by hand._
 
 | Key | Type | Location | Ratio | Recommended size | File path (as-is) | Status |
 |---|---|---|---|---|---|---|
@@ -49,6 +49,18 @@ _36 of 36 still pending. Generated from media.json; don't edit by hand._
 | `broll-uts` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-uts.mp4` | ⬜ placeholder |
 | `broll-edu` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-edu.mp4` | ⬜ placeholder |
 | `broll-main` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-main.mp4` | ⬜ placeholder |
+| `still-sfc-1` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/sfc-1.jpg` | ⬜ placeholder |
+| `still-sfc-2` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/sfc-2.jpg` | ⬜ placeholder |
+| `still-sfc-3` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/sfc-3.jpg` | ⬜ placeholder |
+| `still-uts-1` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/uts-1.jpg` | ⬜ placeholder |
+| `still-uts-2` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/uts-2.jpg` | ⬜ placeholder |
+| `still-uts-3` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/uts-3.jpg` | ⬜ placeholder |
+| `still-edu-1` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/edu-1.jpg` | ⬜ placeholder |
+| `still-edu-2` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/edu-2.jpg` | ⬜ placeholder |
+| `still-edu-3` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/edu-3.jpg` | ⬜ placeholder |
+| `still-main-1` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/main-1.jpg` | ⬜ placeholder |
+| `still-main-2` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/main-2.jpg` | ⬜ placeholder |
+| `still-main-3` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/main-3.jpg` | ⬜ placeholder |
 
 ## Other placeholders
 

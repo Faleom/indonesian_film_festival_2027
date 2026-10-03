@@ -10,6 +10,7 @@ import HalftoneCamera from '../components/three/HalftoneCamera.astro';
 import { media, mediaKeys, mediaDelivered, getHalftone } from '../lib/media';
 import halftoneConfig from '../../halftone.config.json';
 import fontData from '../content/fonts.json';
+import { findFontFile } from '../lib/fonts';
 
 const themes = [
   { id: 'sfc', name: 'SFC', event: 'Short Film Competition' },
@@ -38,10 +39,9 @@ const revealDemos = [
   { type: 'children', code: 'data-reveal="fade-up" data-reveal-children' },
 ];
 
-const fontsDir = path.join(process.cwd(), 'public', 'fonts');
 const fonts = fontData.fonts.map((f) => ({
   ...f,
-  loaded: f.google || (f.files.length > 0 && f.files.every((file) => fs.existsSync(path.join(fontsDir, file.file)))),
+  loaded: f.google || (f.files.length > 0 && f.files.every((file) => findFontFile(file.names))),
 }));
 const fontSamples: Record<string, { size: string; text: string; transform?: string }> = {
   '--ff-display': { size: 'text-6xl md:text-8xl', text: 'Arunika Cinema 21', transform: 'uppercase' },
@@ -155,7 +155,7 @@ const fontSamples: Record<string, { size: string; text: string; transform?: stri
                       <span>✓ File loaded</span>
                     ) : (
                       <span style="color: var(--c-text-accent)">
-                        ✕ Missing: {f.files.map((x) => x.file).join(', ')} (showing fallback)
+                        ✕ Missing: add {f.files.map((x) => `${x.names[0]}.woff2`).join(', ')} to public/fonts (showing fallback)
                       </span>
                     )}
                   </p>

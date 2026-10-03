@@ -6,6 +6,8 @@ import Fonts from '../components/layout/Fonts.astro';
 import Navbar from '../components/layout/Navbar.astro';
 import Footer from '../components/layout/Footer.astro';
 import Toast from '../components/layout/Toast.astro';
+import fs from 'node:fs';
+import path from 'node:path';
 import site from '../content/site.json';
 
 export type { Theme } from '../lib/content';
@@ -20,6 +22,10 @@ interface Props {
 }
 
 const { title, description = site.description, theme = 'base', reprint = false } = Astro.props;
+
+// Icons generated from src/assets/brand/logo.* by scripts/favicons.mjs.
+const pub = (f: string) => fs.existsSync(path.join(process.cwd(), 'public', f));
+const icons = { ico: pub('favicon.ico'), svg: pub('icon.svg'), apple: pub('apple-touch-icon.png'), manifest: pub('site.webmanifest') };
 ---
 
 <!doctype html>
@@ -32,6 +38,10 @@ const { title, description = site.description, theme = 'base', reprint = false }
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    {icons.ico && <link rel="icon" href="/favicon.ico" sizes="32x32" />}
+    {icons.svg && <link rel="icon" href="/icon.svg" type="image/svg+xml" />}
+    {icons.apple && <link rel="apple-touch-icon" href="/apple-touch-icon.png" />}
+    {icons.manifest && <link rel="manifest" href="/site.webmanifest" />}
     <MotionHead />
     <Fonts />
     <ClientRouter />

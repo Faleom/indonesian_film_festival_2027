@@ -69,13 +69,13 @@ export function titleCardTexture(opts: { number: number; total: number; name: st
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, W, H);
   ctx.fillStyle = '#000000';
-  ctx.font = `400 34px ${f.type}`;
+  ctx.font = `400 44px ${f.type}`;
   ctx.fillText(`EVENT ${String(opts.number).padStart(2, '0')} / ${String(opts.total).padStart(2, '0')}`, 70, 100);
   ctx.fillRect(70, 125, W - 140, 4);
 
   // Event name, wrapped onto up to 3 lines, as large as fits.
   const words = opts.name.toUpperCase().split(' ');
-  let size = 230;
+  let size = 300;
   let lines: string[] = [];
   for (; size > 80; size -= 10) {
     ctx.font = `400 ${size}px ${f.display}`;
@@ -89,11 +89,12 @@ export function titleCardTexture(opts: { number: number; total: number; name: st
       } else line = test;
     }
     lines.push(line);
-    if (lines.length <= 3 && lines.length * size * 0.9 < H - 360) break;
+    if (lines.length <= 2 && lines.length * size * 0.9 < H - 320) break;
+    if (size <= 160 && lines.length <= 3) break;
   }
   lines.forEach((l, i) => ctx.fillText(l, 66, 190 + size * 0.86 * (i + 1)));
 
-  ctx.font = `400 40px ${f.type}`;
+  ctx.font = `400 50px ${f.type}`;
   ctx.fillText(opts.date.toUpperCase(), 70, H - 80);
   // Big faint number, like a print registration mark
   ctx.globalAlpha = 0.12;

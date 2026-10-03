@@ -1,5 +1,5 @@
 {
-  "$comment": "The four festival events, in journey order (SFC -> Under the Stars -> Educational Screening -> Main Screening). `id` is used in films/schedule; `theme` is the colour theme (sfc | uts | main | base). `title` lines + `script` build the big display title. Media keys refer to media.json.",
+  "$comment": "The four festival events, in journey order (SFC -> Under the Stars -> Educational Screening -> Main Screening). `id` is used in films/schedule; `theme` is the colour theme (sfc | uts | main | base). `title` lines build the big display title; `script` (optional) is a word that is genuinely part of the name, drawn in script between the lines (e.g. Under *the* Stars). Media keys refer to media.json.",
   "items": [
     {
       "id": "sfc",
@@ -12,7 +12,6 @@
         "Short Film",
         "Competition"
       ],
-      "script": "the",
       "kicker": "Event 01 · Short Film Competition",
       "tagline": "New voices, original stories.",
       "summary": "Showcases emerging Indonesian filmmakers, highlighting original stories and fresh creative voices.",
@@ -68,7 +67,6 @@
         "Educational",
         "Screening"
       ],
-      "script": "the",
       "kicker": "Event 03 · Educational Screening",
       "tagline": "Films and learning for students and young audiences.",
       "lineupTitle": "The film",
@@ -96,7 +94,6 @@
         "Main",
         "Screening"
       ],
-      "script": "the",
       "kicker": "Event 04 · Main Screening",
       "tagline": "Three films. The heart of the festival.",
       "summary": "Three curated Indonesian films that represent the essence of the festival.",

@@ -1,5 +1,5 @@
 {
-  "$comment": "Copy for each page: hero title lines, script word, kicker, intro text, SEO title/description. Event pages take most of their copy from events.json.",
+  "$comment": "Copy for each page: hero title lines, script word, kicker, intro text, SEO title/description. Event pages take most of their copy from events.json. A `script` word must be part of the real title (it is read between the lines: Frequently *Asked* Questions).",
   "home": {
     "metaTitle": "21st Indonesian Film Festival · Melbourne",
     "kicker": "Melbourne · March 2027 (TBC)",
@@ -48,9 +48,9 @@
     "kicker": "Since the first edition",
     "title": [
       "About",
-      "the Festival"
+      "Festival"
     ],
-    "script": "all",
+    "script": "the",
     "hero": "about-hero",
     "story": [
       "The Indonesian Film Festival (IFF) is a non-profit festival run entirely by students in Melbourne. For more than two decades, it has brought the best of Indonesian cinema to Australian audiences, usually at ACMI in Federation Square.",
@@ -81,7 +81,6 @@
       "Our",
       "Sponsors"
     ],
-    "script": "with thanks",
     "hero": "sponsors-hero",
     "intro": "The festival is free of profit, not of cost. These partners make it possible.",
     "tiers": {
@@ -99,9 +98,9 @@
     "kicker": "Error 404",
     "title": [
       "Lost",
-      "the Reel"
+      "Reel"
     ],
-    "script": "we",
+    "script": "the",
     "text": "This page has been cut from the final edit."
   }
 }

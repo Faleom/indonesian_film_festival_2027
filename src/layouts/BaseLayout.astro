@@ -9,7 +9,8 @@ import Footer from '../components/layout/Footer.astro';
 import Toast from '../components/layout/Toast.astro';
 import site from '../content/site.json';
 
-export type Theme = 'base' | 'sfc' | 'uts' | 'main';
+export type { Theme } from '../lib/content';
+import type { Theme } from '../lib/content';
 
 interface Props {
   title: string;

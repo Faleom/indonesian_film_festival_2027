@@ -68,6 +68,9 @@
 .page {
   position: relative;
   z-index: 1;
+  /* Hero splashes bleed past the edge on purpose. Clipped here, not on <body>,
+     because body overflow is handed to the viewport and doesn't clip reliably. */
+  overflow-x: clip;
 }
 
 /* Global grain, above everything, never intercepts input. */

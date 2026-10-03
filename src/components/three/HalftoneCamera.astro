@@ -1,0 +1,60 @@
+---
+/**
+ * Halftone 3D film camera (risograph dots in the theme colour).
+ * Live WebGL on desktop with motion on; a static halftone image everywhere
+ * else, and until the scene has loaded. Uses /public/models/camera.glb
+ * instead of the primitive camera when that file exists.
+ *
+ * Max 3 heavy 3D spots site-wide.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  id?: string;
+  /** Base dot size in CSS px (scroll enlarges it near the screen edges). */
+  dotSize?: number;
+  /** CSS aspect ratio, e.g. "4 / 3". */
+  ratio?: string;
+  label?: string;
+  /** false = static fallback image only, never WebGL (thumbnails, extra spots). */
+  live?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  dotSize = 9,
+  ratio = '4 / 3',
+  label = 'Illustration of a vintage film camera printed in halftone dots',
+  live = true,
+  class: className,
+} = Astro.props;
+
+const publicDir = path.join(process.cwd(), 'public');
+const model = fs.existsSync(path.join(publicDir, 'models/camera.glb')) ? '/models/camera.glb' : undefined;
+const fallback = fs.existsSync(path.join(publicDir, 'images/camera-fallback.png'));
+---
+
+<div
+  id={id}
+  class:list={['ht3d', className]}
+  style={`--ratio: ${ratio}`}
+  data-halftone-3d={live ? '' : undefined}
+  data-model={model}
+  data-dot-size={dotSize}
+  role="img"
+  aria-label={label}
+>
+  {
+    fallback ? (
+      <div class="ht3d__fallback" style="--ht-fallback: url('/images/camera-fallback.png')" />
+    ) : (
+      <div class="ht3d__fallback ht3d__fallback--empty" />
+    )
+  }
+</div>
+
+<script>
+  import '../../scripts/three/loader';
+</script>

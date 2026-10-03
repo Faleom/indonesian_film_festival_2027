@@ -2,8 +2,10 @@ import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 import sponsorsFile from '../content/sponsors.json';
 import teamFile from '../content/team.json';
 import faqFile from '../content/faq.json';
+import eventsFile from '../content/events.json';
 
-export type EventId = 'sfc' | 'uts' | 'main';
+export type EventId = 'sfc' | 'uts' | 'edu' | 'main';
+export type Theme = 'sfc' | 'uts' | 'main' | 'base';
 export type EventEntry = CollectionEntry<'events'>;
 export type FilmEntry = CollectionEntry<'films'>;
 export type SessionEntry = CollectionEntry<'schedule'>;
@@ -47,6 +49,11 @@ export async function getTeam(): Promise<CollectionEntry<'team'>[]> {
 
 export async function getFaq(): Promise<CollectionEntry<'faq'>[]> {
   return (await getCollection('faq')).sort(byFileOrder(faqFile));
+}
+
+/** Colour theme for an event id (Edu shares the festival's base theme). */
+export function themeOf(eventId: string): Theme {
+  return (eventsFile.items.find((e) => e.id === eventId)?.theme ?? 'base') as Theme;
 }
 
 export const eventHref = (event: EventEntry) => `/${event.data.slug}`;

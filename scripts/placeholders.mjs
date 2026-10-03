@@ -40,7 +40,7 @@ ${rows.map((r) => `| \`${r.key}\` | ${r.type} | ${r.location} | ${r.ratio} | ${r
 
 | Item | Location | Notes |
 |---|---|---|
-| 3D camera model | Home hero (Phase 6/7) | Procedural low-poly camera until \`public/models/camera.glb\` is provided |
+| 3D camera model | \`<HalftoneCamera />\` (styleguide now, home hero in Phase 7) | Procedural low-poly camera until \`public/models/camera.glb\` is provided. After adding it, run \`npm run render:3d-fallback\` with the site running to refresh the static fallback (\`public/images/camera-fallback.png\`) |
 | Fonts | \`public/fonts\` | See \`src/content/fonts.json\` for exact filenames. Missing files fall back to Bebas Neue / Oswald / Jost / cursive |
 `;
 

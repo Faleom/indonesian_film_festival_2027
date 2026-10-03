@@ -13,6 +13,7 @@ const events = defineCollection({
   loader: file('src/content/events.json', { parser: items }),
   schema: z.object({
     order: z.number(),
+    theme: z.enum(['sfc', 'uts', 'main', 'base']),
     slug: z.string(),
     name: z.string(),
     shortName: z.string(),

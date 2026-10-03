@@ -1,7 +1,7 @@
 ---
 /** Film as a newspaper clipping. Takes the event's colour theme. */
 import Media from '../media/Media.astro';
-import { filmHref, formatRuntime, formatShortDate, type FilmEntry } from '../../lib/content';
+import { filmHref, formatRuntime, formatShortDate, themeOf, type FilmEntry } from '../../lib/content';
 
 interface Props {
   film: FilmEntry;
@@ -15,7 +15,7 @@ const { film, showEvent = false, eventName, headingLevel: Heading = 'h3' } = Ast
 const f = film.data;
 ---
 
-<article class="clipping" data-theme={f.event.id}>
+<article class="clipping" data-theme={themeOf(f.event.id)}>
   <div class="clipping__paper flex flex-col gap-2.5 sm:gap-3">
     <Media id={f.poster} sizes="(min-width: 1024px) 25vw, 45vw" />
     <div class="flex flex-wrap items-center gap-2">

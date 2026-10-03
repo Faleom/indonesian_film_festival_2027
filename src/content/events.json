@@ -1,9 +1,10 @@
 {
-  "$comment": "The three festival events, in journey order (SFC -> UTS -> Main). `id` is also the colour theme. `title` lines + `script` build the big display title. Media keys refer to media.json.",
+  "$comment": "The four festival events, in journey order (SFC -> Under the Stars -> Educational Screening -> Main Screening). `id` is used in films/schedule; `theme` is the colour theme (sfc | uts | main | base). `title` lines + `script` build the big display title. Media keys refer to media.json.",
   "items": [
     {
       "id": "sfc",
       "order": 1,
+      "theme": "sfc",
       "slug": "sfc",
       "name": "Short Film Competition",
       "shortName": "SFC",
@@ -14,7 +15,7 @@
       "script": "the",
       "kicker": "Event 01 · Short Film Competition",
       "tagline": "New voices, short stories, one night.",
-      "summary": "Emerging Indonesian and Indonesian-Australian filmmakers compete with short films judged by an industry panel. Finalists are screened on the night and winners announced live.",
+      "summary": "Showcases emerging Indonesian filmmakers, highlighting original stories and fresh creative voices. Finalists screen on the night and winners are announced live.",
       "description": [
         "The Short Film Competition opens the festival journey. Every year we call for short films from students, first-time directors and independent filmmakers across Indonesia and Australia.",
         "Finalists screen in front of a live audience and an industry jury. Awards include Best Short Film, Best Director and the Audience Choice Award, voted on the night.",
@@ -32,33 +33,65 @@
     {
       "id": "uts",
       "order": 2,
+      "theme": "uts",
       "slug": "uts",
-      "name": "UTS Screening",
+      "name": "Under the Stars",
       "shortName": "UTS",
       "title": [
-        "UTS",
-        "Screening"
+        "Under",
+        "Stars"
       ],
       "script": "the",
-      "kicker": "Event 02 · UTS Screening",
-      "tagline": "A night between the shorts and the main event.",
-      "summary": "A special screening event bridging the competition and the main festival: a feature film, conversation and community night.",
+      "kicker": "Event 02 · Under the Stars",
+      "tagline": "Indonesian cinema, open-air, under the Melbourne sky.",
+      "summary": "An open-air screening of featured Indonesian films in a community-driven outdoor setting. Bring a blanket.",
       "description": [
-        "The UTS Screening is the second stop on the festival journey: a feature screening followed by a conversation with the filmmakers.",
-        "Full details for the 21st edition will be announced soon."
+        "Under the Stars takes Indonesian cinema outdoors: a featured film screened open-air, with the community gathered on blankets and picnic rugs.",
+        "Come early for food, music and catching up with friends before the film starts at sunset.",
+        "Venue and full details for the 21st edition will be announced soon."
       ],
       "date": "2027-03-05",
       "dateLabel": "Friday 5 March 2027 (TBC)",
       "time": "7:00 PM",
-      "venue": "Venue TBC",
+      "venue": "Open-air venue TBC",
       "hero": "hero-uts",
       "trailer": null,
       "ticketUrl": "#",
       "lineupTitle": "The film"
     },
     {
-      "id": "main",
+      "id": "edu",
       "order": 3,
+      "theme": "base",
+      "slug": "edu-screening",
+      "name": "Educational Screening",
+      "shortName": "Edu",
+      "title": [
+        "Educational",
+        "Screening"
+      ],
+      "script": "the",
+      "kicker": "Event 03 · Educational Screening",
+      "tagline": "Films and learning for students and young audiences.",
+      "lineupTitle": "The film",
+      "summary": "A special screening designed for students and young audiences, offering curated films and learning opportunities that explore Indonesian culture and storytelling.",
+      "description": [
+        "The Educational Screening brings Indonesian cinema to students and young audiences, with a curated film chosen for discussion in the classroom and beyond.",
+        "Each session includes a guided conversation about the film's culture, language and storytelling. Teachers can request discussion notes in advance.",
+        "Schools and groups interested in attending can contact us. Full details for the 21st edition will be announced soon."
+      ],
+      "date": "2027-03-12",
+      "dateLabel": "Friday 12 March 2027 (TBC)",
+      "time": "10:30 AM",
+      "venue": "Venue TBC",
+      "hero": "hero-edu-screening",
+      "trailer": null,
+      "ticketUrl": "#"
+    },
+    {
+      "id": "main",
+      "order": 4,
+      "theme": "main",
       "slug": "main-screening",
       "name": "Main Screening",
       "shortName": "Main",
@@ -67,11 +100,11 @@
         "Screening"
       ],
       "script": "the",
-      "kicker": "Event 03 · Main Screening",
+      "kicker": "Event 04 · Main Screening",
       "tagline": "Three days of Indonesian cinema at ACMI.",
-      "summary": "The heart of the festival: feature films from Indonesia's most exciting filmmakers, panel discussions and Q&As at ACMI.",
+      "summary": "The heart of the festival: three curated Indonesian films that represent the festival's essence, with panels and Q&As at ACMI.",
       "description": [
-        "The Main Screening is the festival's flagship weekend at ACMI: a curated program of recent Indonesian features, many screening in Australia for the first time.",
+        "The Main Screening is the festival's flagship weekend at ACMI: three curated Indonesian features that represent the essence of the festival, many screening in Australia for the first time.",
         "Between screenings, join panels and Q&As with directors, actors and producers. All films screen with English subtitles."
       ],
       "date": "2027-03-19",

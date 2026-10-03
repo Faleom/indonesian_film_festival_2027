@@ -9,7 +9,7 @@ Until the real file exists, `<Media id="key" />` renders a halftone placeholder 
 
 Then run `npm run placeholders` to refresh this list. To use a different filename, change `src` for that key in `media.json`.
 
-_33 of 33 still pending. Generated from media.json; don't edit by hand._
+_34 of 34 still pending. Generated from media.json; don't edit by hand._
 
 | Key | Type | Location | Ratio | Recommended size | File path (as-is) | Status |
 |---|---|---|---|---|---|---|
@@ -17,6 +17,7 @@ _33 of 33 still pending. Generated from media.json; don't edit by hand._
 | `hero-loop` | video | / (home) hero, mobile fallback for 3D | 9:16 | 1080x1920, under 4 MB, muted loop | `public/videos/hero-loop.mp4` | ⬜ placeholder |
 | `hero-sfc` | image | /sfc hero | 4:5 | 1600x2000 | `public/images/hero-sfc.jpg` | ⬜ placeholder |
 | `hero-uts` | image | /uts hero | 4:5 | 1600x2000 | `public/images/hero-uts.jpg` | ⬜ placeholder |
+| `hero-edu-screening` | image | /edu-screening hero | 4:5 | 1600x2000 | `public/images/hero-edu-screening.jpg` | ⬜ placeholder |
 | `hero-main-screening` | image | /main-screening hero | 4:5 | 1600x2000 | `public/images/hero-main-screening.jpg` | ⬜ placeholder |
 | `trailer-main` | video | / (home) and /main-screening trailer | 16:9 | 1920x1080 H.264, under 25 MB | `public/videos/trailer-main.mp4` | ⬜ placeholder |
 | `trailer-sfc` | video | /sfc trailer | 16:9 | 1920x1080 H.264, under 25 MB | `public/videos/trailer-sfc.mp4` | ⬜ placeholder |
@@ -51,5 +52,5 @@ _33 of 33 still pending. Generated from media.json; don't edit by hand._
 
 | Item | Location | Notes |
 |---|---|---|
-| 3D camera model | Home hero (Phase 6/7) | Procedural low-poly camera until `public/models/camera.glb` is provided |
+| 3D camera model | `<HalftoneCamera />` (styleguide now, home hero in Phase 7) | Procedural low-poly camera until `public/models/camera.glb` is provided. After adding it, run `npm run render:3d-fallback` with the site running to refresh the static fallback (`public/images/camera-fallback.png`) |
 | Fonts | `public/fonts` | See `src/content/fonts.json` for exact filenames. Missing files fall back to Bebas Neue / Oswald / Jost / cursive |

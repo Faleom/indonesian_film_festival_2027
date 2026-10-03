@@ -13,7 +13,7 @@ import FilmCard from '../../components/sections/FilmCard.astro';
 import VideoPlayer from '../../components/sections/VideoPlayer.astro';
 import ScheduleTable from '../../components/sections/ScheduleTable.astro';
 import site from '../../content/site.json';
-import { eventHref, formatDate, formatRuntime, getEvent, getFilms, getSessions, type EventId, type FilmEntry } from '../../lib/content';
+import { eventHref, formatDate, formatRuntime, getEvent, getFilms, getSessions, themeOf, type EventId, type FilmEntry } from '../../lib/content';
 
 export const getStaticPaths = (async () => {
   const films = await getCollection('films');
@@ -39,7 +39,7 @@ const facts = [
 ];
 ---
 
-<BaseLayout title={`${f.title} · ${site.shortName} ${site.editionNumber}`} description={f.synopsis} theme={eventId}>
+<BaseLayout title={`${f.title} · ${site.shortName} ${site.editionNumber}`} description={f.synopsis} theme={themeOf(eventId)}>
   <div class="container-page pt-8">
     <a href={eventHref(event)} class="font-typewriter text-sm uppercase underline underline-offset-4">← {event.data.name}</a>
   </div>

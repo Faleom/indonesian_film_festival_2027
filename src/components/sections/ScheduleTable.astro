@@ -20,7 +20,7 @@ const days = groupByDate(sessions);
         <Heading class="classifieds__day m-0 py-2 text-2xl md:text-3xl">{formatDate(day.date)}</Heading>
         <ol class="m-0 list-none p-0">
           {day.sessions.map((s) => (
-            <li class="classifieds__row" data-theme={s.event.id}>
+            <li class="classifieds__row" data-theme={s.event.data.theme}>
               <p class="classifieds__time m-0">
                 <time datetime={`${s.data.date}T${s.data.start}`} class="text-lg">
                   {formatTime(s.data.start)}

@@ -1,5 +1,5 @@
 ---
-/** Shared template for /sfc, /uts and /main-screening. All copy comes from events.json. */
+/** Shared template for /sfc, /uts, /edu-screening and /main-screening. All copy comes from events.json. */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../sections/Hero.astro';
 import FilmCard from '../sections/FilmCard.astro';
@@ -24,7 +24,7 @@ const next = events[index + 1];
 const prev = events[index - 1];
 ---
 
-<BaseLayout title={`${e.name} · ${site.shortName} ${site.editionNumber}`} description={e.summary} theme={event.id as EventId}>
+<BaseLayout title={`${e.name} · ${site.shortName} ${site.editionNumber}`} description={e.summary} theme={e.theme}>
   <Hero
     title={e.title}
     script={e.script}
@@ -99,7 +99,7 @@ const prev = events[index - 1];
   <nav class="container-page grid gap-4 py-12 md:grid-cols-2" aria-label="Festival journey">
     {
       prev ? (
-        <a href={eventHref(prev)} data-theme={prev.id} class="group flex flex-col gap-2 border border-ink p-6 text-ink no-underline hover:bg-primary hover:text-on-primary">
+        <a href={eventHref(prev)} data-theme={prev.data.theme} class="group flex flex-col gap-2 border border-ink p-6 text-ink no-underline hover:bg-primary hover:text-on-primary">
           <span class="font-typewriter text-xs tracking-widest uppercase">← Previously on the journey</span>
           <span class="font-display text-4xl leading-none uppercase md:text-5xl">{prev.data.name}</span>
         </a>
@@ -107,7 +107,7 @@ const prev = events[index - 1];
     }
     {
       next && (
-        <a href={eventHref(next)} data-theme={next.id} class="group flex flex-col gap-2 border border-ink p-6 text-right text-ink no-underline hover:bg-primary hover:text-on-primary">
+        <a href={eventHref(next)} data-theme={next.data.theme} class="group flex flex-col gap-2 border border-ink p-6 text-right text-ink no-underline hover:bg-primary hover:text-on-primary">
           <span class="font-typewriter text-xs tracking-widest uppercase">Next on the journey →</span>
           <span class="font-display text-4xl leading-none uppercase md:text-5xl">{next.data.name}</span>
         </a>

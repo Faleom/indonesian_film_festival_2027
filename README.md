@@ -12,6 +12,7 @@ Astro + Tailwind, static output. See `CLAUDE.md` for the design brief and `PLAN.
 | `npm run preview` | Serve the built `dist/` locally |
 | `npm run halftone` | Process photos only. Add `-- --force` to redo every photo |
 | `npm run placeholders` | Regenerate `PLACEHOLDERS.md` from `src/content/media.json` |
+| `npm run render:3d-fallback` | Re-render the static 3D fallback image (site must be running, needs Chrome) |
 
 The design system lives at `/styleguide`.
 
@@ -69,3 +70,14 @@ Changing a setting re-processes the affected photos on the next run. Unchanged p
 - Set `"halftone": false` on an image in `media.json` to show the original file from `/public` untouched (logos, sponsor artwork).
 
 `<Media>` picks, in order: halftone output → original file at `src` in `/public` → labelled placeholder.
+
+## Halftone 3D
+
+`<HalftoneCamera />` (`src/components/three/`) renders a 3D model through a halftone shader (`src/scripts/three/`): dots in the theme's primary colour, a slightly misregistered key plate in the theme's dark colour, and grain. It turns towards the mouse; scrolling turns it and enlarges the dots near the screen edges.
+
+- Three.js is lazy-loaded only when the block is near the viewport, and only on desktop (fine pointer, 768px+) with motion on.
+- Phones, reduced motion and no-JS show the static fallback `public/images/camera-fallback.png`, recoloured per theme with a CSS mask. It's also shown until the live scene is ready.
+- Each scene renders only while visible, and its WebGL context is released when you leave the page.
+- Use `live={false}` for extra copies that should only ever show the static image. Heavy 3D is limited to 3 hero spots site-wide.
+
+**Replacing the model:** save a GLB as `public/models/camera.glb`; it's picked up automatically and scaled to fit. Then run the site and `npm run render:3d-fallback` to refresh the fallback image.

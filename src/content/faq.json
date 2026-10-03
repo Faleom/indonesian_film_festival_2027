@@ -1,16 +1,77 @@
 {
   "$comment": "FAQ entries, grouped by `category` (shown in this order). Answers are plain text; blank lines are not supported, keep each answer to one paragraph.",
   "items": [
-    { "id": "buy-tickets", "category": "Tickets", "question": "Where do I buy tickets?", "answer": "Tickets are sold through the venue. Use the Get Tickets button on any event or film page. Ticket links will go live when the program is announced." },
-    { "id": "ticket-prices", "category": "Tickets", "question": "How much are tickets?", "answer": "Prices will be announced with the program. Student and concession prices are available for most sessions." },
-    { "id": "refunds", "category": "Tickets", "question": "Can I get a refund or exchange?", "answer": "Refunds and exchanges follow the venue's ticketing policy. Contact the venue box office directly for help with an existing booking." },
-    { "id": "venue", "category": "At the venue", "question": "Where is the festival held?", "answer": "Most sessions are held at ACMI, Federation Square, Melbourne. Each event page lists its exact venue." },
-    { "id": "accessibility", "category": "At the venue", "question": "Is the venue accessible?", "answer": "ACMI cinemas are wheelchair accessible and offer companion card seating. Contact us before the event if you have specific access needs and we'll do our best to help." },
-    { "id": "arrive", "category": "At the venue", "question": "When should I arrive?", "answer": "Please arrive 15 to 20 minutes before your session. Late entry may not be possible once a film has started." },
-    { "id": "subtitles", "category": "Films", "question": "Are the films subtitled?", "answer": "Yes. Every film screens in its original language with English subtitles." },
-    { "id": "ages", "category": "Films", "question": "Are there age restrictions?", "answer": "Each film shows its Australian classification. Films marked CTC (Check the Classification) have not been classified yet; check the film page closer to the date." },
-    { "id": "submit", "category": "Get involved", "question": "How do I submit a film to the Short Film Competition?", "answer": "Submission details for the 21st edition will be announced on the Short Film Competition page and our socials. Follow us to be the first to know." },
-    { "id": "volunteer", "category": "Get involved", "question": "Can I volunteer?", "answer": "Yes, we'd love your help. Visit the Volunteer page to see the roles and register your interest." },
-    { "id": "sponsor", "category": "Get involved", "question": "How can my organisation sponsor the festival?", "answer": "Visit the Sponsors page or email us. We offer packages for businesses, community groups and institutions of every size." }
+    {
+      "id": "buy-tickets",
+      "category": "Tickets",
+      "question": "Where do I buy tickets?",
+      "answer": "Tickets are sold through the venue. Use the Get Tickets button on any event or film page. Ticket links will go live when the program is announced."
+    },
+    {
+      "id": "ticket-prices",
+      "category": "Tickets",
+      "question": "How much are tickets?",
+      "answer": "Prices will be announced with the program. Student and concession prices are available for most sessions."
+    },
+    {
+      "id": "refunds",
+      "category": "Tickets",
+      "question": "Can I get a refund or exchange?",
+      "answer": "Refunds and exchanges follow the venue's ticketing policy. Contact the venue box office directly for help with an existing booking."
+    },
+    {
+      "id": "venue",
+      "category": "At the venue",
+      "question": "Where is the festival held?",
+      "answer": "Most sessions are held at ACMI, Federation Square, Melbourne. Each event page lists its exact venue."
+    },
+    {
+      "id": "accessibility",
+      "category": "At the venue",
+      "question": "Is the venue accessible?",
+      "answer": "ACMI cinemas are wheelchair accessible and offer companion card seating. Contact us before the event if you have specific access needs and we'll do our best to help."
+    },
+    {
+      "id": "arrive",
+      "category": "At the venue",
+      "question": "When should I arrive?",
+      "answer": "Please arrive 15 to 20 minutes before your session. Late entry may not be possible once a film has started."
+    },
+    {
+      "id": "subtitles",
+      "category": "Films",
+      "question": "Are the films subtitled?",
+      "answer": "Yes. Every film screens in its original language with English subtitles."
+    },
+    {
+      "id": "ages",
+      "category": "Films",
+      "question": "Are there age restrictions?",
+      "answer": "Each film shows its Australian classification. Films marked CTC (Check the Classification) have not been classified yet; check the film page closer to the date."
+    },
+    {
+      "id": "schools",
+      "category": "Get involved",
+      "question": "Can schools attend the Educational Screening?",
+      "answer": "Yes. The Educational Screening is designed for students and young audiences. Email us to register a school or group and to request discussion notes."
+    },
+    {
+      "id": "submit",
+      "category": "Get involved",
+      "question": "How do I submit a film to the Short Film Competition?",
+      "answer": "Submission details for the 21st edition will be announced on the Short Film Competition page and our socials. Follow us to be the first to know."
+    },
+    {
+      "id": "volunteer",
+      "category": "Get involved",
+      "question": "Can I volunteer?",
+      "answer": "Yes, we'd love your help. Visit the Volunteer page to see the roles and register your interest."
+    },
+    {
+      "id": "sponsor",
+      "category": "Get involved",
+      "question": "How can my organisation sponsor the festival?",
+      "answer": "Visit the Sponsors page or email us. We offer packages for businesses, community groups and institutions of every size."
+    }
   ]
 }

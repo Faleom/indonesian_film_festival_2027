@@ -30,8 +30,16 @@
       "type": "image",
       "src": "/images/hero-uts.jpg",
       "ratio": "4:5",
-      "alt": "UTS screening hero image",
+      "alt": "Open-air screening under the stars",
       "location": "/uts hero",
+      "recommended": "1600x2000"
+    },
+    "hero-edu-screening": {
+      "type": "image",
+      "src": "/images/hero-edu-screening.jpg",
+      "ratio": "4:5",
+      "alt": "Students at the Educational Screening",
+      "location": "/edu-screening hero",
       "recommended": "1600x2000"
     },
     "hero-main-screening": {

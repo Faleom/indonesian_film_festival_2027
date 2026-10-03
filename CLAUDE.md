@@ -3,12 +3,13 @@
 ## Project context
 - Website for the **21st Indonesian Film Festival (IFF)**, Melbourne. A non-profit, student-run festival, usually held at ACMI.
 - Previous edition (20th, 2026): "Arunika: The Ascending Light of Cinema". 21st edition theme TBD; use a placeholder.
-- Events (each has its own theme):
-  - `sfc`: Short Film Competition
-  - `uts`: UTS screening event
-  - `main`: Main Screening (films, panels, Q&A)
-  - `base`: general festival brand (home, about, etc.)
-- Festival journey / gradient order: **SFC → UTS → Main Screening**.
+- Events: there are exactly four, no others (reference: https://www.indonesianfilmfestivalau.com):
+  - `sfc`: Short Film Competition (theme `sfc`)
+  - `uts`: **Under the Stars**, an open-air community screening (theme `uts`). UTS is NOT a university.
+  - `edu`: Educational Screening, for students and young audiences (theme `base` until it gets its own palette)
+  - `main`: Main Screening, three curated films plus panels and Q&A (theme `main`)
+  - `base` theme: general festival brand (home, about, etc.)
+- Festival journey order: **SFC → Under the Stars → Educational Screening → Main Screening**. Colour gradient: SFC → UTS → Main.
 
 ## Current scope: FRONTEND ONLY
 - No backend, no database, no auth, no CMS, no payments.
@@ -79,7 +80,7 @@ Font files go in `/public/fonts`. Rushford, Military Script, Etna, and Futura ne
 
 ## Site structure
 - `/`: home (base theme)
-- `/sfc`, `/uts`, `/main-screening`: event pages (own theme each)
+- `/sfc`, `/uts`, `/edu-screening`, `/main-screening`: event pages (own theme each)
 - `/films/[slug]`: film detail
 - `/program`: schedule
 - `/faq`, `/about`, `/sponsors`, `/volunteer`

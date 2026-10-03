@@ -22,8 +22,8 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href
       </span>
     </a>
 
-    <nav aria-label="Main" class="hidden lg:block">
-      <ul class="m-0 flex list-none items-center gap-5 p-0 xl:gap-7">
+    <nav aria-label="Main" class="hidden xl:block">
+      <ul class="m-0 flex list-none items-center gap-5 p-0 2xl:gap-7">
         {
           site.nav.map((item) => (
             <li data-theme={item.theme}>
@@ -39,7 +39,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href
 
     <div class="flex items-center gap-3">
       <a href={site.ticketUrl} class="btn btn--primary hidden sm:inline-flex">Tickets</a>
-      <details class="nav-menu lg:hidden">
+      <details class="nav-menu xl:hidden">
         <summary class="btn btn--ghost" aria-label="Menu">
           <span class="nav-menu__icon-open">Menu</span>
           <span class="nav-menu__icon-close">Close</span>

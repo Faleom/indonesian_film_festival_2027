@@ -31,6 +31,11 @@
       "theme": "uts"
     },
     {
+      "label": "Edu",
+      "href": "/edu-screening",
+      "theme": "base"
+    },
+    {
       "label": "Main Screening",
       "href": "/main-screening",
       "theme": "main"

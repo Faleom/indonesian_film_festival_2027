@@ -6,15 +6,16 @@ import DisplayTitle from '../components/typography/DisplayTitle.astro';
 import Kicker from '../components/typography/Kicker.astro';
 import BodyText from '../components/typography/BodyText.astro';
 import Media from '../components/media/Media.astro';
+import HalftoneCamera from '../components/three/HalftoneCamera.astro';
 import { media, mediaKeys, mediaDelivered, getHalftone } from '../lib/media';
 import halftoneConfig from '../../halftone.config.json';
 import fontData from '../content/fonts.json';
 
 const themes = [
   { id: 'sfc', name: 'SFC', event: 'Short Film Competition' },
-  { id: 'uts', name: 'UTS', event: 'UTS Screening' },
+  { id: 'uts', name: 'UTS', event: 'Under the Stars' },
   { id: 'main', name: 'Main', event: 'Main Screening' },
-  { id: 'base', name: 'Base', event: 'Festival brand' },
+  { id: 'base', name: 'Base', event: 'Festival brand · Edu Screening' },
 ];
 
 // Read hex values straight from themes.css so the labels can't drift.
@@ -66,7 +67,7 @@ const fontSamples: Record<string, { size: string; text: string; transform?: stri
     <section aria-labelledby="sg-themes" class="mb-24">
       <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4 border-b border-ink pb-3">
         <h2 id="sg-themes" class="heading-condensed">01 · Themes</h2>
-        <Kicker as="span">Journey: SFC → UTS → Main · Base = festival</Kicker>
+        <Kicker as="span">Journey: SFC → UTS → Edu → Main · Base = festival + Edu</Kicker>
       </div>
 
       <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -345,5 +346,63 @@ const fontSamples: Record<string, { size: string; text: string; transform?: stri
         }
       </div>
     </section>
+    <!-- ============ 3D HALFTONE ============ -->
+    <section aria-labelledby="sg-3d" class="mt-24">
+      <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4 border-b border-ink pb-3">
+        <h2 id="sg-3d" class="heading-condensed">06 · 3D halftone</h2>
+        <Kicker as="span">Three.js · max 3 hero spots</Kicker>
+      </div>
+      <div class="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
+        <div id="ht3d-demo-wrap" data-theme="main" class="border border-ink/40">
+          <HalftoneCamera id="ht3d-demo" />
+        </div>
+        <div class="flex flex-col gap-6">
+          <BodyText size="small">
+            <p>
+              A placeholder low-poly film camera built from primitives, rendered through a halftone shader: a colour
+              plate in the theme primary plus a slightly misregistered key plate in the theme dark, with grain.
+              Move the mouse to turn it; scrolling turns it and enlarges the dots near the screen edges.
+            </p>
+            <p>
+              Loads only when near the viewport, on desktop with motion on. Phones, reduced motion and no-JS get the
+              static image below (also shown until the scene is ready). Drop <code>public/models/camera.glb</code> in
+              to replace the model.
+            </p>
+          </BodyText>
+          <div class="flex flex-col gap-2">
+            <span class="field__label">Theme</span>
+            <div class="flex flex-wrap gap-2">
+              {themes.map((t) => (
+                <button type="button" class="btn btn--ghost cursor-pointer text-xs" data-theme={t.id} data-ht3d-theme={t.id}>{t.name}</button>
+              ))}
+            </div>
+          </div>
+          <label class="flex flex-col gap-2">
+            <span class="field__label">Dot size (uniform)</span>
+            <input type="range" min="4" max="18" step="1" value="9" data-ht3d-dot="ht3d-demo" disabled class="accent-ink" />
+          </label>
+          <div>
+            <span class="field__label mb-3 block">Static fallback in each theme</span>
+            <div class="grid grid-cols-4 gap-2">
+              {themes.map((t) => (
+                <div data-theme={t.id} class="border border-ink/30"><HalftoneCamera ratio="1 / 1" label={`Fallback in the ${t.name} theme`} live={false} /></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // Demo-only: recolour the 3D block by switching data-theme on its wrapper.
+      document.addEventListener('astro:page-load', () => {
+        document.querySelectorAll<HTMLButtonElement>('[data-ht3d-theme]').forEach((btn) => {
+          btn.onclick = () => {
+            const wrap = document.getElementById('ht3d-demo-wrap');
+            if (wrap) wrap.dataset.theme = btn.dataset.ht3dTheme;
+          };
+        });
+      });
+    </script>
   </div>
 </BaseLayout>

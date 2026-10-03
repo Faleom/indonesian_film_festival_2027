@@ -1,5 +1,5 @@
 ---
-/** SFC -> UTS -> Main, each card in its own theme. */
+/** SFC -> Under the Stars -> Edu -> Main, each card in its own theme. */
 import { eventHref, type EventEntry } from '../../lib/content';
 
 interface Props {
@@ -9,10 +9,10 @@ interface Props {
 const { events } = Astro.props;
 ---
 
-<ol class="m-0 grid list-none gap-5 p-0 md:grid-cols-3 md:gap-0">
+<ol class="m-0 grid list-none gap-5 p-0 md:grid-cols-2 xl:grid-cols-4 xl:gap-0">
   {
     events.map((e, i) => (
-      <li data-theme={e.id} class="relative flex">
+      <li data-theme={e.data.theme} class="relative flex">
         <a
           href={eventHref(e)}
           class="group flex w-full flex-col gap-4 border border-ink bg-offwhite/50 p-6 text-ink no-underline transition-colors hover:bg-primary hover:text-on-primary md:p-8"
@@ -33,10 +33,10 @@ const { events } = Astro.props;
         </a>
         {i < events.length - 1 && (
           <span
-            class="absolute -bottom-5 left-1/2 z-10 -translate-x-1/2 font-typewriter text-2xl md:top-1/2 md:right-0 md:bottom-auto md:left-auto md:translate-x-1/2 md:-translate-y-1/2"
+            class="absolute -bottom-5 left-1/2 z-10 -translate-x-1/2 font-typewriter text-2xl md:hidden xl:top-1/2 xl:right-0 xl:bottom-auto xl:left-auto xl:block xl:translate-x-1/2 xl:-translate-y-1/2"
             aria-hidden="true"
           >
-            <span class="block rotate-90 md:rotate-0">→</span>
+            <span class="block rotate-90 xl:rotate-0">→</span>
           </span>
         )}
       </li>

@@ -9,7 +9,7 @@ Until the real file exists, `<Media id="key" />` renders a halftone placeholder 
 
 Then run `npm run placeholders` to refresh this list. To use a different filename, change `src` for that key in `media.json`.
 
-_32 of 32 still pending. Generated from media.json; don't edit by hand._
+_36 of 36 still pending. Generated from media.json; don't edit by hand._
 
 | Key | Type | Location | Ratio | Recommended size | File path (as-is) | Status |
 |---|---|---|---|---|---|---|
@@ -45,6 +45,10 @@ _32 of 32 still pending. Generated from media.json; don't edit by hand._
 | `team-design-lead` | image | /about team grid | 4:5 | 800x1000 | `public/images/team/design-lead.jpg` | ⬜ placeholder |
 | `team-sponsorship-lead` | image | /about team grid | 4:5 | 800x1000 | `public/images/team/sponsorship-lead.jpg` | ⬜ placeholder |
 | `team-treasurer` | image | /about team grid | 4:5 | 800x1000 | `public/images/team/treasurer.jpg` | ⬜ placeholder |
+| `broll-sfc` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-sfc.mp4` | ⬜ placeholder |
+| `broll-uts` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-uts.mp4` | ⬜ placeholder |
+| `broll-edu` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-edu.mp4` | ⬜ placeholder |
+| `broll-main` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-main.mp4` | ⬜ placeholder |
 
 ## Other placeholders
 

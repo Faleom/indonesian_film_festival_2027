@@ -261,6 +261,38 @@
       "alt": "Portrait of the Treasurer",
       "location": "/about team grid",
       "recommended": "800x1000"
+    },
+    "broll-sfc": {
+      "type": "video",
+      "src": "/videos/broll-sfc.mp4",
+      "ratio": "16:9",
+      "alt": "B-roll from the Short Film Competition",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1280x720 H.264, 8-15 s silent loop, under 6 MB"
+    },
+    "broll-uts": {
+      "type": "video",
+      "src": "/videos/broll-uts.mp4",
+      "ratio": "16:9",
+      "alt": "B-roll from the Under the Stars",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1280x720 H.264, 8-15 s silent loop, under 6 MB"
+    },
+    "broll-edu": {
+      "type": "video",
+      "src": "/videos/broll-edu.mp4",
+      "ratio": "16:9",
+      "alt": "B-roll from the Educational Screening",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1280x720 H.264, 8-15 s silent loop, under 6 MB"
+    },
+    "broll-main": {
+      "type": "video",
+      "src": "/videos/broll-main.mp4",
+      "ratio": "16:9",
+      "alt": "B-roll from the Main Screening",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1280x720 H.264, 8-15 s silent loop, under 6 MB"
     }
   }
 }

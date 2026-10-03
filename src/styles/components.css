@@ -381,3 +381,185 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
   background: radial-gradient(circle, var(--c-primary) 0 1.5px, transparent 2px) 0 0 / 8px 8px;
   opacity: 0.35;
 }
+
+/* ---------- Home hero (HomeHero.astro) ----------
+ * Static by default. .is-3d (desktop + motion, set by the 3D loader) pins the
+ * stage for a long scroll while the particle scene plays.
+ */
+.hero3d__stage { position: relative; }
+.hero3d__overlay,
+.hero3d__poster { display: none; }
+
+.hero3d.is-3d { height: 360vh; }
+.hero3d.is-3d .hero3d__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+.hero3d.is-3d .hero3d__static { display: none; }
+/* Paper fade under the intro so flying dots never hurt readability. */
+.hero3d.is-3d .hero3d__stage::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+  height: 34%;
+  background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--c-offwhite) 88%, transparent) 70%);
+  pointer-events: none;
+}
+.hero3d.is-3d .hero3d__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-block: 2rem 2.5rem;
+  pointer-events: none;
+}
+.hero3d__overlay a,
+.hero3d__overlay button { pointer-events: auto; }
+.hero3d__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.hero3d__cue {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  margin: 0;
+  transform: translateX(-50%);
+  font-family: var(--ff-typewriter);
+  font-size: 0.8125rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: clamp(0, calc(1 - var(--hero-p, 0) * 8), 1);
+}
+.hero3d__cue span { display: inline-block; animation: cue-bob 1.6s ease-in-out infinite; }
+@keyframes cue-bob { 50% { transform: translateY(5px); } }
+
+/* Static camera shown while the 3D scene loads. */
+.hero3d.is-3d .hero3d__poster {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(48vh, 40vw);
+  aspect-ratio: 3 / 4;
+  transform: translate(-50%, -50%);
+  background: var(--c-primary);
+  -webkit-mask: var(--ht-fallback) center / contain no-repeat;
+  mask: var(--ht-fallback) center / contain no-repeat;
+  transition: opacity 0.6s ease;
+}
+.hero3d.is-live .hero3d__poster { opacity: 0; }
+
+.hero3d__stage > .ht3d__canvas,
+.strip3d__stage > .ht3d__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.is-live .hero3d__stage > .ht3d__canvas,
+.is-live .strip3d__stage > .ht3d__canvas { opacity: 1; }
+
+/* ---------- Journey film strip (FilmStripJourney.astro) ---------- */
+.strip3d__stage { display: none; }
+.strip3d.is-3d { height: calc(100vh + var(--frames, 12) * 34vh); }
+.strip3d.is-3d .strip3d__static { display: none; }
+.strip3d.is-3d .strip3d__stage {
+  position: sticky;
+  top: 0;
+  display: block;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.strip3d__hud {
+  position: absolute;
+  inset: 1.75rem 0 auto;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  pointer-events: none;
+}
+.strip3d__segments {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.strip3d__segments li {
+  width: clamp(4rem, 9vw, 8rem);
+  font-family: var(--ff-typewriter);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.strip3d__segments li::after {
+  content: '';
+  display: block;
+  height: 3px;
+  margin-top: 0.35rem;
+  background: linear-gradient(90deg, var(--c-primary) calc(var(--fill, 0) * 100%), rgb(0 0 0 / 0.15) 0);
+}
+
+.strip3d__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2.25rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px);
+  transition: opacity 0.45s ease, transform 0.45s ease, visibility 0s linear 0.45s;
+}
+.strip3d__panel.is-current {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.strip3d__name {
+  margin: 0;
+  font-family: var(--ff-display);
+  font-weight: 400;
+  font-size: clamp(3rem, 7vw, 6.5rem);
+  line-height: 0.85;
+  text-transform: uppercase;
+  color: var(--c-display-top);
+}
+.strip3d__meta {
+  margin: 0;
+  font-family: var(--ff-typewriter);
+  font-size: 0.875rem;
+}
+.strip3d__timecode {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 2.25rem;
+  z-index: 2;
+  margin: 0;
+  font-family: var(--ff-typewriter);
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  color: var(--c-text-accent);
+}
+.strip3d__timecode::before { content: '● REC  '; color: var(--c-primary); }

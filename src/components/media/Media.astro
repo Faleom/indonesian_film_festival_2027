@@ -24,10 +24,12 @@ interface Props {
   priority?: boolean;
   /** `sizes` attribute for responsive halftone images */
   sizes?: string;
+  /** Video only: silent autoplaying loop without controls (decorative). */
+  background?: boolean;
   class?: string;
 }
 
-const { id, ratio, alt, tone: toneProp, priority = false, sizes = '100vw', class: className } = Astro.props;
+const { id, ratio, alt, tone: toneProp, priority = false, sizes = '100vw', background = false, class: className } = Astro.props;
 const entry = getMedia(id);
 
 if (!entry) {
@@ -101,7 +103,11 @@ const label = entry
   {
     exists && entry && type === 'video' && (
       <div class="media" style={ratioStyle}>
-        <video src={entry.src} poster={posterSrc} controls preload="none" playsinline aria-label={altText} />
+        {background ? (
+          <video src={entry.src} poster={posterSrc} autoplay muted loop playsinline preload="metadata" aria-hidden="true" />
+        ) : (
+          <video src={entry.src} poster={posterSrc} controls preload="none" playsinline aria-label={altText} />
+        )}
       </div>
     )
   }

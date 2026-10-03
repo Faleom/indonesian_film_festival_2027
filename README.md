@@ -81,3 +81,12 @@ Changing a setting re-processes the affected photos on the next run. Unchanged p
 - Use `live={false}` for extra copies that should only ever show the static image. Heavy 3D is limited to 3 hero spots site-wide.
 
 **Replacing the model:** save a GLB as `public/models/camera.glb`; it's picked up automatically and scaled to fit. Then run the site and `npm run render:3d-fallback` to refresh the fallback image.
+
+### Home page 3D (Phase 7)
+
+Two pinned, scroll-driven scenes on the home page (desktop with motion on; phones and reduced motion get the static layouts):
+
+- **Hero** (`src/components/home/HomeHero.astro`, `src/scripts/three/heroScene.ts`): the film camera made of halftone dots turns, explodes and reassembles into the festival title. The title text comes from `pages.json` (`home.title` + `home.script`), drawn in the site fonts.
+- **Journey film strip** (`src/components/home/FilmStripJourney.astro`, `src/scripts/three/filmStrip.ts`): a curved 3D film strip with, per event, a title card, its b-roll (`broll-<event>` in `media.json`) and up to two film posters. The site re-inks in each event's colours as its frames pass the centre.
+
+**Adding b-roll:** save a short silent loop as `public/videos/broll-sfc.mp4` (and `-uts`, `-edu`, `-main`). Posters and photos come through the halftone pipeline, which also writes the greyscale `-tex.jpg` the strip uses as a texture.

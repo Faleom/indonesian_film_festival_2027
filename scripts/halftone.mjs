@@ -5,6 +5,7 @@
 //   <key>-black.png             pure black dots
 //   <key>-<theme>.png           dots in each theme's primary colour (sfc/uts/main/base)
 //   <key>-<variant>-<w>.png     smaller copies for srcset (config.smallWidths)
+//   <key>-tex.jpg               greyscale texture for the 3D film strip (printed as dots by the shader)
 // plus manifest.json (sizes + hashes, read by <Media> and used for caching).
 // PNG with a 16-colour palette is ~2x smaller than WebP for flat dot patterns.
 //
@@ -22,7 +23,7 @@ const inputDir = path.join(root, config.input);
 const outputDir = path.join(root, config.output);
 const manifestPath = path.join(outputDir, 'manifest.json');
 // Bump when the rendering code changes, so cached outputs are regenerated.
-const PIPELINE_VERSION = 2;
+const PIPELINE_VERSION = 3;
 const EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.tif', '.tiff', '.avif']);
 
 // Theme primaries come from themes.css so colours never drift from the site.
@@ -123,6 +124,7 @@ function removeStale(previous, manifest) {
         fs.rmSync(path.join(root, 'public', url), { force: true });
       }
     }
+    if (previous[key].texture) fs.rmSync(path.join(root, 'public', previous[key].texture), { force: true });
     console.log(`[halftone] Removed outputs for deleted photo "${key}".`);
   }
 }
@@ -171,7 +173,9 @@ async function main() {
       prev?.settingsHash === settingsHash &&
       Object.values(prev.variants ?? {}).every((v) =>
         [v.src, ...v.srcset.map((s) => s.src)].every((url) => fs.existsSync(path.join(root, 'public', url))),
-      );
+      ) &&
+      !!prev.texture &&
+      fs.existsSync(path.join(root, 'public', prev.texture));
     if (upToDate) {
       manifest[key] = prev;
       continue;
@@ -211,9 +215,20 @@ async function main() {
       }),
     );
 
+    // Plain greyscale copy for WebGL textures (the 3D shader does its own halftoning).
+    const texture = `${urlBase}/${key}-tex.jpg`;
+    await sharp(path.join(inputDir, file))
+      .rotate()
+      .resize({ width: 1024, withoutEnlargement: true })
+      .greyscale()
+      .normalise()
+      .jpeg({ quality: 78, mozjpeg: true })
+      .toFile(path.join(root, 'public', texture));
+
     manifest[key] = {
       width,
       height,
+      texture,
       variants: Object.fromEntries(variantEntries),
       sourceHash,
       settingsHash,

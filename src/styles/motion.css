@@ -155,3 +155,26 @@ html[data-motion='off']::view-transition-old(*),
 html[data-motion='off']::view-transition-new(*) {
   animation: none !important;
 }
+
+/* ---------- Animated theme changes ----------
+ * Registered colour properties so the film strip's re-inking (body data-theme)
+ * fades between event colours instead of snapping.
+ */
+@property --c-primary { syntax: '<color>'; inherits: true; initial-value: #7200b8; }
+@property --c-dark { syntax: '<color>'; inherits: true; initial-value: #632e89; }
+@property --c-light { syntax: '<color>'; inherits: true; initial-value: #c59dd8; }
+@property --c-display-top { syntax: '<color>'; inherits: true; initial-value: #632e89; }
+@property --c-display-bottom { syntax: '<color>'; inherits: true; initial-value: #7200b8; }
+@property --c-text-accent { syntax: '<color>'; inherits: true; initial-value: #7200b8; }
+@property --c-on-primary { syntax: '<color>'; inherits: true; initial-value: #eae4d8; }
+
+html[data-motion='on'] body {
+  transition:
+    --c-primary 0.7s ease,
+    --c-dark 0.7s ease,
+    --c-light 0.7s ease,
+    --c-display-top 0.7s ease,
+    --c-display-bottom 0.7s ease,
+    --c-text-accent 0.7s ease,
+    --c-on-primary 0.7s ease;
+}

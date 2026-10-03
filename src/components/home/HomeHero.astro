@@ -1,0 +1,91 @@
+---
+/**
+ * Home hero. Static by default (title + image; looping video on phones).
+ * On desktop with motion on, the loader pins it and the halftone camera
+ * made of dots turns, explodes and reassembles into the festival title as
+ * you scroll (scripts/three/heroScene.ts).
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import DisplayTitle from '../typography/DisplayTitle.astro';
+import Kicker from '../typography/Kicker.astro';
+import BodyText from '../typography/BodyText.astro';
+import Media from '../media/Media.astro';
+import Splash from '../ui/Splash.astro';
+import Button from '../ui/Button.astro';
+import site from '../../content/site.json';
+import pages from '../../content/pages.json';
+
+const page = pages.home;
+const model = fs.existsSync(path.join(process.cwd(), 'public/models/camera.glb')) ? '/models/camera.glb' : undefined;
+const hasFallback = fs.existsSync(path.join(process.cwd(), 'public/images/camera-fallback.png'));
+const meta = [
+  { label: 'Theme', value: site.theme },
+  { label: 'When', value: site.dates },
+  { label: 'Where', value: site.venue },
+];
+---
+
+<section
+  class="hero3d"
+  data-halftone-3d="hero"
+  data-live-layout
+  data-title={JSON.stringify(page.title)}
+  data-script={page.script}
+  data-model={model}
+>
+  <div class="hero3d__stage" data-hero-stage>
+    <!-- Static layout: no JS, phones, reduced motion -->
+    <div class="hero3d__static container-page grid items-center gap-10 pt-10 pb-16 md:pt-16 md:pb-24 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+      <div class="flex flex-col gap-6">
+        <Kicker rule tone="accent">{page.kicker}</Kicker>
+        <DisplayTitle as="h1" lines={page.title} script={page.script} />
+        <BodyText size="lead"><p>{page.intro}</p></BodyText>
+        <dl class="m-0 grid grid-cols-[auto_1fr] gap-x-6 gap-y-1 border-t border-ink pt-4 font-typewriter text-sm">
+          {
+            meta.map((m) => (
+              <Fragment>
+                <dt class="uppercase tracking-widest">{m.label}</dt>
+                <dd class="m-0">{m.value}</dd>
+              </Fragment>
+            ))
+          }
+        </dl>
+        <div class="flex flex-wrap gap-3 pt-2">
+          <Button href={site.ticketUrl} external>Get tickets</Button>
+          <Button href="#journey" variant="ghost">Explore the events</Button>
+        </div>
+      </div>
+      <div class="hero__media mx-auto w-full max-w-md lg:max-w-none">
+        <Splash class="hero__splash" variant={1} />
+        <Splash class="hero__splash hero__splash--alt" variant={3} />
+        <div class="mx-auto max-w-[18rem] md:hidden">
+          <Media id="hero-loop" background />
+        </div>
+        <div class="hidden md:block">
+          <Media id={page.hero} ratio="4:5" priority sizes="(min-width: 1024px) 45vw, 90vw" />
+        </div>
+        <div class="hero__melt" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <!-- Live 3D overlay (desktop + motion on) -->
+    <div class="hero3d__overlay container-page">
+      <h1 class="sr-only">{site.edition} {site.name}</h1>
+      <Kicker rule tone="accent">{page.kicker}</Kicker>
+      {hasFallback && <div class="hero3d__poster" style="--ht-fallback: url('/images/camera-fallback.png')" aria-hidden="true"></div>}
+      <div class="hero3d__bottom">
+        <BodyText size="lead" class="max-w-[46ch]"><p>{page.intro}</p></BodyText>
+        <div class="flex flex-wrap gap-3">
+          <Button href={site.ticketUrl} external>Get tickets</Button>
+          <Button href="#journey" variant="ghost">Explore the events</Button>
+        </div>
+      </div>
+      <p class="hero3d__cue" aria-hidden="true">Scroll to print <span>↓</span></p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../../scripts/three/loader';
+</script>

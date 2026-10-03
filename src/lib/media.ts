@@ -30,6 +30,8 @@ export interface HalftoneVariant {
 export interface HalftoneOutput {
   width: number;
   height: number;
+  /** Greyscale JPG for WebGL textures. */
+  texture?: string;
   variants: Record<'black' | Theme, HalftoneVariant>;
 }
 
@@ -55,6 +57,18 @@ export const srcsetOf = (variant: HalftoneVariant) => variant.srcset.map((s) => 
 export function mediaDelivered(key: string): boolean {
   const entry = media[key];
   return !!entry && (!!getHalftone(key, entry) || mediaExists(entry));
+}
+
+/**
+ * Source for a WebGL texture (3D film strip): video file, the pipeline's
+ * greyscale texture, or the original image. null = draw a placeholder.
+ */
+export function textureFor(key: string): { type: MediaType; src: string | null; ratio: string } {
+  const entry = media[key];
+  if (!entry) return { type: 'image', src: null, ratio: '16:9' };
+  const halftone = getHalftone(key, entry);
+  const src = halftone?.texture ?? (mediaExists(entry) ? entry.src : null);
+  return { type: entry.type, src, ratio: entry.ratio };
 }
 
 /** True when the asset's file is present in /public (checked at build time). */

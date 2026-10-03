@@ -1,0 +1,84 @@
+---
+/**
+ * The festival journey. Static cards by default; on desktop with motion on,
+ * a pinned 3D film strip (scripts/three/filmStrip.ts) slides each event's
+ * title card, b-roll and posters past the camera and re-inks the site in
+ * that event's colours as it passes the centre.
+ */
+import SectionHead from '../ui/SectionHead.astro';
+import JourneyStrip from '../sections/JourneyStrip.astro';
+import pages from '../../content/pages.json';
+import { eventHref, getEvents, getFilms, type EventId } from '../../lib/content';
+import { media, textureFor } from '../../lib/media';
+
+const page = pages.home;
+const events = await getEvents();
+const POSTERS_PER_EVENT = 2;
+
+const frames: { event: number; kind: 'title' | 'media'; label?: string; type?: string; src?: string | null }[] = [];
+for (const [i, e] of events.entries()) {
+  frames.push({ event: i, kind: 'title' });
+  const keys = [`broll-${e.id}`, ...(await getFilms(e.id as EventId)).slice(0, POSTERS_PER_EVENT).map((f) => f.data.poster)];
+  for (const key of keys.filter((k) => media[k])) {
+    const tex = textureFor(key);
+    frames.push({ event: i, kind: 'media', type: tex.type, src: tex.src, label: `[${tex.type === 'video' ? 'VIDEO' : 'IMG'}: ${key}]` });
+  }
+}
+const strip = {
+  events: events.map((e) => ({ id: e.id, theme: e.data.theme, name: e.data.name, date: e.data.dateLabel })),
+  frames,
+};
+---
+
+<section
+  class="strip3d"
+  data-halftone-3d="filmstrip"
+  data-live-layout
+  data-strip={JSON.stringify(strip)}
+  style={`--frames: ${frames.length}`}
+  aria-labelledby="journey"
+>
+  <!-- Static layout: no JS, phones, reduced motion -->
+  <div class="strip3d__static container-page py-12 md:py-20">
+    <SectionHead title={page.journeyTitle} kicker={page.journeyKicker} id="journey" />
+    <JourneyStrip events={events} />
+  </div>
+
+  <!-- Live 3D stage -->
+  <div class="strip3d__stage" data-strip-stage>
+    <div class="strip3d__hud container-page">
+      <p class="kicker" data-tone="accent">{page.journeyKicker} · {page.journeyTitle}</p>
+      <ol class="strip3d__segments" aria-hidden="true">
+        {
+          events.map((e) => (
+            <li data-strip-seg data-theme={e.data.theme}>
+              <span>{e.data.shortName}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    {
+      events.map((e, i) => (
+        <article class="strip3d__panel container-page" data-strip-panel data-theme={e.data.theme}>
+          <p class="kicker" data-tone="accent">
+            Event {String(i + 1).padStart(2, '0')} / {String(events.length).padStart(2, '0')}
+          </p>
+          <h3 class="strip3d__name">{e.data.name}</h3>
+          <p class="strip3d__meta">{e.data.dateLabel} · {e.data.venue}</p>
+          <p class="m-0 max-w-[40ch]">{e.data.summary}</p>
+          <a href={eventHref(e)} class="btn btn--primary mt-2 self-start">Explore {e.data.shortName} →</a>
+        </article>
+      ))
+    }
+
+    <p class="strip3d__timecode" aria-hidden="true">
+      <span data-strip-timecode>00:00:00:00</span>
+    </p>
+  </div>
+</section>
+
+<script>
+  import '../../scripts/three/loader';
+</script>

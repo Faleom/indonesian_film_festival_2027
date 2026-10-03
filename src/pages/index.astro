@@ -1,19 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/sections/Hero.astro';
-import JourneyStrip from '../components/sections/JourneyStrip.astro';
+import HomeHero from '../components/home/HomeHero.astro';
+import FilmStripJourney from '../components/home/FilmStripJourney.astro';
 import VideoPlayer from '../components/sections/VideoPlayer.astro';
 import FilmCard from '../components/sections/FilmCard.astro';
 import SponsorStrip from '../components/sections/SponsorStrip.astro';
 import SectionHead from '../components/ui/SectionHead.astro';
-import Button from '../components/ui/Button.astro';
 import site from '../content/site.json';
 import pages from '../content/pages.json';
-import { getEvent, getEvents, getFilms, getSponsors } from '../lib/content';
+import { getEvent, getFilms, getSponsors } from '../lib/content';
 
 const page = pages.home;
-const [events, mainEvent, mainFilms, sponsors] = await Promise.all([
-  getEvents(),
+const [mainEvent, mainFilms, sponsors] = await Promise.all([
   getEvent('main'),
   getFilms('main'),
   getSponsors(),
@@ -21,29 +19,9 @@ const [events, mainEvent, mainFilms, sponsors] = await Promise.all([
 ---
 
 <BaseLayout title={page.metaTitle}>
-  <Hero
-    title={page.title}
-    script={page.script}
-    kicker={page.kicker}
-    intro={page.intro}
-    media={page.hero}
-    ratio="4:5"
-    meta={[
-      { label: 'Theme', value: site.theme },
-      { label: 'When', value: site.dates },
-      { label: 'Where', value: site.venue },
-    ]}
-  >
-    <Fragment slot="actions">
-      <Button href={site.ticketUrl} external>Get tickets</Button>
-      <Button href="#journey" variant="ghost">Explore the events</Button>
-    </Fragment>
-  </Hero>
+  <HomeHero />
 
-  <section class="container-page py-12 md:py-20" aria-labelledby="journey">
-    <SectionHead title={page.journeyTitle} kicker={page.journeyKicker} id="journey" />
-    <JourneyStrip events={events} />
-  </section>
+  <FilmStripJourney />
 
   {
     mainEvent.data.trailer && (

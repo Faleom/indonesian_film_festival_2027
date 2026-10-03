@@ -104,3 +104,27 @@ Built into the shared components, so new pages get it for free. All of it is off
 - **Event pages** re-print in their colour on a direct visit (`<BaseLayout reprint>`).
 
 Effects live in `src/scripts/motion/effects.ts`.
+
+## Deploying (Vercel)
+
+The site is fully static; Vercel builds it with the settings in `vercel.json` (no adapter needed).
+
+1. In Vercel, **Add New → Project** and import `Faleom/indonesian_film_festival_2027`. The Astro preset, `npm run build` and `dist` are picked up from `vercel.json`.
+2. Node 22 is required (`engines` in `package.json`; Vercel's default is fine).
+3. Optional: once the domain is decided, add an environment variable **`SITE_URL`** (e.g. `https://example.com.au`) and redeploy. It's used for canonical links, social share tags, `robots.txt` and the sitemap. Until then the Vercel production URL is used automatically.
+4. Every push to `main` deploys to production; other branches get preview URLs.
+
+The build runs the halftone pipeline and favicon generator first (`prebuild`), so generated images and icons are never committed.
+
+**Fonts:** `public/fonts` holds subset `.woff2` copies; the originals are in `src/assets/fonts-src`. Regenerate after replacing a font:
+
+```sh
+# Rushford: capitals, digits, punctuation only (all display text is uppercase)
+python3 -m fontTools.subset src/assets/fonts-src/RushfordPrinted.otf --unicodes="U+0020-0040,U+0041-005A,U+005B-0060,U+007B-007E,U+00A0,U+00B7,U+2013-2014,U+2018-201D,U+2022,U+2026,U+2190-2193" --layout-features='*' --flavor=woff2 --output-file=public/fonts/RushfordPrinted.woff2
+# Military Scribe: basic Latin
+python3 -m fontTools.subset src/assets/fonts-src/MilitaryScribe.ttf --unicodes="U+0020-007E,U+00A0,U+2018-201D,U+2026" --layout-features='*' --flavor=woff2 --output-file=public/fonts/MilitaryScribe.woff2
+```
+
+**Logo / favicon:** save the logo as `src/assets/brand/logo.svg` (or `.png`); icons are generated on the next build. Until then a neutral dot icon is used.
+
+**Performance note:** Lighthouse scores 98–99 on desktop and ~80 on throttled mobile. The mobile gap is the Rushford font file (~350 KB even after subsetting); everything else scores 100.

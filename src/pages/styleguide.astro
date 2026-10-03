@@ -52,7 +52,7 @@ const fontSamples: Record<string, { size: string; text: string; transform?: stri
 };
 ---
 
-<BaseLayout title="Styleguide · IFF 21" description="Internal design system reference.">
+<BaseLayout title="Styleguide · IFF 21" description="Internal design system reference." noindex>
   <div class="mx-auto max-w-[1600px] px-4 py-12 md:px-8 md:py-20">
     <header class="mb-16 md:mb-24">
       <Kicker rule tone="accent">Internal · Design system</Kicker>
@@ -150,7 +150,7 @@ const fontSamples: Record<string, { size: string; text: string; transform?: stri
                   <p class="m-0 font-typewriter text-xs">Fallback: {f.fallback}</p>
                   <p class="m-0 font-typewriter text-xs">
                     {f.google ? (
-                      <span>Google Fonts</span>
+                      <span>Free (Google Fonts), self-hosted</span>
                     ) : f.loaded ? (
                       <span>✓ File loaded</span>
                     ) : (

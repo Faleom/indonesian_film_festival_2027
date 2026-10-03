@@ -23,7 +23,7 @@ const next = events[index + 1];
 const prev = events[index - 1];
 ---
 
-<BaseLayout title={`${e.name} · ${site.shortName} ${site.editionNumber}`} description={e.summary} theme={e.theme} reprint>
+<BaseLayout title={`${e.name} · ${site.shortName} ${site.editionNumber}`} description={e.summary} theme={e.theme} reprint ogImage={e.hero}>
   <Hero
     title={e.title}
     script={e.script}

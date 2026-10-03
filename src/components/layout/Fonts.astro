@@ -3,7 +3,7 @@
  * @font-face for the brand fonts in /public/fonts (see src/content/fonts.json
  * for accepted file names). Missing files get a local()-only rule (used if
  * the visitor has the font installed, never 404s) and the CSS stacks fall
- * back to the Google Fonts.
+ * back to the self-hosted free fonts (@fontsource, imported in BaseLayout).
  */
 import fontData from '../../content/fonts.json';
 import { findFontFile, hasDisplayFont } from '../../lib/fonts';
@@ -28,8 +28,5 @@ const preloads = fontData.fonts
   .filter((f) => f && f.format === 'woff2');
 ---
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href={fontData.googleFontsUrl} />
 {preloads.map((f) => <link rel="preload" href={f!.url} as="font" type="font/woff2" crossorigin />)}
 <style is:inline set:html={faces.join('\n')}></style>

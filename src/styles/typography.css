@@ -3,7 +3,7 @@
  * which only points at /public/fonts files that actually exist.
  */
 :root {
-  --ff-display: 'Rushford Printed', 'Bebas Neue', 'Oswald', sans-serif;
+  --ff-display: 'Rushford Printed', 'Oswald', sans-serif;
   --ff-script: 'Military Script', cursive;
   --ff-condensed: 'Oswald', 'Arial Narrow', sans-serif;
   --ff-typewriter: 'Special Elite', monospace;

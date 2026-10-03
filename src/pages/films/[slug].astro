@@ -38,7 +38,7 @@ const facts = [
 ];
 ---
 
-<BaseLayout title={`${f.title} · ${site.shortName} ${site.editionNumber}`} description={f.synopsis} theme={themeOf(eventId)}>
+<BaseLayout title={`${f.title} · ${site.shortName} ${site.editionNumber}`} description={f.synopsis} theme={themeOf(eventId)} ogImage={f.poster}>
   <div class="container-page pt-8">
     <a href={eventHref(event)} class="font-typewriter text-sm uppercase underline underline-offset-4">← {event.data.name}</a>
   </div>

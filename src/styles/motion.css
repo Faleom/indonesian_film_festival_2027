@@ -4,12 +4,6 @@
  * fully static and readable.
  */
 
-/* ---------- Reveal starting state (only while the engine is expected) ---------- */
-html.motion-js [data-reveal]:not([data-reveal-children]):not(.is-revealed),
-html.motion-js [data-reveal-children]:not(.is-revealed) > * {
-  opacity: 0;
-}
-
 /* misregister: two colour plates offset by --mis (1 = out of register, 0 = aligned) */
 .reveal-mis {
   filter:

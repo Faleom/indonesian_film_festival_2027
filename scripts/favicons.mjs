@@ -2,7 +2,7 @@
 // Source: src/assets/brand/logo.svg or logo.png (square-ish, dark on light).
 // Output (public/): favicon.ico (16/32/48), icon-192.png, icon-512.png,
 // apple-touch-icon.png (180), icon.svg (if the source is SVG), site.webmanifest.
-// Runs before dev/build; skips if there's no logo yet.
+// Runs before dev/build. Without a logo it generates a neutral interim icon.
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
@@ -10,15 +10,16 @@ import sharp from 'sharp';
 const root = process.cwd();
 const brandDir = path.join(root, 'src/assets/brand');
 const out = path.join(root, 'public');
-const source = ['logo.svg', 'logo.png', 'logo.jpg', 'logo.webp'].map((f) => path.join(brandDir, f)).find((f) => fs.existsSync(f));
+const logo = ['logo.svg', 'logo.png', 'logo.jpg', 'logo.webp'].map((f) => path.join(brandDir, f)).find((f) => fs.existsSync(f));
 
-if (!source) {
-  console.log('[favicons] No src/assets/brand/logo.(svg|png), skipping.');
-  process.exit(0);
-}
+// Until the real logo is added, use a neutral stand-in: a halftone dot disc in
+// the festival purple (the site's dot motif, not a logo).
+const INTERIM = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><pattern id="d" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="3" fill="#7200b8"/></pattern><clipPath id="c"><circle cx="32" cy="32" r="28"/></clipPath></defs><circle cx="32" cy="32" r="29" fill="none" stroke="#7200b8" stroke-width="3"/><rect width="64" height="64" fill="url(#d)" clip-path="url(#c)"/></svg>`;
+const source = logo ?? Buffer.from(INTERIM);
+if (!logo) console.log('[favicons] No src/assets/brand/logo.(svg|png) yet, using the interim dot icon.');
 
 const stampFile = path.join(out, '.favicons-stamp');
-const stamp = `${path.basename(source)}:${fs.statSync(source).mtimeMs}`;
+const stamp = logo ? `${path.basename(logo)}:${fs.statSync(logo).mtimeMs}` : 'interim:1';
 if (fs.existsSync(stampFile) && fs.readFileSync(stampFile, 'utf8') === stamp && fs.existsSync(path.join(out, 'favicon.ico'))) {
   console.log('[favicons] Up to date.');
   process.exit(0);
@@ -66,7 +67,8 @@ fs.writeFileSync(path.join(out, 'favicon.ico'), ico(small));
 fs.writeFileSync(path.join(out, 'icon-192.png'), await icon(192));
 fs.writeFileSync(path.join(out, 'icon-512.png'), await icon(512));
 fs.writeFileSync(path.join(out, 'apple-touch-icon.png'), await icon(180, 0.12));
-if (source.endsWith('.svg')) fs.copyFileSync(source, path.join(out, 'icon.svg'));
+if (!logo) fs.writeFileSync(path.join(out, 'icon.svg'), INTERIM);
+else if (logo.endsWith('.svg')) fs.copyFileSync(logo, path.join(out, 'icon.svg'));
 else fs.rmSync(path.join(out, 'icon.svg'), { force: true });
 
 fs.writeFileSync(
@@ -88,4 +90,4 @@ fs.writeFileSync(
   ) + '\n',
 );
 fs.writeFileSync(stampFile, stamp);
-console.log(`[favicons] Generated icons from ${path.basename(source)}.`);
+console.log(`[favicons] Generated icons from ${logo ? path.basename(logo) : 'the interim dot icon'}.`);

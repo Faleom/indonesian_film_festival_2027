@@ -54,7 +54,6 @@ document.addEventListener('astro:before-swap', (event) => {
   const next = event.newDocument.documentElement;
   // The router copies <html> attributes from the new page; carry motion state over.
   next.dataset.motion = root.dataset.motion;
-  next.classList.toggle('motion-js', root.classList.contains('motion-js'));
 
   navigated = true;
   if (!motionOn()) return;

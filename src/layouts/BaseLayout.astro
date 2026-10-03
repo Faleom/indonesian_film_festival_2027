@@ -1,5 +1,12 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+// Free fonts, self-hosted (no render-blocking request to Google). Latin only.
+import '@fontsource/special-elite/latin-400.css';
+import '@fontsource/oswald/latin-400.css';
+import '@fontsource/oswald/latin-600.css';
+import '@fontsource/jost/latin-400.css';
+import '@fontsource/jost/latin-500.css';
+import '@fontsource/jost/latin-700.css';
 import '../styles/global.css';
 import MotionHead from '../components/layout/MotionHead.astro';
 import Fonts from '../components/layout/Fonts.astro';
@@ -9,6 +16,7 @@ import Toast from '../components/layout/Toast.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 import site from '../content/site.json';
+import { getMedia, mediaExists } from '../lib/media';
 
 export type { Theme } from '../lib/content';
 import type { Theme } from '../lib/content';
@@ -19,12 +27,22 @@ interface Props {
   theme?: Theme;
   /** Event pages: the theme colour re-prints over the page on load (motion only). */
   reprint?: boolean;
+  /** Media key for the social share image (defaults to og-default). */
+  ogImage?: string;
+  /** Keep this page out of search engines (internal pages). */
+  noindex?: boolean;
 }
 
-const { title, description = site.description, theme = 'base', reprint = false } = Astro.props;
+const { title, description = site.description, theme = 'base', reprint = false, ogImage, noindex = false } = Astro.props;
 
 // Icons generated from src/assets/brand/logo.* by scripts/favicons.mjs.
 const pub = (f: string) => fs.existsSync(path.join(process.cwd(), 'public', f));
+// build.format 'file' reports /sfc.html and /index.html; publish clean URLs.
+const cleanPath = Astro.url.pathname.replace(/\.html$/, '').replace(/(^|\/)index$/, '$1') || '/';
+const canonical = new URL(cleanPath, Astro.site);
+// Social share image: the given media key or og-default, once the file exists.
+const shareImage = [ogImage, 'og-default'].map((k) => k && getMedia(k)).find((m) => m && m.type === 'image' && mediaExists(m));
+const themeColour = { base: '#7200b8', sfc: '#004bb6', uts: '#fa26b2', main: '#d80d1e' }[theme];
 const icons = { ico: pub('favicon.ico'), svg: pub('icon.svg'), apple: pub('apple-touch-icon.png'), manifest: pub('site.webmanifest') };
 ---
 
@@ -35,9 +53,21 @@ const icons = { ico: pub('favicon.ico'), svg: pub('icon.svg'), apple: pub('apple
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content={themeColour} />
+    <meta property="og:site_name" content={`${site.edition} ${site.name}`} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="en_AU" />
+    {shareImage && <meta property="og:image" content={new URL(shareImage.src, Astro.site)} />}
+    {shareImage && <meta property="og:image:alt" content={shareImage.alt} />}
+    <meta name="twitter:card" content={shareImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
     {icons.ico && <link rel="icon" href="/favicon.ico" sizes="32x32" />}
     {icons.svg && <link rel="icon" href="/icon.svg" type="image/svg+xml" />}
     {icons.apple && <link rel="apple-touch-icon" href="/apple-touch-icon.png" />}

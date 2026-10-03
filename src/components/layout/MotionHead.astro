@@ -1,10 +1,10 @@
 ---
 /**
- * Runs before first paint. Decides whether motion is on and, if so, adds
- * `motion-js` so [data-reveal] elements start hidden (no flash before GSAP).
+ * Runs before first paint and sets <html data-motion="on|off">.
  * Motion is off when the visitor prefers reduced motion, or turned it off
  * with the footer toggle (stored in localStorage as iff-motion=off|on).
- * If the motion engine hasn't loaded after 3s, content is shown anyway.
+ * Content is never hidden here: reveals hide only off-screen elements, once
+ * the motion engine has loaded (see scripts/motion/reveals.ts).
  */
 ---
 
@@ -17,11 +17,5 @@
     } catch (e) {}
     var off = stored === 'off' || (stored !== 'on' && matchMedia('(prefers-reduced-motion: reduce)').matches);
     d.dataset.motion = off ? 'off' : 'on';
-    if (!off) {
-      d.classList.add('motion-js');
-      setTimeout(function () {
-        if (!window.__iffMotion) d.classList.remove('motion-js');
-      }, 3000);
-    }
   })();
 </script>

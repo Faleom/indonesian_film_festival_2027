@@ -1,12 +1,11 @@
 {
-  "$comment": "Font registry. Drop the licensed font files into /public/fonts using one of the `names` listed (any of .woff2, .woff, .otf, .ttf; woff2 is smallest). Missing files fall back to the stack in src/styles/typography.css. Rushford, Military Script/Scribe and Futura need a web licence before launch. Original .otf/.ttf files live in src/assets/fonts-src (not deployed); public/fonts holds Latin-subset .woff2 copies.",
-  "googleFontsUrl": "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:wght@400;500;700&family=Oswald:wght@400;600&family=Special+Elite&display=swap",
+  "$comment": "Font registry. Drop the licensed font files into /public/fonts using one of the `names` listed (any of .woff2, .woff, .otf, .ttf; woff2 is smallest). Missing files fall back to the stack in src/styles/typography.css. Rushford, Military Script/Scribe and Futura need a web licence before launch. Original .otf/.ttf files live in src/assets/fonts-src (not deployed); public/fonts holds Latin-subset .woff2 copies. Special Elite, Oswald and Jost are free Google Fonts, self-hosted via @fontsource (imported in BaseLayout). Rushford is subset to capitals, digits and punctuation only (all display text is uppercase) to keep it small: regenerate with the command in README if the source changes.",
   "fonts": [
     {
       "family": "Rushford Printed",
       "role": "Display / big titles",
       "cssVar": "--ff-display",
-      "fallback": "Bebas Neue, Oswald, sans-serif",
+      "fallback": "Oswald, sans-serif",
       "files": [
         {
           "weight": 400,

@@ -14,12 +14,13 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href
   </div>
 
   <div class="container-page flex items-center justify-between gap-6 py-3">
-    <a href="/" class="flex items-baseline gap-3 text-ink no-underline" aria-label={`${site.name}, home`}>
-      <span class="font-display text-5xl leading-none" style="color: var(--c-display-top)">{site.shortName}</span>
+    <a href="/" class="flex items-baseline gap-3 text-ink no-underline">
+      <span class="font-display text-5xl leading-none uppercase" style="color: var(--c-display-top)">{site.shortName}</span>
       <span class="font-script text-3xl leading-none" style="color: var(--c-display-bottom)">{site.editionNumber}</span>
       <span class="hidden font-typewriter text-xs leading-tight uppercase tracking-widest md:block">
         {site.edition}<br />{site.name}
       </span>
+      <span class="sr-only">, home</span>
     </a>
 
     <nav aria-label="Main" class="hidden xl:block">

@@ -55,11 +55,11 @@ Source: `/docs/konsep_iff_21.pdf` (read it and the reference images in `/docs`).
 ### Typography
 | role | font | fallback |
 |---|---|---|
-| Display / big titles | Rushford Printed | Bebas Neue, Oswald, sans-serif |
+| Display / big titles | Rushford Printed | Oswald, sans-serif |
 | Script accent | Military Script | cursive |
 | Condensed headings | Oswald (Google Fonts; Etna Condensed dropped, it's paid) | Arial Narrow, sans-serif |
-| Typewriter / kicker / schedule | Special Elite (Google Fonts) | monospace |
-| Body | Futura | Jost (Google Fonts), sans-serif |
+| Typewriter / kicker | Special Elite (Google Fonts, self-hosted) | monospace |
+| Body | Futura | Jost (Google Fonts, self-hosted), sans-serif |
 
 Font files go in `/public/fonts` (Latin-subset .woff2; originals in `src/assets/fonts-src`). Rushford, Military Script/Scribe and Futura need a valid web license before launch.
 

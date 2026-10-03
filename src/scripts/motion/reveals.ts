@@ -6,8 +6,10 @@
  *   data-reveal-children        animate each child in turn instead of the element
  *   data-reveal-stagger="0.1"   gap between children (default 0.08)
  *
- * Elements start hidden only while html.motion-js is set (see motion.css),
- * so without JS or with motion off everything is simply visible.
+ * Content is never hidden before this script runs. Elements already on screen
+ * when the page loads get a "soft" reveal (they stay visible and animate into
+ * place), so the main content paints immediately; elements further down get
+ * the full reveal as they scroll in.
  */
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -22,71 +24,93 @@ export interface RevealHandle {
 // Inline props the reveals touch; cleared afterwards without wiping other inline styles.
 const CLEAR = 'opacity,visibility,transform,translate,rotate,scale,--mis,--ht';
 
-type Builder = (targets: HTMLElement[], tl: gsap.core.Timeline, stagger: number) => void | (() => void);
+interface BuildContext {
+  targets: HTMLElement[];
+  tl: gsap.core.Timeline;
+  stagger: number;
+  /** Already visible at load: don't hide it, just animate it into place. */
+  soft: boolean;
+}
+
+type Builder = (ctx: BuildContext) => void | (() => void);
 
 const builders: Record<RevealType, Builder> = {
-  'fade-up': (targets, tl, stagger) => {
-    tl.fromTo(targets, { autoAlpha: 0, y: 36 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger });
+  'fade-up': ({ targets, tl, stagger, soft }) => {
+    tl.fromTo(
+      targets,
+      { autoAlpha: soft ? 1 : 0, y: soft ? 18 : 36 },
+      { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger },
+    );
   },
 
   // Colour plates start out of register and slide into place (filter in motion.css).
-  misregister: (targets, tl, stagger) => {
+  misregister: ({ targets, tl, stagger, soft }) => {
     targets.forEach((t) => t.classList.add('reveal-mis'));
     tl.fromTo(
       targets,
-      { autoAlpha: 0, '--mis': 1, x: -4 },
+      { autoAlpha: soft ? 1 : 0, '--mis': 1, x: -4 },
       { autoAlpha: 1, '--mis': 0, x: 0, duration: 1.2, ease: 'expo.out', stagger },
     );
     return () => targets.forEach((t) => t.classList.remove('reveal-mis'));
   },
 
-  // Characters appear one at a time with a caret, like a typewriter.
-  typewriter: (targets, tl) => {
+  // Characters appear one at a time with a caret, like a typewriter. The text is
+  // only split into characters while it types, then restored.
+  typewriter: ({ targets, tl, soft }) => {
     const splits: SplitText[] = [];
+    if (!soft) gsap.set(targets, { autoAlpha: 0 });
     targets.forEach((t) => {
-      const split = SplitText.create(t, { type: 'words,chars', aria: 'auto' });
-      splits.push(split);
-      const chars = split.chars as HTMLElement[];
-      let prev: HTMLElement | undefined;
-      tl.set(t, { autoAlpha: 1 });
-      tl.fromTo(
-        chars,
-        { autoAlpha: 0 },
-        {
-          autoAlpha: 1,
-          duration: 0.01,
-          ease: 'none',
-          stagger: {
-            each: Math.min(0.045, 1.6 / Math.max(chars.length, 1)),
-            onStart() {
-              prev?.classList.remove('tw-caret');
-              prev = this.targets()[0] as HTMLElement;
-              prev.classList.add('tw-caret');
+      tl.add(() => {
+        const split = SplitText.create(t, { type: 'words,chars', aria: 'none' });
+        splits.push(split);
+        const chars = split.chars as HTMLElement[];
+        let prev: HTMLElement | undefined;
+        gsap.set(t, { autoAlpha: 1 });
+        gsap.fromTo(
+          chars,
+          { autoAlpha: 0 },
+          {
+            autoAlpha: 1,
+            duration: 0.01,
+            ease: 'none',
+            stagger: {
+              each: Math.min(0.045, 1.6 / Math.max(chars.length, 1)),
+              onStart() {
+                prev?.classList.remove('tw-caret');
+                prev = this.targets()[0] as HTMLElement;
+                prev.classList.add('tw-caret');
+              },
+            },
+            onComplete: () => {
+              gsap.delayedCall(0.4, () => {
+                prev?.classList.remove('tw-caret');
+                split.revert();
+              });
             },
           },
-        },
-      );
-      tl.call(() => prev?.classList.remove('tw-caret'), undefined, '+=0.5');
+        );
+      });
     });
+    tl.to({}, { duration: 1.8 }); // keep the timeline alive while it types
     return () => splits.forEach((s) => s.revert());
   },
 
   // Unfolds from the top edge like a folded newspaper.
-  fold: (targets, tl, stagger) => {
+  fold: ({ targets, tl, stagger, soft }) => {
     tl.fromTo(
       targets,
-      { autoAlpha: 0, rotateX: -78, transformPerspective: 900, transformOrigin: '50% 0%' },
+      { autoAlpha: soft ? 1 : 0, rotateX: soft ? -35 : -78, transformPerspective: 900, transformOrigin: '50% 0%' },
       { autoAlpha: 1, rotateX: 0, duration: 1.1, ease: 'power3.out', stagger },
     );
   },
 
   // Revealed through halftone dots that grow until solid (mask in motion.css).
-  'halftone-grow': (targets, tl, stagger) => {
+  'halftone-grow': ({ targets, tl, stagger, soft }) => {
     targets.forEach((t) => t.classList.add('reveal-ht'));
     tl.fromTo(
       targets,
-      { autoAlpha: 1, '--ht': '0px' },
-      { '--ht': '13px', duration: 1.3, ease: 'power2.inOut', stagger },
+      { autoAlpha: 1, '--ht': soft ? '6px' : '0px' },
+      { '--ht': '13px', duration: soft ? 0.9 : 1.3, ease: 'power2.inOut', stagger },
     );
     return () => targets.forEach((t) => t.classList.remove('reveal-ht'));
   },
@@ -103,6 +127,8 @@ export function buildReveal(el: HTMLElement, { immediate = false } = {}): Reveal
   const useChildren = el.hasAttribute('data-reveal-children');
   const targets = useChildren ? (Array.from(el.children) as HTMLElement[]) : [el];
   const stagger = Number(el.dataset.revealStagger ?? 0.08);
+  const rect = el.getBoundingClientRect();
+  const soft = !immediate && rect.top < innerHeight && rect.bottom > 0;
   el.classList.remove('is-revealed');
 
   let cleanup: void | (() => void);
@@ -115,13 +141,15 @@ export function buildReveal(el: HTMLElement, { immediate = false } = {}): Reveal
       el.classList.add('is-revealed');
     },
   });
-  // fromTo() renders its hidden start state immediately, so nothing flashes before the trigger.
-  cleanup = build(targets, tl, stagger);
+  // fromTo() renders its start state immediately, so off-screen content is
+  // hidden before it scrolls into view and nothing flashes.
+  cleanup = build({ targets, tl, stagger, soft });
 
-  const trigger = immediate
-    ? undefined
-    : ScrollTrigger.create({ trigger: el, start: 'top 88%', once: true, onEnter: () => tl.play() });
-  if (immediate) tl.play();
+  const trigger =
+    immediate || soft
+      ? undefined
+      : ScrollTrigger.create({ trigger: el, start: 'top 88%', once: true, onEnter: () => tl.play() });
+  if (immediate || soft) tl.play();
 
   return {
     kill() {

@@ -25,7 +25,7 @@ const team = await getTeam();
         {
           page.editions.map((ed) => (
             <li class="grid grid-cols-[4.5rem_1fr] gap-3">
-              <span class="font-display text-4xl leading-none" style="color: var(--c-display-top)">{ed.label}</span>
+              <span class="font-display text-4xl leading-none uppercase" style="color: var(--c-display-top)">{ed.label}</span>
               <span>
                 <span class="block font-typewriter text-xs">{ed.year}</span>
                 <span class="font-condensed text-lg leading-tight uppercase">{ed.title}</span>

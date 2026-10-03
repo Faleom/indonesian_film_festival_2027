@@ -9,12 +9,14 @@ import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 import { buildReveal, type RevealHandle } from './reveals';
 import { startCursor, type CursorHandle } from './cursor';
+import { clippingTilt, foldingAccordions, marquees, reprint, scrollDots, teamStacks } from './effects';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 let lenis: Lenis | undefined;
 let cursor: CursorHandle | undefined;
 const reveals = new Map<HTMLElement, RevealHandle>();
+let cleanups: (() => void)[] = [];
 const raf = (time: number) => lenis?.raf(time * 1000);
 let refreshTimer: number | undefined;
 
@@ -24,7 +26,8 @@ const onToggle = () => {
   refreshTimer = window.setTimeout(() => ScrollTrigger.refresh(), 50);
 };
 
-export function start() {
+/** @param navigated true after a client-side page transition (it already printed the theme). */
+export function start({ navigated = false } = {}) {
   stop();
 
   // Smooth scroll, driven by GSAP's ticker so ScrollTrigger stays in sync.
@@ -40,12 +43,15 @@ export function start() {
 
   document.addEventListener('toggle', onToggle, true);
   cursor = startCursor();
+  cleanups = [scrollDots(), clippingTilt(), foldingAccordions(), marquees(lenis), teamStacks(), reprint(navigated)];
   ScrollTrigger.refresh();
 }
 
 export function stop() {
   reveals.forEach((r) => r.kill());
   reveals.clear();
+  cleanups.forEach((c) => c());
+  cleanups = [];
   ScrollTrigger.getAll().forEach((t) => t.kill());
   document.removeEventListener('toggle', onToggle, true);
   gsap.ticker.remove(raf);

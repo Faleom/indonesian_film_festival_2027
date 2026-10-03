@@ -23,7 +23,7 @@ const next = events[index + 1];
 const prev = events[index - 1];
 ---
 
-<BaseLayout title={`${e.name} · ${site.shortName} ${site.editionNumber}`} description={e.summary} theme={e.theme}>
+<BaseLayout title={`${e.name} · ${site.shortName} ${site.editionNumber}`} description={e.summary} theme={e.theme} reprint>
   <Hero
     title={e.title}
     script={e.script}
@@ -48,7 +48,7 @@ const prev = events[index - 1];
       <BodyText size="lead" dropcap>
         {e.description.map((p) => <p>{p}</p>)}
       </BodyText>
-      <aside class="self-start border border-ink p-6" aria-label="Event details">
+      <aside data-reveal="fold" class="self-start border border-ink p-6" aria-label="Event details">
         <Kicker tone="accent" class="mb-4">At a glance</Kicker>
         <dl class="m-0 grid gap-3 font-typewriter text-sm">
           <div><dt class="uppercase tracking-widest">Date</dt><dd class="m-0 text-base">{e.dateLabel}</dd></div>
@@ -73,7 +73,7 @@ const prev = events[index - 1];
     films.length > 0 && (
       <section class="container-page py-12 md:py-20" aria-labelledby="lineup">
         <SectionHead title={e.lineupTitle} kicker={`${films.length} ${films.length === 1 ? 'film' : 'films'}`} id="lineup" />
-        <ul class="clipping-grid m-0 grid list-none grid-cols-2 gap-x-4 gap-y-10 p-0 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-3 xl:grid-cols-4">
+        <ul data-reveal="fold" data-reveal-children data-reveal-stagger="0.1" class="clipping-grid m-0 grid list-none grid-cols-2 gap-x-4 gap-y-10 p-0 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-3 xl:grid-cols-4">
           {films.map((film) => (
             <li>
               <FilmCard film={film} />
@@ -84,7 +84,7 @@ const prev = events[index - 1];
     )
   }
 
-  <nav class="container-page grid gap-4 py-12 md:grid-cols-2" aria-label="Festival journey">
+  <nav data-reveal="fade-up" data-reveal-children class="container-page grid gap-4 py-12 md:grid-cols-2" aria-label="Festival journey">
     {
       prev ? (
         <a href={eventHref(prev)} data-theme={prev.data.theme} class="group flex flex-col gap-2 border border-ink p-6 text-ink no-underline hover:bg-primary hover:text-on-primary">

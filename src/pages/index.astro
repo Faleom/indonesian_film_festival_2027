@@ -36,7 +36,7 @@ const [mainEvent, mainFilms, sponsors] = await Promise.all([
     <SectionHead title={page.filmsTitle} kicker={page.filmsKicker} id="films">
       <a href="/main-screening" class="font-typewriter text-sm uppercase underline underline-offset-4">All Main Screening films →</a>
     </SectionHead>
-    <ul class="clipping-grid m-0 grid list-none grid-cols-2 gap-x-4 gap-y-10 p-0 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-4">
+    <ul data-reveal="fold" data-reveal-children data-reveal-stagger="0.1" class="clipping-grid m-0 grid list-none grid-cols-2 gap-x-4 gap-y-10 p-0 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-4">
       {
         mainFilms.map((film) => (
           <li>
@@ -51,6 +51,6 @@ const [mainEvent, mainFilms, sponsors] = await Promise.all([
     <SectionHead title="Sponsors" kicker={page.sponsorsKicker} id="sponsors">
       <a href="/sponsors" class="font-typewriter text-sm uppercase underline underline-offset-4">Become a sponsor →</a>
     </SectionHead>
-    <SponsorStrip sponsors={sponsors} />
+    <SponsorStrip sponsors={sponsors} variant="marquee" />
   </section>
 </BaseLayout>

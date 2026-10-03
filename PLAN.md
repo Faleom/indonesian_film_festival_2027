@@ -25,7 +25,7 @@ Read CLAUDE.md and /docs. Scaffold the Astro + Tailwind project.
 Build the design system first:
 - CSS variables for the 4 themes, switched via data-theme on <body>.
 - @font-face for all fonts with the fallbacks listed in CLAUDE.md (font files may be missing for now).
-- Beige paper background: SVG noise texture plus faint low-opacity newspaper column text. No external images.
+- Beige crumpled-paper background (SVG lighting filter, no background text). No external images.
 - Global grain overlay (SVG feTurbulence, pointer-events none).
 - Typography components: DisplayTitle (huge Rushford, optional Military Script word overlapping at an angle in beige/gold, like the FAQ prototype), Kicker (Special Elite), body text.
 - Placeholder system: a Media component that reads src/content/media.json and renders a labeled halftone placeholder ([IMG: key ratio] / [VIDEO: key ratio]) when the file doesn't exist yet. Create PLACEHOLDERS.md listing every key.

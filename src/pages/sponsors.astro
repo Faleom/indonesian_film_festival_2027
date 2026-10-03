@@ -15,11 +15,11 @@ const sponsors = await getSponsors();
   <Hero title={page.title} script={page.script} kicker={page.kicker} intro={page.intro} media={page.hero} />
 
   <section class="container-page" aria-label="Sponsors">
-    <SponsorStrip sponsors={sponsors} tiered tierLabels={page.tiers} />
+    <SponsorStrip sponsors={sponsors} variant="tiered" tierLabels={page.tiers} />
   </section>
 
   <section class="container-page py-16 md:py-24" aria-labelledby="become">
-    <div class="grid gap-8 border border-ink bg-primary p-8 text-on-primary md:grid-cols-[1.4fr_1fr] md:items-end md:p-12">
+    <div data-reveal="fold" class="grid gap-8 border border-ink bg-primary p-8 text-on-primary md:grid-cols-[1.4fr_1fr] md:items-end md:p-12">
       <div class="flex flex-col gap-4">
         <h2 id="become" class="m-0 font-display text-6xl leading-[0.85] uppercase md:text-8xl">{page.ctaTitle}</h2>
         <p class="m-0 max-w-[55ch] text-lg">{page.ctaText}</p>

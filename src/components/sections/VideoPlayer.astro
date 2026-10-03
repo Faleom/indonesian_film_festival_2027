@@ -11,7 +11,7 @@ interface Props {
 const { id, caption, class: className } = Astro.props;
 ---
 
-<figure class:list={['m-0', className]}>
+<figure class:list={['m-0', className]} data-reveal="fold">
   <div class="film-strip">
     <Media id={id} />
   </div>

@@ -5,12 +5,14 @@ interface Props {
   /** Newspaper drop cap on the first paragraph. */
   dropcap?: boolean;
   as?: 'div' | 'section' | 'article';
+  /** Fade-up reveal on scroll (default on). */
+  reveal?: boolean;
   class?: string;
 }
 
-const { size = 'base', dropcap = false, as: Tag = 'div', class: className } = Astro.props;
+const { size = 'base', dropcap = false, as: Tag = 'div', reveal = true, class: className } = Astro.props;
 ---
 
-<Tag class:list={['body-text', className]} data-size={size} data-dropcap={String(dropcap)}>
+<Tag class:list={['body-text', className]} data-size={size} data-dropcap={String(dropcap)} data-reveal={reveal ? 'fade-up' : undefined}>
   <slot />
 </Tag>

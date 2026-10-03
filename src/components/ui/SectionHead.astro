@@ -14,8 +14,8 @@ const { title, kicker, id, as: Tag = 'h2' } = Astro.props;
 
 <div class="section-head">
   <div class="flex flex-col gap-2">
-    {kicker && <Kicker tone="accent">{kicker}</Kicker>}
-    <Tag id={id} class="heading-condensed">{title}</Tag>
+    {kicker && <Kicker tone="accent" typewriter>{kicker}</Kicker>}
+    <Tag id={id} class="heading-condensed" data-reveal="fade-up">{title}</Tag>
   </div>
   <slot />
 </div>

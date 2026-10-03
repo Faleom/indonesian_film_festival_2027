@@ -9,7 +9,7 @@ interface Props {
 const { events } = Astro.props;
 ---
 
-<ol class="m-0 grid list-none gap-5 p-0 md:grid-cols-2 xl:grid-cols-4 xl:gap-0">
+<ol data-reveal="fade-up" data-reveal-children data-reveal-stagger="0.12" class="m-0 grid list-none gap-5 p-0 md:grid-cols-2 xl:grid-cols-4 xl:gap-0">
   {
     events.map((e, i) => (
       <li data-theme={e.data.theme} class="relative flex">

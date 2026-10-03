@@ -41,7 +41,7 @@ Source: `/docs/konsep_iff_21.pdf` (read it and the reference images in `/docs`).
 - **Main idea:** risograph printing + retro newspaper.
 - Simple assets. **One main image per section/design.** Lots of negative space.
 - Images are **halftone**, **monochromatic per event**, with color overlay splashes, grain, and texture.
-- Same **beige newspaper background** everywhere: paper texture plus faint, low-opacity newspaper column text behind the content.
+- Same **beige crumpled-paper background** everywhere (generated texture, no text in the background).
 - Signature title treatment (from the FAQ prototype): a huge display title, with a script word overlapping it at an angle in beige/gold (e.g. "Frequently *Asked* Questions"). The image fades into the event color at the bottom edge.
 
 ### Color palettes (CSS variables, switched via `data-theme` on `<body>`)

@@ -23,6 +23,8 @@ interface Props {
   size?: 'xl' | 'lg' | 'md';
   align?: 'start' | 'center' | 'end';
   as?: 'h1' | 'h2' | 'h3' | 'p';
+  /** Misregistration reveal on scroll (default on). */
+  reveal?: boolean;
   class?: string;
 }
 
@@ -37,6 +39,7 @@ const {
   size = 'xl',
   align = 'start',
   as: Tag = 'h2',
+  reveal = true,
   class: className,
 } = Astro.props;
 
@@ -48,7 +51,7 @@ const style = [
   .join('; ');
 ---
 
-<div class:list={['display-title-wrap', className]}>
+<div class:list={['display-title-wrap', className]} data-reveal={reveal ? 'misregister' : undefined}>
   <Tag
     class="display-title"
     data-tone={tone}

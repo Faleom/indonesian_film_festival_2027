@@ -10,6 +10,7 @@ type Engine = typeof import('./engine');
 const root = document.documentElement;
 const motionOn = () => root.dataset.motion === 'on';
 let engine: Engine | undefined;
+let navigated = false;
 
 async function loadEngine(): Promise<Engine> {
   engine ??= await import('./engine');
@@ -46,7 +47,7 @@ document.addEventListener('astro:page-load', async () => {
   if (!motionOn()) return;
   const e = await loadEngine();
   (window as any).__iffMotion = true;
-  e.start();
+  e.start({ navigated });
 });
 
 document.addEventListener('astro:before-swap', (event) => {
@@ -55,6 +56,7 @@ document.addEventListener('astro:before-swap', (event) => {
   next.dataset.motion = root.dataset.motion;
   next.classList.toggle('motion-js', root.classList.contains('motion-js'));
 
+  navigated = true;
   if (!motionOn()) return;
   engine?.stop();
 

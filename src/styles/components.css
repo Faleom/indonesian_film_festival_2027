@@ -563,3 +563,74 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
   color: var(--c-text-accent);
 }
 .strip3d__timecode::before { content: '● REC  '; color: var(--c-primary); }
+
+/* ---------- Sponsor marquee (SponsorStrip variant="marquee") ----------
+ * Plain grid without motion; effects.ts adds .is-running and scrolls it.
+ */
+.marquee__track {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.marquee__dup { display: none; }
+.marquee.is-running {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee.is-running .marquee__track {
+  display: flex;
+  width: max-content;
+  /* padding = gap, so half the track width is exactly one full copy */
+  padding-right: 0.75rem;
+}
+.marquee.is-running .marquee__track > li { flex: none; width: 15rem; }
+.marquee.is-running .marquee__dup { display: block; }
+
+/* ---------- Team paper stack (TeamGrid) ----------
+ * Grid without motion; effects.ts adds .is-stack and lays the cards on top of
+ * each other (grid-area overlap), draggable from the top.
+ */
+.team__controls { display: none; }
+.team.is-stack .team__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas: 'stack';
+  gap: 0;
+  width: min(22rem, 80vw);
+  margin-inline: auto;
+  padding-block: 1rem 2rem;
+}
+.team.is-stack .team__card { grid-area: stack; touch-action: none; }
+.team.is-stack .team__card .clipping { --tilt: 0deg; }
+.team.is-stack .team__card:first-child { cursor: grab; }
+.team.is-stack .team__card:first-child:active { cursor: grabbing; }
+.team.is-stack .team__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+.team__counter {
+  min-width: 14rem;
+  margin: 0;
+  font-family: var(--ff-typewriter);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* ---------- Event page re-print (effects.ts) ---------- */
+.reprint-plate {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background: var(--c-primary);
+  mix-blend-mode: multiply;
+  -webkit-mask: radial-gradient(circle, #000 calc(var(--rp, 0px) - 0.5px), transparent var(--rp, 0px)) 0 0 / 18px 18px;
+  mask: radial-gradient(circle, #000 calc(var(--rp, 0px) - 0.5px), transparent var(--rp, 0px)) 0 0 / 18px 18px;
+}

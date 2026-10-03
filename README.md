@@ -90,3 +90,17 @@ Two pinned, scroll-driven scenes on the home page (desktop with motion on; phone
 - **Journey film strip** (`src/components/home/FilmStripJourney.astro`, `src/scripts/three/filmStrip.ts`): a curved 3D film strip with, per event, a title card, its b-roll (`broll-<event>` in `media.json`) and up to two film posters. The site re-inks in each event's colours as its frames pass the centre.
 
 **Adding b-roll:** save a short silent loop as `public/videos/broll-sfc.mp4` (and `-uts`, `-edu`, `-main`). Posters and photos come through the halftone pipeline, which also writes the greyscale `-tex.jpg` the strip uses as a texture.
+
+### Site-wide motion (Phase 8)
+
+Built into the shared components, so new pages get it for free. All of it is off with reduced motion, the footer toggle, or without JS.
+
+- **Reveals:** DisplayTitle misregisters into place, SectionHead kickers type out, BodyText fades up, hero images print in as growing dots, card grids fold in one by one, video frames unfold. Turn one off with `reveal={false}` (DisplayTitle, BodyText).
+- **Halftone placeholders** change dot size as they scroll; real halftone images drift in scale.
+- **Film clippings** tilt toward the pointer (desktop).
+- **FAQ** answers unfold like folded paper.
+- **Sponsors (home):** a marquee whose speed follows your scrolling (`<SponsorStrip variant="marquee" />`).
+- **Team (about):** a draggable paper stack with Back/Next buttons.
+- **Event pages** re-print in their colour on a direct visit (`<BaseLayout reprint>`).
+
+Effects live in `src/scripts/motion/effects.ts`.

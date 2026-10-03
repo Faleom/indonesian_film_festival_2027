@@ -6,13 +6,14 @@ import NewsletterForm from '../forms/NewsletterForm.astro';
 <footer class="mt-24 border-t-[3px] border-double border-ink md:mt-32">
   <div class="container-page py-12 md:py-16">
     <p
+      data-reveal="misregister"
       class="m-0 font-display leading-[0.85] uppercase"
       style="font-size: clamp(3rem, 11vw, 10rem); color: var(--c-display-top)"
     >
       {site.name}
     </p>
 
-    <div class="mt-10 grid gap-10 border-t border-ink pt-10 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1.4fr]">
+    <div data-reveal="fade-up" data-reveal-children data-reveal-stagger="0.1" class="mt-10 grid gap-10 border-t border-ink pt-10 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1.4fr]">
       <nav aria-label="Footer">
         <p class="kicker mb-4">Festival</p>
         <ul class="m-0 grid list-none grid-cols-2 gap-x-6 gap-y-2 p-0">

@@ -1,4 +1,9 @@
 ---
+/**
+ * Committee. A grid of paper photos by default; with motion on it becomes a
+ * messy stack you can drag (or step through with the buttons). Every member
+ * stays in the list for screen readers.
+ */
 import type { CollectionEntry } from 'astro:content';
 import Media from '../media/Media.astro';
 
@@ -9,20 +14,27 @@ interface Props {
 const { members } = Astro.props;
 ---
 
-<ul class="clipping-grid m-0 grid list-none grid-cols-2 gap-x-5 gap-y-10 p-0 md:grid-cols-3 lg:grid-cols-4">
-  {
-    members.map((m) => (
-      <li>
-        <figure class="clipping m-0">
-          <div class="clipping__paper flex flex-col gap-3">
-            <Media id={m.data.photo} sizes="(min-width: 1024px) 22vw, (min-width: 768px) 30vw, 45vw" />
-            <figcaption class="flex flex-col gap-1">
-              <span class="font-condensed text-xl leading-none uppercase md:text-2xl">{m.data.name}</span>
-              <span class="font-typewriter text-xs text-accent-text uppercase">{m.data.role}</span>
-            </figcaption>
-          </div>
-        </figure>
-      </li>
-    ))
-  }
-</ul>
+<div class="team" data-team-stack data-reveal="fade-up">
+  <ul class="team__list clipping-grid m-0 grid list-none grid-cols-2 gap-x-5 gap-y-10 p-0 md:grid-cols-3 lg:grid-cols-4" data-team-list>
+    {
+      members.map((m, i) => (
+        <li class="team__card" data-name={`${m.data.name}, ${m.data.role}`} data-seed={i + 1}>
+          <figure class="clipping m-0">
+            <div class="clipping__paper flex flex-col gap-3">
+              <Media id={m.data.photo} sizes="(min-width: 1024px) 22vw, (min-width: 768px) 30vw, 45vw" />
+              <figcaption class="flex flex-col gap-1">
+                <span class="font-condensed text-xl leading-none uppercase md:text-2xl">{m.data.name}</span>
+                <span class="font-typewriter text-xs text-accent-text uppercase">{m.data.role}</span>
+              </figcaption>
+            </div>
+          </figure>
+        </li>
+      ))
+    }
+  </ul>
+  <div class="team__controls">
+    <button type="button" class="btn btn--ghost cursor-pointer" data-team-prev>← Back</button>
+    <p class="team__counter" data-team-counter aria-live="polite"></p>
+    <button type="button" class="btn btn--primary cursor-pointer" data-team-next>Next →</button>
+  </div>
+</div>

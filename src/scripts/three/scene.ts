@@ -119,7 +119,10 @@ export async function mountScene(host: HTMLElement, opts: SceneOptions = {}): Pr
     setActive(next) {
       if (next === active) return;
       active = next;
-      if (active) loop();
+      if (active) {
+        refreshColours();
+        loop();
+      }
       else cancelAnimationFrame(frame);
     },
     refreshColours() {

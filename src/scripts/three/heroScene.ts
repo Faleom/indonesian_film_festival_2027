@@ -162,7 +162,9 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
     uniforms.uTitleHalf.value = titleHalf;
     uniforms.uTitleOffset.value.set(0, halfH * 0.14);
     uniforms.uTitleDotPx.value = title.step * titleHalf * pxPerWorld * 1.12;
-    uniforms.uCamScale.value = (halfH * 1.55) / cam.height;
+    // Fit the camera to whichever is tighter: screen height, or width (it spins,
+    // so use its horizontal radius). Keeps it on screen in narrow/portrait windows.
+    uniforms.uCamScale.value = Math.min((halfH * 1.55) / cam.height, (halfW * 0.82) / cam.radius);
   };
   const ro = new ResizeObserver(resize);
   ro.observe(stage);
@@ -189,8 +191,12 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
   let frame = 0;
   const start = performance.now();
 
+  // Body theme colours animate (registered CSS properties), so after a theme
+  // change keep re-reading them until the transition has finished.
+  let colourUntil = 0;
   const render = () => {
     const t = (performance.now() - start) / 1000;
+    if (performance.now() < colourUntil) refreshColours();
     smoothP += (progress() - smoothP) * 0.12;
     const p = smoothP;
     pointer.sx += (pointer.x - pointer.sx) * 0.06;
@@ -222,11 +228,17 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
     setActive(next) {
       if (next === active) return;
       active = next;
-      if (active) loop();
+      if (active) {
+        // The theme may have changed while off screen.
+        refreshColours();
+        colourUntil = performance.now() + 900;
+        loop();
+      }
       else cancelAnimationFrame(frame);
     },
     refreshColours() {
       refreshColours();
+      colourUntil = performance.now() + 900;
       if (!active) render();
     },
     dispose() {
@@ -272,6 +284,7 @@ function sampleModel(model: Object3D, count: number) {
   const n = new Vector3();
   const c = new Color();
   let minY = Infinity;
+  let radius = 0;
   let maxY = -Infinity;
   for (let i = 0; i < count; i++) {
     sampler.sample(p, n, c);
@@ -280,10 +293,11 @@ function sampleModel(model: Object3D, count: number) {
     tones[i] = c.r;
     minY = Math.min(minY, p.y);
     maxY = Math.max(maxY, p.y);
+    radius = Math.max(radius, Math.hypot(p.x, p.z));
   }
   merged.dispose();
   parts.forEach((g) => g.dispose());
-  return { positions, normals, tones, height: maxY - minY || 1 };
+  return { positions, normals, tones, height: maxY - minY || 1, radius: radius || 1 };
 }
 
 function disposeModel(model: Object3D) {

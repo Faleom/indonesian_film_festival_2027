@@ -441,6 +441,8 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
   opacity: clamp(0, calc(1 - var(--hero-p, 0) * 8), 1);
 }
 .hero3d__cue span { display: inline-block; animation: cue-bob 1.6s ease-in-out infinite; }
+/* Narrow windows: the intro and buttons need the bottom row. */
+@media (max-width: 1023px) { .hero3d__cue { display: none; } }
 @keyframes cue-bob { 50% { transform: translateY(5px); } }
 
 /* Static camera shown while the 3D scene loads. */

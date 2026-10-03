@@ -1,0 +1,118 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DisplayTitle from '../../components/typography/DisplayTitle.astro';
+import Kicker from '../../components/typography/Kicker.astro';
+import BodyText from '../../components/typography/BodyText.astro';
+import Media from '../../components/media/Media.astro';
+import Splash from '../../components/ui/Splash.astro';
+import Button from '../../components/ui/Button.astro';
+import SectionHead from '../../components/ui/SectionHead.astro';
+import FilmCard from '../../components/sections/FilmCard.astro';
+import VideoPlayer from '../../components/sections/VideoPlayer.astro';
+import ScheduleTable from '../../components/sections/ScheduleTable.astro';
+import site from '../../content/site.json';
+import { eventHref, formatDate, formatRuntime, getEvent, getFilms, getSessions, type EventId, type FilmEntry } from '../../lib/content';
+
+export const getStaticPaths = (async () => {
+  const films = await getCollection('films');
+  return films.map((film) => ({ params: { slug: film.id }, props: { film } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  film: FilmEntry;
+}
+
+const { film } = Astro.props;
+const f = film.data;
+const eventId = f.event.id as EventId;
+const [event, sessions, siblings] = await Promise.all([getEvent(eventId), getSessions({ film: film.id }), getFilms(eventId)]);
+const more = siblings.filter((s) => s.id !== film.id).slice(0, 4);
+
+const facts = [
+  { label: 'Director', value: f.director },
+  { label: 'Year', value: String(f.year) },
+  { label: 'Runtime', value: formatRuntime(f.runtime) },
+  { label: 'Classification', value: f.rating },
+  ...(f.language ? [{ label: 'Language', value: f.language }] : []),
+];
+---
+
+<BaseLayout title={`${f.title} · ${site.shortName} ${site.editionNumber}`} description={f.synopsis} theme={eventId}>
+  <div class="container-page pt-8">
+    <a href={eventHref(event)} class="font-typewriter text-sm uppercase underline underline-offset-4">← {event.data.name}</a>
+  </div>
+
+  <article>
+    <div class="container-page grid gap-10 pt-8 pb-16 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-14 md:pb-24">
+      <div class="hero__media mx-auto w-full max-w-sm self-start md:max-w-none">
+        <Splash class="hero__splash" variant={2} />
+        <Media id={f.poster} priority sizes="(min-width: 768px) 40vw, 90vw" />
+        <div class="hero__melt" aria-hidden="true" />
+      </div>
+
+      <div class="flex flex-col gap-6">
+        <Kicker rule tone="accent">{event.data.name}</Kicker>
+        <DisplayTitle as="h1" lines={[f.title]} size="lg" />
+        {f.englishTitle && <p class="-mt-3 mb-0 font-script text-3xl" style="color: var(--c-display-bottom)">{f.englishTitle}</p>}
+
+        <BodyText size="lead"><p>{f.synopsis}</p></BodyText>
+
+        <dl class="m-0 grid grid-cols-2 gap-x-6 gap-y-4 border-y-[3px] border-double border-ink py-5 sm:grid-cols-3">
+          {
+            facts.map((x) => (
+              <div>
+                <dt class="font-typewriter text-xs tracking-widest uppercase">{x.label}</dt>
+                <dd class="m-0 font-condensed text-xl leading-tight uppercase">{x.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        <div class="flex flex-col gap-1 font-typewriter">
+          <span class="text-xs tracking-widest uppercase">Session</span>
+          <span class="text-lg">{formatDate(f.date)} · {f.time}</span>
+          <span>{f.venue}</span>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <Button href={f.ticketUrl} external>Get tickets</Button>
+          <Button href="/program" variant="ghost">Full program</Button>
+        </div>
+      </div>
+    </div>
+
+    {
+      f.trailer && (
+        <section class="container-page py-12 md:py-16" aria-labelledby="trailer">
+          <SectionHead title="Trailer" id="trailer" />
+          <VideoPlayer id={f.trailer} class="mx-auto max-w-5xl" />
+        </section>
+      )
+    }
+
+    {
+      sessions.length > 0 && (
+        <section class="container-page py-12 md:py-16" aria-labelledby="sessions">
+          <SectionHead title="Sessions" id="sessions" />
+          <ScheduleTable sessions={sessions} showEvent={false} headingLevel="h3" />
+        </section>
+      )
+    }
+  </article>
+
+  {
+    more.length > 0 && (
+      <section class="container-page py-12 md:py-16" aria-labelledby="more">
+        <SectionHead title={`More from ${event.data.shortName}`} id="more" />
+        <ul class="clipping-grid m-0 grid list-none grid-cols-2 gap-x-4 gap-y-10 p-0 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-4">
+          {more.map((m) => (
+            <li>
+              <FilmCard film={m} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</BaseLayout>

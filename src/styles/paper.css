@@ -1,0 +1,83 @@
+/*
+ * Beige newspaper paper + grain. Everything is inline SVG (data URIs),
+ * so there are no external images.
+ */
+:root {
+  /* Fibres and blotches: low-frequency fractal noise, warm-tinted. */
+  --paper-fibre: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.03' numOctaves='4' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.33 0 0 0 0 0.18 0 0 0 0.32 -0.08'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  /* Fine speckle: high-frequency noise, very faint. */
+  --paper-speckle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 0 0.12 0 0 0 1.4 -0.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+  /* Grain overlay: grey noise for a multiply layer above everything. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+.paper {
+  background-color: var(--c-offwhite);
+  background-image:
+    radial-gradient(ellipse at 50% 40%, transparent 55%, rgb(150 120 70 / 0.14) 100%),
+    var(--paper-speckle),
+    var(--paper-fibre);
+  background-attachment: fixed;
+  background-size:
+    100% 100%,
+    240px 240px,
+    600px 600px;
+}
+
+/* Faint newspaper columns, fixed behind content. Decorative only. */
+.newsprint {
+  position: fixed;
+  inset: -2rem;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  padding: 2.5rem;
+  columns: 15rem;
+  column-gap: 1.75rem;
+  column-rule: 1px solid currentColor;
+  column-fill: auto;
+  height: calc(100vh + 4rem);
+  color: var(--c-black);
+  opacity: 0.12;
+  font-family: 'Times New Roman', Times, Georgia, serif;
+  font-size: 12.5px;
+  line-height: 1.38;
+  text-align: justify;
+  hyphens: auto;
+  filter: blur(0.35px);
+  -webkit-mask-image: radial-gradient(ellipse at 30% 35%, #000 25%, rgb(0 0 0 / 0.55) 80%);
+  mask-image: radial-gradient(ellipse at 30% 35%, #000 25%, rgb(0 0 0 / 0.55) 80%);
+}
+
+.newsprint h2 {
+  margin: 0 0 0.4em;
+  font-size: 1.6em;
+  line-height: 1;
+  font-weight: 700;
+  text-align: left;
+  break-after: avoid;
+}
+
+.newsprint p {
+  margin: 0 0 0.6em;
+  text-indent: 1.2em;
+}
+
+/* Page content sits above the newsprint. */
+.page {
+  position: relative;
+  z-index: 1;
+}
+
+/* Global grain, above everything, never intercepts input. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: var(--grain);
+  background-size: 200px 200px;
+  mix-blend-mode: multiply;
+  opacity: 0.16;
+}

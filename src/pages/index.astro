@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import JourneyStrip from '../components/sections/JourneyStrip.astro';
+import VideoPlayer from '../components/sections/VideoPlayer.astro';
+import FilmCard from '../components/sections/FilmCard.astro';
+import SponsorStrip from '../components/sections/SponsorStrip.astro';
+import SectionHead from '../components/ui/SectionHead.astro';
+import Button from '../components/ui/Button.astro';
+import site from '../content/site.json';
+import pages from '../content/pages.json';
+import { getEvent, getEvents, getFilms, getSponsors } from '../lib/content';
+
+const page = pages.home;
+const [events, mainEvent, mainFilms, sponsors] = await Promise.all([
+  getEvents(),
+  getEvent('main'),
+  getFilms('main'),
+  getSponsors(),
+]);
+---
+
+<BaseLayout title={page.metaTitle}>
+  <Hero
+    title={page.title}
+    script={page.script}
+    kicker={page.kicker}
+    intro={page.intro}
+    media={page.hero}
+    ratio="4:5"
+    meta={[
+      { label: 'Theme', value: site.theme },
+      { label: 'When', value: site.dates },
+      { label: 'Where', value: site.venue },
+    ]}
+  >
+    <Fragment slot="actions">
+      <Button href={site.ticketUrl} external>Get tickets</Button>
+      <Button href="/program" variant="ghost">See the program</Button>
+    </Fragment>
+  </Hero>
+
+  <section class="container-page py-12 md:py-20" aria-labelledby="journey">
+    <SectionHead title={page.journeyTitle} kicker={page.journeyKicker} id="journey" />
+    <JourneyStrip events={events} />
+  </section>
+
+  {
+    mainEvent.data.trailer && (
+      <section class="container-page py-12 md:py-20" aria-labelledby="trailer">
+        <SectionHead title={page.trailerTitle} kicker={page.trailerKicker} id="trailer" />
+        <VideoPlayer id={mainEvent.data.trailer} class="mx-auto max-w-5xl" />
+      </section>
+    )
+  }
+
+  <section class="container-page py-12 md:py-20" aria-labelledby="films" data-theme="main">
+    <SectionHead title={page.filmsTitle} kicker={page.filmsKicker} id="films">
+      <a href="/main-screening" class="font-typewriter text-sm uppercase underline underline-offset-4">All Main Screening films →</a>
+    </SectionHead>
+    <ul class="clipping-grid m-0 grid list-none grid-cols-2 gap-x-4 gap-y-10 p-0 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-4">
+      {
+        mainFilms.map((film) => (
+          <li>
+            <FilmCard film={film} />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="container-page py-12 md:py-20" aria-labelledby="sponsors">
+    <SectionHead title="Sponsors" kicker={page.sponsorsKicker} id="sponsors">
+      <a href="/sponsors" class="font-typewriter text-sm uppercase underline underline-offset-4">Become a sponsor →</a>
+    </SectionHead>
+    <SponsorStrip sponsors={sponsors} />
+  </section>
+</BaseLayout>

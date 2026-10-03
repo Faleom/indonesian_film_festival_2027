@@ -1,0 +1,131 @@
+---
+/**
+ * Renders an image/video from src/content/media.json by key. In order:
+ *   1. Halftone output from `npm run halftone` (photo in src/assets/raw/<key>.*)
+ *   2. The original file at `src` in /public
+ *   3. A labelled halftone placeholder, so pages never break while assets are pending
+ *
+ * tone="theme" (default) colours the dots with the primary of whatever
+ * data-theme is in scope, using the black dots as a CSS mask. "black" or a
+ * theme name uses that pre-rendered file instead.
+ */
+import { getHalftone, getMedia, mediaExists, ratioToCss, srcsetOf, type HalftoneTone } from '../../lib/media';
+
+interface Props {
+  /** Key in src/content/media.json */
+  id: string;
+  /** Override the ratio from media.json, e.g. "1:1" */
+  ratio?: string;
+  /** Override the alt text from media.json */
+  alt?: string;
+  /** Halftone colour. Defaults to media.json `tone`, then 'theme'. */
+  tone?: HalftoneTone;
+  /** Load eagerly (above-the-fold heroes) */
+  priority?: boolean;
+  /** `sizes` attribute for responsive halftone images */
+  sizes?: string;
+  class?: string;
+}
+
+const { id, ratio, alt, tone: toneProp, priority = false, sizes = '100vw', class: className } = Astro.props;
+const entry = getMedia(id);
+
+if (!entry) {
+  console.warn(`[Media] Unknown media key "${id}". Add it to src/content/media.json.`);
+}
+
+const type = entry?.type ?? 'image';
+const displayRatio = ratio ?? entry?.ratio ?? '16:9';
+const ratioStyle = `--ratio: ${ratioToCss(displayRatio)}`;
+const altText = alt ?? entry?.alt ?? '';
+const tone = toneProp ?? entry?.tone ?? 'theme';
+
+const halftone = getHalftone(id, entry);
+const exists = !halftone && entry ? mediaExists(entry) : false;
+const fixedVariant = halftone && tone !== 'theme' ? halftone.variants[tone] : undefined;
+const maskVariant = halftone && tone === 'theme' ? halftone.variants.black : undefined;
+
+// Video poster: original file first, else its halftone (black dots on the paper background).
+const posterEntry = entry?.poster ? getMedia(entry.poster) : undefined;
+const posterHalftone = entry?.poster ? getHalftone(entry.poster) : undefined;
+const posterSrc =
+  posterEntry && mediaExists(posterEntry) ? posterEntry.src : posterHalftone?.variants.black.src;
+
+const label = entry
+  ? `[${type === 'video' ? 'VIDEO' : 'IMG'}: ${id} ${displayRatio}]`
+  : `[MISSING KEY: ${id}]`;
+---
+
+<div class:list={['media-wrap', className]}>
+  {
+    fixedVariant && halftone && (
+      <div class="media media--halftone" style={ratioStyle}>
+        <img
+          src={fixedVariant.src}
+          srcset={srcsetOf(fixedVariant)}
+          sizes={sizes}
+          width={halftone.width}
+          height={halftone.height}
+          alt={altText}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+          fetchpriority={priority ? 'high' : 'auto'}
+        />
+      </div>
+    )
+  }
+  {
+    maskVariant && (
+      <div
+        class="media media--halftone ht-mask"
+        style={`${ratioStyle}; --ht-sm: url('${maskVariant.srcset[0].src}'); --ht-lg: url('${maskVariant.src}')`}
+        role="img"
+        aria-label={altText}
+        data-media-key={id}
+      />
+    )
+  }
+  {
+    exists && entry && type === 'image' && (
+      <div class="media" style={ratioStyle}>
+        <img
+          src={entry.src}
+          alt={altText}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+          fetchpriority={priority ? 'high' : 'auto'}
+        />
+      </div>
+    )
+  }
+  {
+    exists && entry && type === 'video' && (
+      <div class="media" style={ratioStyle}>
+        <video src={entry.src} poster={posterSrc} controls preload="none" playsinline aria-label={altText} />
+      </div>
+    )
+  }
+  {
+    !halftone && !exists && (
+      <div
+        class="media ph"
+        style={ratioStyle}
+        data-type={type}
+        data-media-key={id}
+        role="img"
+        aria-label={`Placeholder: ${altText || id}`}
+      >
+        <div class="ph__ink" aria-hidden="true">
+          <div class="ph__dots" />
+          <div class="ph__tint" />
+        </div>
+        {type === 'video' && (
+          <span class="ph__play" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 3l16 9-16 9z" /></svg>
+          </span>
+        )}
+        <span class="ph__label" aria-hidden="true">{label}</span>
+      </div>
+    )
+  }
+</div>

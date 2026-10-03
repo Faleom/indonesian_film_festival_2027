@@ -1,0 +1,274 @@
+{
+  "$comment": "Single source of truth for every image/video. Photos: save as src/assets/raw/<key>.jpg and the halftone pipeline handles them. Videos and untreated files (set \"halftone\": false): put the file at `src` (relative to /public). Optional per image: \"tone\": \"theme\" | \"black\" | \"sfc\" | \"uts\" | \"main\" | \"base\". Run `npm run placeholders` to refresh PLACEHOLDERS.md. See README.",
+  "media": {
+    "hero-home": {
+      "type": "image",
+      "src": "/images/hero-home.jpg",
+      "ratio": "16:9",
+      "alt": "Festival hero image",
+      "location": "/ (home) hero",
+      "recommended": "2400x1350"
+    },
+    "hero-loop": {
+      "type": "video",
+      "src": "/videos/hero-loop.mp4",
+      "poster": "hero-home",
+      "ratio": "9:16",
+      "alt": "Looping halftone festival teaser",
+      "location": "/ (home) hero, mobile fallback for 3D",
+      "recommended": "1080x1920, under 4 MB, muted loop"
+    },
+    "hero-sfc": {
+      "type": "image",
+      "src": "/images/hero-sfc.jpg",
+      "ratio": "4:5",
+      "alt": "Short Film Competition hero image",
+      "location": "/sfc hero",
+      "recommended": "1600x2000"
+    },
+    "hero-uts": {
+      "type": "image",
+      "src": "/images/hero-uts.jpg",
+      "ratio": "4:5",
+      "alt": "UTS screening hero image",
+      "location": "/uts hero",
+      "recommended": "1600x2000"
+    },
+    "hero-main-screening": {
+      "type": "image",
+      "src": "/images/hero-main-screening.jpg",
+      "ratio": "4:5",
+      "alt": "Main Screening hero image",
+      "location": "/main-screening hero",
+      "recommended": "1600x2000"
+    },
+    "trailer-main": {
+      "type": "video",
+      "src": "/videos/trailer-main.mp4",
+      "poster": "hero-main-screening",
+      "ratio": "16:9",
+      "alt": "Festival trailer",
+      "location": "/ (home) and /main-screening trailer",
+      "recommended": "1920x1080 H.264, under 25 MB"
+    },
+    "trailer-sfc": {
+      "type": "video",
+      "src": "/videos/trailer-sfc.mp4",
+      "poster": "hero-sfc",
+      "ratio": "16:9",
+      "alt": "Short Film Competition trailer",
+      "location": "/sfc trailer",
+      "recommended": "1920x1080 H.264, under 25 MB"
+    },
+    "faq-hero": {
+      "type": "image",
+      "src": "/images/faq-hero.jpg",
+      "ratio": "4:5",
+      "alt": "Filmmaker holding a vintage film camera",
+      "location": "/faq hero",
+      "recommended": "1600x2000"
+    },
+    "about-hero": {
+      "type": "image",
+      "src": "/images/about-hero.jpg",
+      "ratio": "3:2",
+      "alt": "Festival committee at ACMI",
+      "location": "/about hero",
+      "recommended": "2100x1400"
+    },
+    "program-hero": {
+      "type": "image",
+      "src": "/images/program-hero.jpg",
+      "ratio": "21:9",
+      "alt": "Audience in a cinema",
+      "location": "/program header",
+      "recommended": "2520x1080"
+    },
+    "sponsors-hero": {
+      "type": "image",
+      "src": "/images/sponsors-hero.jpg",
+      "ratio": "3:2",
+      "alt": "Festival night crowd",
+      "location": "/sponsors header",
+      "recommended": "2100x1400"
+    },
+    "volunteer-hero": {
+      "type": "image",
+      "src": "/images/volunteer-hero.jpg",
+      "ratio": "4:5",
+      "alt": "Volunteers at the festival front desk",
+      "location": "/volunteer hero",
+      "recommended": "1600x2000"
+    },
+    "og-default": {
+      "type": "image",
+      "src": "/images/og-default.jpg",
+      "ratio": "1200:630",
+      "alt": "21st Indonesian Film Festival",
+      "location": "Social share image (meta og:image)",
+      "recommended": "1200x630"
+    },
+    "poster-garam-dan-gula": {
+      "type": "image",
+      "src": "/images/posters/garam-dan-gula.jpg",
+      "ratio": "2:3",
+      "alt": "Poster for Garam dan Gula",
+      "location": "Film card + /films/garam-dan-gula",
+      "recommended": "1000x1500"
+    },
+    "poster-ombak-terakhir": {
+      "type": "image",
+      "src": "/images/posters/ombak-terakhir.jpg",
+      "ratio": "2:3",
+      "alt": "Poster for Ombak Terakhir",
+      "location": "Film card + /films/ombak-terakhir",
+      "recommended": "1000x1500"
+    },
+    "poster-surat-untuk-ibu": {
+      "type": "image",
+      "src": "/images/posters/surat-untuk-ibu.jpg",
+      "ratio": "2:3",
+      "alt": "Poster for Surat untuk Ibu",
+      "location": "Film card + /films/surat-untuk-ibu",
+      "recommended": "1000x1500"
+    },
+    "poster-tukang-cukur": {
+      "type": "image",
+      "src": "/images/posters/tukang-cukur.jpg",
+      "ratio": "2:3",
+      "alt": "Poster for Tukang Cukur",
+      "location": "Film card + /films/tukang-cukur",
+      "recommended": "1000x1500"
+    },
+    "poster-benang-merah": {
+      "type": "image",
+      "src": "/images/posters/benang-merah.jpg",
+      "ratio": "2:3",
+      "alt": "Poster for Benang Merah",
+      "location": "Film card + /films/benang-merah",
+      "recommended": "1000x1500"
+    },
+    "poster-rumah-di-ujung-jalan": {
+      "type": "image",
+      "src": "/images/posters/rumah-di-ujung-jalan.jpg",
+      "ratio": "2:3",
+      "alt": "Poster for Rumah di Ujung Jalan",
+      "location": "Film card + /films/rumah-di-ujung-jalan",
+      "recommended": "1000x1500"
+    },
+    "poster-senandika": {
+      "type": "image",
+      "src": "/images/posters/senandika.jpg",
+      "ratio": "2:3",
+      "alt": "Poster for Senandika",
+      "location": "Film card + /films/senandika",
+      "recommended": "1000x1500"
+    },
+    "trailer-senandika": {
+      "type": "video",
+      "src": "/videos/trailer-senandika.mp4",
+      "poster": "poster-senandika",
+      "ratio": "16:9",
+      "alt": "Trailer for Senandika",
+      "location": "/films/senandika",
+      "recommended": "1920x1080 H.264, under 25 MB"
+    },
+    "poster-musim-kemarau": {
+      "type": "image",
+      "src": "/images/posters/musim-kemarau.jpg",
+      "ratio": "2:3",
+      "alt": "Poster for Musim Kemarau",
+      "location": "Film card + /films/musim-kemarau",
+      "recommended": "1000x1500"
+    },
+    "poster-pasar-malam": {
+      "type": "image",
+      "src": "/images/posters/pasar-malam.jpg",
+      "ratio": "2:3",
+      "alt": "Poster for Pasar Malam",
+      "location": "Film card + /films/pasar-malam",
+      "recommended": "1000x1500"
+    },
+    "trailer-pasar-malam": {
+      "type": "video",
+      "src": "/videos/trailer-pasar-malam.mp4",
+      "poster": "poster-pasar-malam",
+      "ratio": "16:9",
+      "alt": "Trailer for Pasar Malam",
+      "location": "/films/pasar-malam",
+      "recommended": "1920x1080 H.264, under 25 MB"
+    },
+    "poster-kabut-di-dieng": {
+      "type": "image",
+      "src": "/images/posters/kabut-di-dieng.jpg",
+      "ratio": "2:3",
+      "alt": "Poster for Kabut di Dieng",
+      "location": "Film card + /films/kabut-di-dieng",
+      "recommended": "1000x1500"
+    },
+    "team-festival-director": {
+      "type": "image",
+      "src": "/images/team/festival-director.jpg",
+      "ratio": "4:5",
+      "alt": "Portrait of the Festival Director",
+      "location": "/about team grid",
+      "recommended": "800x1000"
+    },
+    "team-deputy-director": {
+      "type": "image",
+      "src": "/images/team/deputy-director.jpg",
+      "ratio": "4:5",
+      "alt": "Portrait of the Deputy Director",
+      "location": "/about team grid",
+      "recommended": "800x1000"
+    },
+    "team-programming-lead": {
+      "type": "image",
+      "src": "/images/team/programming-lead.jpg",
+      "ratio": "4:5",
+      "alt": "Portrait of the Programming Lead",
+      "location": "/about team grid",
+      "recommended": "800x1000"
+    },
+    "team-events-lead": {
+      "type": "image",
+      "src": "/images/team/events-lead.jpg",
+      "ratio": "4:5",
+      "alt": "Portrait of the Events & Operations Lead",
+      "location": "/about team grid",
+      "recommended": "800x1000"
+    },
+    "team-marketing-lead": {
+      "type": "image",
+      "src": "/images/team/marketing-lead.jpg",
+      "ratio": "4:5",
+      "alt": "Portrait of the Marketing Lead",
+      "location": "/about team grid",
+      "recommended": "800x1000"
+    },
+    "team-design-lead": {
+      "type": "image",
+      "src": "/images/team/design-lead.jpg",
+      "ratio": "4:5",
+      "alt": "Portrait of the Design Lead",
+      "location": "/about team grid",
+      "recommended": "800x1000"
+    },
+    "team-sponsorship-lead": {
+      "type": "image",
+      "src": "/images/team/sponsorship-lead.jpg",
+      "ratio": "4:5",
+      "alt": "Portrait of the Sponsorship Lead",
+      "location": "/about team grid",
+      "recommended": "800x1000"
+    },
+    "team-treasurer": {
+      "type": "image",
+      "src": "/images/team/treasurer.jpg",
+      "ratio": "4:5",
+      "alt": "Portrait of the Treasurer",
+      "location": "/about team grid",
+      "recommended": "800x1000"
+    }
+  }
+}

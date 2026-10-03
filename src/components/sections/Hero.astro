@@ -1,0 +1,80 @@
+---
+/**
+ * One big halftone image + DisplayTitle + riso colour splash.
+ *   split: title left, image right (default)
+ *   stack: title on top, wide image below
+ */
+import DisplayTitle from '../typography/DisplayTitle.astro';
+import Kicker from '../typography/Kicker.astro';
+import BodyText from '../typography/BodyText.astro';
+import Media from '../media/Media.astro';
+import Splash from '../ui/Splash.astro';
+
+interface Props {
+  title: string[];
+  script?: string;
+  kicker?: string;
+  intro?: string;
+  media: string;
+  /** Small facts under the intro, e.g. date and venue. */
+  meta?: { label: string; value: string }[];
+  layout?: 'split' | 'stack';
+  /** Ratio override for the hero image. */
+  ratio?: string;
+}
+
+const { title, script, kicker, intro, media, meta = [], layout = 'split', ratio } = Astro.props;
+---
+
+<section class="container-page pt-10 pb-16 md:pt-16 md:pb-24">
+  {
+    layout === 'split' ? (
+      <div class="grid items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+        <div class="flex flex-col gap-6">
+          {kicker && <Kicker rule tone="accent">{kicker}</Kicker>}
+          <DisplayTitle as="h1" lines={title} script={script} />
+          {intro && <BodyText size="lead"><p>{intro}</p></BodyText>}
+          {meta.length > 0 && (
+            <dl class="m-0 grid grid-cols-[auto_1fr] gap-x-6 gap-y-1 border-t border-ink pt-4 font-typewriter text-sm">
+              {meta.map((m) => (
+                <Fragment>
+                  <dt class="uppercase tracking-widest">{m.label}</dt>
+                  <dd class="m-0">{m.value}</dd>
+                </Fragment>
+              ))}
+            </dl>
+          )}
+          <div class="flex flex-wrap gap-3 pt-2 empty:hidden">
+            <slot name="actions" />
+          </div>
+        </div>
+        <div class="hero__media mx-auto w-full max-w-md lg:max-w-none">
+          <Splash class="hero__splash" variant={1} />
+          <Splash class="hero__splash hero__splash--alt" variant={3} />
+          <Media id={media} ratio={ratio} priority sizes="(min-width: 1024px) 45vw, 100vw" />
+          <div class="hero__melt" aria-hidden="true" />
+        </div>
+      </div>
+    ) : (
+      <div class="flex flex-col gap-10">
+        <div class="grid items-end gap-8 lg:grid-cols-[1.4fr_1fr]">
+          <div class="flex flex-col gap-6">
+            {kicker && <Kicker rule tone="accent">{kicker}</Kicker>}
+            <DisplayTitle as="h1" lines={title} script={script} />
+          </div>
+          <div class="flex flex-col gap-5">
+            {intro && <BodyText size="lead"><p>{intro}</p></BodyText>}
+            <div class="flex flex-wrap gap-3 empty:hidden">
+              <slot name="actions" />
+            </div>
+          </div>
+        </div>
+        <div class="hero__media">
+          <Splash class="hero__splash" variant={2} />
+          <Media id={media} ratio={ratio} priority sizes="100vw" />
+          <div class="hero__melt" aria-hidden="true" />
+        </div>
+      </div>
+    )
+  }
+</section>

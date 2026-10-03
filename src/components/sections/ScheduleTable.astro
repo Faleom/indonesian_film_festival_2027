@@ -1,0 +1,65 @@
+---
+/** Schedule in classified-ad style, grouped by day. Each row takes its event's theme. */
+import { filmHref, formatDate, formatTime, groupByDate, sessionTypeLabel, type Session } from '../../lib/content';
+
+interface Props {
+  sessions: Session[];
+  /** Show the event chip on each row (program page). */
+  showEvent?: boolean;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { sessions, showEvent = true, headingLevel: Heading = 'h2' } = Astro.props;
+const days = groupByDate(sessions);
+---
+
+<div class="flex flex-col gap-12">
+  {
+    days.map((day) => (
+      <section aria-label={formatDate(day.date)}>
+        <Heading class="classifieds__day m-0 py-2 text-2xl md:text-3xl">{formatDate(day.date)}</Heading>
+        <ol class="m-0 list-none p-0">
+          {day.sessions.map((s) => (
+            <li class="classifieds__row" data-theme={s.event.id}>
+              <p class="classifieds__time m-0">
+                <time datetime={`${s.data.date}T${s.data.start}`} class="text-lg">
+                  {formatTime(s.data.start)}
+                </time>
+                {s.data.end && (
+                  <span class="block text-xs">
+                    to <time datetime={`${s.data.date}T${s.data.end}`}>{formatTime(s.data.end)}</time>
+                  </span>
+                )}
+              </p>
+              <div class="classifieds__title flex flex-col gap-1.5">
+                <div class="flex flex-wrap gap-2">
+                  {showEvent && <span class="chip">{s.event.data.shortName}</span>}
+                  <span class="chip chip--outline">{sessionTypeLabel[s.data.type]}</span>
+                </div>
+                <p class="m-0 font-condensed text-xl leading-tight uppercase md:text-2xl">
+                  {s.film ? (
+                    <a href={filmHref(s.film)} class="text-ink underline-offset-4 hover:underline">
+                      {s.data.title}
+                    </a>
+                  ) : (
+                    s.data.title
+                  )}
+                </p>
+              </div>
+              <p class="classifieds__venue m-0">{s.data.venue}</p>
+              <p class="classifieds__action m-0">
+                {s.data.ticketUrl ? (
+                  <a href={s.data.ticketUrl} class="font-typewriter text-sm text-accent-text uppercase underline underline-offset-4">
+                    Tickets<span class="sr-only"> for {s.data.title}</span> →
+                  </a>
+                ) : (
+                  <span class="font-typewriter text-xs uppercase">Included</span>
+                )}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))
+  }
+</div>

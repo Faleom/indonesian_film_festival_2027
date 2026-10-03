@@ -1,0 +1,16 @@
+---
+/** Futura body copy. Wrap paragraphs (or rendered Markdown) in it. */
+interface Props {
+  size?: 'lead' | 'base' | 'small';
+  /** Newspaper drop cap on the first paragraph. */
+  dropcap?: boolean;
+  as?: 'div' | 'section' | 'article';
+  class?: string;
+}
+
+const { size = 'base', dropcap = false, as: Tag = 'div', class: className } = Astro.props;
+---
+
+<Tag class:list={['body-text', className]} data-size={size} data-dropcap={String(dropcap)}>
+  <slot />
+</Tag>

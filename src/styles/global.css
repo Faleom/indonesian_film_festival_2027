@@ -1,0 +1,69 @@
+@import 'tailwindcss';
+@import './themes.css';
+@import './paper.css';
+@import './typography.css';
+@import './placeholder.css';
+@import './components.css';
+@import './motion.css';
+
+/*
+ * Tailwind tokens. `inline` makes utilities reference the runtime CSS
+ * variables, so `bg-primary` follows whichever data-theme is in scope.
+ */
+@theme inline {
+  --color-primary: var(--c-primary);
+  --color-dark: var(--c-dark);
+  --color-light: var(--c-light);
+  --color-offwhite: var(--c-offwhite);
+  --color-ink: var(--c-black);
+  --color-beige: var(--c-beige);
+  --color-accent-text: var(--c-text-accent);
+  --color-on-primary: var(--c-on-primary);
+
+  --font-display: var(--ff-display);
+  --font-script: var(--ff-script);
+  --font-condensed: var(--ff-condensed);
+  --font-typewriter: var(--ff-typewriter);
+  --font-body: var(--ff-body);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    position: relative;
+    overflow-x: clip; /* hero splashes bleed past the edge on purpose */
+    min-height: 100vh;
+    margin: 0;
+    color: var(--c-black);
+    font-family: var(--ff-body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  ::selection {
+    background: var(--c-primary);
+    color: var(--c-offwhite);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--c-text-accent);
+    outline-offset: 3px;
+  }
+}
+
+/* Reduced motion: stop CSS motion unless the visitor switched motion back on
+   with the footer toggle (html[data-motion='on']). See also motion.css. */
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion='on']) *,
+  html:not([data-motion='on']) *::before,
+  html:not([data-motion='on']) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

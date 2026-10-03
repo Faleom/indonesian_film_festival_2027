@@ -1,0 +1,27 @@
+---
+/**
+ * "Coming soon" toast for forms. Any <form data-coming-soon> shows it on a
+ * valid submit instead of sending anything.
+ * TODO(backend): replace with real submission handling.
+ */
+import site from '../../content/site.json';
+---
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden data-message={site.formsComingSoon}></div>
+
+<script>
+  let timer: number | undefined;
+
+  // Looked up per submit: page transitions replace the body, toast included.
+  document.addEventListener('submit', (e) => {
+    const form = e.target;
+    const toast = document.getElementById('toast');
+    if (!(form instanceof HTMLFormElement) || !form.hasAttribute('data-coming-soon') || !toast) return;
+    // TODO(backend): POST the form data here instead of showing the toast.
+    e.preventDefault();
+    toast.textContent = form.dataset.comingSoon || toast.dataset.message || 'Coming soon.';
+    toast.hidden = false;
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => (toast.hidden = true), 6000);
+  });
+</script>

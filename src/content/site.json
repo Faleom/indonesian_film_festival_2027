@@ -1,0 +1,74 @@
+{
+  "$comment": "Festival-wide settings: name, edition, dates, links. Placeholder values are marked TBC.",
+  "name": "Indonesian Film Festival",
+  "shortName": "IFF",
+  "edition": "21st",
+  "editionNumber": 21,
+  "year": 2027,
+  "theme": "Theme TBC",
+  "themeSubtitle": "The 21st edition theme will be announced soon.",
+  "city": "Melbourne",
+  "venue": "ACMI, Federation Square",
+  "dates": "March 2027 (TBC)",
+  "ticketUrl": "#",
+  "email": "hello@example.com",
+  "description": "The 21st Indonesian Film Festival: a non-profit, student-run celebration of Indonesian cinema in Melbourne.",
+  "previousEdition": "20th IFF (2026): Arunika, The Ascending Light of Cinema",
+  "acknowledgement": "The Indonesian Film Festival acknowledges the Wurundjeri Woi-wurrung people of the Kulin Nation, the Traditional Owners of the land on which we gather, screen and work. We pay our respects to Elders past and present. Sovereignty was never ceded.",
+  "nav": [
+    {
+      "label": "Program",
+      "href": "/program"
+    },
+    {
+      "label": "SFC",
+      "href": "/sfc",
+      "theme": "sfc"
+    },
+    {
+      "label": "UTS",
+      "href": "/uts",
+      "theme": "uts"
+    },
+    {
+      "label": "Main Screening",
+      "href": "/main-screening",
+      "theme": "main"
+    },
+    {
+      "label": "About",
+      "href": "/about"
+    },
+    {
+      "label": "FAQ",
+      "href": "/faq"
+    },
+    {
+      "label": "Sponsors",
+      "href": "/sponsors"
+    },
+    {
+      "label": "Volunteer",
+      "href": "/volunteer"
+    }
+  ],
+  "socials": [
+    {
+      "label": "Instagram",
+      "href": "#"
+    },
+    {
+      "label": "TikTok",
+      "href": "#"
+    },
+    {
+      "label": "Facebook",
+      "href": "#"
+    },
+    {
+      "label": "YouTube",
+      "href": "#"
+    }
+  ],
+  "formsComingSoon": "Thanks! Online forms open soon. For now, email us at hello@example.com."
+}

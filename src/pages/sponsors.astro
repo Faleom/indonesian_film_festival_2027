@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import SponsorStrip from '../components/sections/SponsorStrip.astro';
+import Button from '../components/ui/Button.astro';
+import site from '../content/site.json';
+import pages from '../content/pages.json';
+import { getSponsors } from '../lib/content';
+
+const page = pages.sponsors;
+const sponsors = await getSponsors();
+---
+
+<BaseLayout title={page.metaTitle} description={page.metaDescription}>
+  <Hero title={page.title} script={page.script} kicker={page.kicker} intro={page.intro} media={page.hero} />
+
+  <section class="container-page" aria-label="Sponsors">
+    <SponsorStrip sponsors={sponsors} tiered tierLabels={page.tiers} />
+  </section>
+
+  <section class="container-page py-16 md:py-24" aria-labelledby="become">
+    <div class="grid gap-8 border border-ink bg-primary p-8 text-on-primary md:grid-cols-[1.4fr_1fr] md:items-end md:p-12">
+      <div class="flex flex-col gap-4">
+        <h2 id="become" class="m-0 font-display text-6xl leading-[0.85] uppercase md:text-8xl">{page.ctaTitle}</h2>
+        <p class="m-0 max-w-[55ch] text-lg">{page.ctaText}</p>
+      </div>
+      <div class="flex flex-col items-start gap-3 md:items-end">
+        <a href={`mailto:${site.email}?subject=Sponsorship`} class="btn border-on-primary bg-offwhite text-ink shadow-[3px_3px_0_#000]">{page.ctaButton}</a>
+        <span class="font-typewriter text-sm">{page.deckLabel}</span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

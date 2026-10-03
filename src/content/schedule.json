@@ -1,0 +1,16 @@
+{
+  "$comment": "PLACEHOLDER schedule. One item per session. `event` is sfc | uts | main. `type` is screening | panel | qa | ceremony | social. `film` is a film id from films.json (or null). Times are 24h HH:MM for sorting.",
+  "items": [
+    { "id": "sfc-doors", "date": "2027-02-20", "start": "18:00", "end": "18:30", "title": "Doors open and welcome drinks", "event": "sfc", "type": "social", "film": null, "venue": "ACMI Foyer", "ticketUrl": null },
+    { "id": "sfc-finalists", "date": "2027-02-20", "start": "18:30", "end": "20:30", "title": "Short Film Competition: finalists screening", "event": "sfc", "type": "screening", "film": null, "venue": "ACMI Cinema 2", "ticketUrl": "#" },
+    { "id": "sfc-awards", "date": "2027-02-20", "start": "20:45", "end": "21:30", "title": "Awards ceremony", "event": "sfc", "type": "ceremony", "film": null, "venue": "ACMI Cinema 2", "ticketUrl": null },
+    { "id": "uts-screening", "date": "2027-03-05", "start": "19:00", "end": "20:45", "title": "Rumah di Ujung Jalan", "event": "uts", "type": "screening", "film": "rumah-di-ujung-jalan", "venue": "Venue TBC", "ticketUrl": "#" },
+    { "id": "uts-qa", "date": "2027-03-05", "start": "20:45", "end": "21:30", "title": "Q&A with the filmmakers", "event": "uts", "type": "qa", "film": "rumah-di-ujung-jalan", "venue": "Venue TBC", "ticketUrl": null },
+    { "id": "main-opening", "date": "2027-03-19", "start": "19:00", "end": "21:00", "title": "Opening night: Senandika", "event": "main", "type": "screening", "film": "senandika", "venue": "ACMI Cinema 1", "ticketUrl": "#" },
+    { "id": "main-musim", "date": "2027-03-20", "start": "13:00", "end": "14:40", "title": "Musim Kemarau", "event": "main", "type": "screening", "film": "musim-kemarau", "venue": "ACMI Cinema 2", "ticketUrl": "#" },
+    { "id": "main-panel", "date": "2027-03-20", "start": "15:30", "end": "16:30", "title": "Panel: Telling regional stories", "event": "main", "type": "panel", "film": null, "venue": "ACMI Studio", "ticketUrl": "#" },
+    { "id": "main-pasar", "date": "2027-03-20", "start": "18:30", "end": "20:15", "title": "Pasar Malam", "event": "main", "type": "screening", "film": "pasar-malam", "venue": "ACMI Cinema 1", "ticketUrl": "#" },
+    { "id": "main-pasar-qa", "date": "2027-03-20", "start": "20:15", "end": "20:45", "title": "Q&A: Pasar Malam", "event": "main", "type": "qa", "film": "pasar-malam", "venue": "ACMI Cinema 1", "ticketUrl": null },
+    { "id": "main-closing", "date": "2027-03-21", "start": "17:00", "end": "18:40", "title": "Closing night: Kabut di Dieng", "event": "main", "type": "screening", "film": "kabut-di-dieng", "venue": "ACMI Cinema 1", "ticketUrl": "#" }
+  ]
+}

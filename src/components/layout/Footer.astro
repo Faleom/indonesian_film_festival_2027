@@ -1,0 +1,61 @@
+---
+import site from '../../content/site.json';
+import NewsletterForm from '../forms/NewsletterForm.astro';
+---
+
+<footer class="mt-24 border-t-[3px] border-double border-ink md:mt-32">
+  <div class="container-page py-12 md:py-16">
+    <p
+      class="m-0 font-display leading-[0.85] uppercase"
+      style="font-size: clamp(3rem, 11vw, 10rem); color: var(--c-display-top)"
+    >
+      {site.name}
+    </p>
+
+    <div class="mt-10 grid gap-10 border-t border-ink pt-10 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1.4fr]">
+      <nav aria-label="Footer">
+        <p class="kicker mb-4">Festival</p>
+        <ul class="m-0 grid list-none grid-cols-2 gap-x-6 gap-y-2 p-0">
+          {
+            site.nav.map((item) => (
+              <li>
+                <a href={item.href} class="text-ink underline-offset-4 hover:underline">{item.label}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div>
+        <p class="kicker mb-4">Follow</p>
+        <ul class="m-0 flex list-none flex-col gap-2 p-0">
+          {
+            site.socials.map((s) => (
+              <li>
+                <a href={s.href} class="text-ink underline-offset-4 hover:underline">{s.label}</a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="mt-6 mb-0">
+          <a href={`mailto:${site.email}`} class="font-typewriter text-accent-text underline underline-offset-4">{site.email}</a>
+        </p>
+      </div>
+
+      <NewsletterForm compact />
+    </div>
+
+    <div class="mt-12 grid gap-6 border-t border-ink pt-8 md:grid-cols-[2fr_1fr]">
+      <p class="m-0 max-w-[70ch] text-sm leading-relaxed">{site.acknowledgement}</p>
+      <div class="flex flex-col gap-3 md:items-end">
+        <p class="m-0 font-typewriter text-xs leading-relaxed uppercase md:text-right">
+          © {site.year} {site.name}<br />Non-profit · Student-run · {site.city}
+        </p>
+        <!-- Shown by scripts/motion/index.ts; turning motion off is remembered per browser. -->
+        <button id="motion-toggle" type="button" class="btn btn--ghost cursor-pointer text-xs" hidden aria-pressed="true">
+          Motion: <span data-motion-state>On</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>

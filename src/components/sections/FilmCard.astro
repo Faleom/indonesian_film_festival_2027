@@ -1,0 +1,34 @@
+---
+/** Film as a newspaper clipping. Takes the event's colour theme. */
+import Media from '../media/Media.astro';
+import { filmHref, formatRuntime, formatShortDate, type FilmEntry } from '../../lib/content';
+
+interface Props {
+  film: FilmEntry;
+  /** Show the event chip (useful when mixing events). */
+  showEvent?: boolean;
+  eventName?: string;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { film, showEvent = false, eventName, headingLevel: Heading = 'h3' } = Astro.props;
+const f = film.data;
+---
+
+<article class="clipping" data-theme={f.event.id}>
+  <div class="clipping__paper flex flex-col gap-2.5 sm:gap-3">
+    <Media id={f.poster} sizes="(min-width: 1024px) 25vw, 45vw" />
+    <div class="flex flex-wrap items-center gap-2">
+      {showEvent && eventName && <span class="chip">{eventName}</span>}
+      <span class="chip chip--outline">{f.rating}</span>
+    </div>
+    <Heading class="heading-condensed m-0 text-xl leading-none sm:text-[1.75rem]" style="color: var(--c-display-top)">
+      <a href={filmHref(film)} class="clipping__link">{f.title}</a>
+    </Heading>
+    {f.englishTitle && <p class="-mt-2 mb-0 font-body text-sm italic">{f.englishTitle}</p>}
+    <p class="m-0 font-typewriter text-xs leading-relaxed">
+      Dir. {f.director} · {f.year} · {formatRuntime(f.runtime)}<br />
+      {formatShortDate(f.date)} · {f.time} · {f.venue}
+    </p>
+  </div>
+</article>

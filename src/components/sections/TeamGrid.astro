@@ -1,0 +1,28 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Media from '../media/Media.astro';
+
+interface Props {
+  members: CollectionEntry<'team'>[];
+}
+
+const { members } = Astro.props;
+---
+
+<ul class="clipping-grid m-0 grid list-none grid-cols-2 gap-x-5 gap-y-10 p-0 md:grid-cols-3 lg:grid-cols-4">
+  {
+    members.map((m) => (
+      <li>
+        <figure class="clipping m-0">
+          <div class="clipping__paper flex flex-col gap-3">
+            <Media id={m.data.photo} sizes="(min-width: 1024px) 22vw, (min-width: 768px) 30vw, 45vw" />
+            <figcaption class="flex flex-col gap-1">
+              <span class="font-condensed text-xl leading-none uppercase md:text-2xl">{m.data.name}</span>
+              <span class="font-typewriter text-xs text-accent-text uppercase">{m.data.role}</span>
+            </figcaption>
+          </div>
+        </figure>
+      </li>
+    ))
+  }
+</ul>

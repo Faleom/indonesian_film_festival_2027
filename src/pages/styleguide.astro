@@ -1,0 +1,349 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DisplayTitle from '../components/typography/DisplayTitle.astro';
+import Kicker from '../components/typography/Kicker.astro';
+import BodyText from '../components/typography/BodyText.astro';
+import Media from '../components/media/Media.astro';
+import { media, mediaKeys, mediaDelivered, getHalftone } from '../lib/media';
+import halftoneConfig from '../../halftone.config.json';
+import fontData from '../content/fonts.json';
+
+const themes = [
+  { id: 'sfc', name: 'SFC', event: 'Short Film Competition' },
+  { id: 'uts', name: 'UTS', event: 'UTS Screening' },
+  { id: 'main', name: 'Main', event: 'Main Screening' },
+  { id: 'base', name: 'Base', event: 'Festival brand' },
+];
+
+// Read hex values straight from themes.css so the labels can't drift.
+const themesCss = fs.readFileSync(path.join(process.cwd(), 'src/styles/themes.css'), 'utf8');
+const hexIn = (selector: string) => {
+  const block = themesCss.split(selector)[1]?.split('}')[0] ?? '';
+  return Object.fromEntries([...block.matchAll(/--c-([\w-]+):\s*(#[0-9a-f]{6})/gi)].map((m) => [m[1], m[2].toUpperCase()]));
+};
+const shared = hexIn('[data-theme] {');
+const swatchNames = ['primary', 'dark', 'light', 'offwhite', 'black', 'beige'];
+
+const halftoneKeys = mediaKeys.filter((key) => getHalftone(key));
+const toneDemos = ['black', 'sfc', 'uts', 'main', 'base'] as const;
+const revealDemos = [
+  { type: 'fade-up', code: 'data-reveal="fade-up"' },
+  { type: 'misregister', code: 'data-reveal="misregister"' },
+  { type: 'typewriter', code: 'data-reveal="typewriter"' },
+  { type: 'fold', code: 'data-reveal="fold"' },
+  { type: 'halftone-grow', code: 'data-reveal="halftone-grow"' },
+  { type: 'children', code: 'data-reveal="fade-up" data-reveal-children' },
+];
+
+const fontsDir = path.join(process.cwd(), 'public', 'fonts');
+const fonts = fontData.fonts.map((f) => ({
+  ...f,
+  loaded: f.google || (f.files.length > 0 && f.files.every((file) => fs.existsSync(path.join(fontsDir, file.file)))),
+}));
+const fontSamples: Record<string, { size: string; text: string; transform?: string }> = {
+  '--ff-display': { size: 'text-6xl md:text-8xl', text: 'Arunika Cinema 21', transform: 'uppercase' },
+  '--ff-script': { size: 'text-5xl md:text-7xl', text: 'Asked & Answered' },
+  '--ff-condensed': { size: 'text-4xl md:text-6xl', text: 'Short Film Competition', transform: 'uppercase' },
+  '--ff-typewriter': { size: 'text-2xl md:text-3xl', text: 'Fri 14 Mar · 7:30 PM · ACMI Cinema 1' },
+  '--ff-body': { size: 'text-lg md:text-xl', text: 'A non-profit, student-run celebration of Indonesian cinema in Melbourne. The quick brown fox jumps over the lazy dog. 0123456789' },
+};
+---
+
+<BaseLayout title="Styleguide · IFF 21" description="Internal design system reference.">
+  <div class="mx-auto max-w-[1600px] px-4 py-12 md:px-8 md:py-20">
+    <header class="mb-16 md:mb-24">
+      <Kicker rule tone="accent">Internal · Design system</Kicker>
+      <DisplayTitle as="h1" lines={['Style', 'Guide']} script="the" class="mt-6 max-w-4xl" />
+      <BodyText size="lead" class="mt-8">
+        Risograph printing meets retro newspaper. Four event themes, five typefaces, one paper. Nothing here is final
+        artwork: every image is a placeholder from <code>src/content/media.json</code>.
+      </BodyText>
+    </header>
+
+    <!-- ============ THEMES ============ -->
+    <section aria-labelledby="sg-themes" class="mb-24">
+      <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4 border-b border-ink pb-3">
+        <h2 id="sg-themes" class="heading-condensed">01 · Themes</h2>
+        <Kicker as="span">Journey: SFC → UTS → Main · Base = festival</Kicker>
+      </div>
+
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        {
+          themes.map((t) => {
+            const hex = { ...shared, ...hexIn(`[data-theme='${t.id}']`) };
+            return (
+              <article data-theme={t.id} class="flex flex-col gap-6 border border-ink/30 bg-offwhite/40 p-5">
+                <div class="flex items-baseline justify-between">
+                  <Kicker tone="accent">{t.name}</Kicker>
+                  <code class="font-typewriter text-xs">data-theme="{t.id}"</code>
+                </div>
+
+                <ul class="grid grid-cols-6 gap-0 border border-ink" aria-label={`${t.name} palette`}>
+                  {swatchNames.map((name) => (
+                    <li class="flex flex-col">
+                      <span class="block h-16 border-r border-ink last:border-r-0" style={`background: var(--c-${name})`} />
+                      <span class="border-t border-r border-ink px-0.5 py-1 text-center font-typewriter text-[9px] leading-tight last:border-r-0">
+                        {name}
+                        <br />
+                        {hex[name]}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <DisplayTitle lines={['Frequently', 'Questions']} script="Asked" size="lg" />
+
+                <Media id="faq-hero" />
+
+                <div class="flex flex-col gap-3">
+                  <Kicker rule>{t.event}</Kicker>
+                  <h3 class="heading-condensed text-dark" style="color: var(--c-display-top)">
+                    Screening Tonight
+                  </h3>
+                  <BodyText size="small">
+                    <p>
+                      Body copy stays black on paper for contrast. Accent links use the theme's{' '}
+                      <a href="#sg-themes">accessible accent colour</a>.
+                    </p>
+                  </BodyText>
+                  <div class="flex flex-wrap gap-2 pt-1">
+                    <span class="bg-primary px-3 py-1.5 font-typewriter text-sm text-offwhite" style={t.id === 'uts' ? 'background: var(--c-text-accent)' : undefined}>
+                      Get tickets
+                    </span>
+                    <span class="border border-ink px-3 py-1.5 font-typewriter text-sm">Program</span>
+                  </div>
+                </div>
+              </article>
+            );
+          })
+        }
+      </div>
+      <BodyText size="small" class="mt-6">
+        <p>
+          Contrast tokens: <code>--c-display-top</code>, <code>--c-display-bottom</code> (titles, ≥3:1) and
+          <code>--c-text-accent</code> (small text, ≥4.5:1). UTS pink fails on paper, so its text tokens use a derived
+          magenta <code>#A3166F</code>. Light colours and beige are for fills and overlays only, never for text.
+        </p>
+      </BodyText>
+    </section>
+
+    <!-- ============ TYPOGRAPHY ============ -->
+    <section aria-labelledby="sg-type" class="mb-24">
+      <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4 border-b border-ink pb-3">
+        <h2 id="sg-type" class="heading-condensed">02 · Typography</h2>
+        <Kicker as="span">Missing files fall back automatically</Kicker>
+      </div>
+
+      <div class="flex flex-col">
+        {
+          fonts.map((f) => {
+            const sample = fontSamples[f.cssVar];
+            return (
+              <div class="grid gap-4 border-b border-ink/30 py-8 md:grid-cols-[18rem_1fr]">
+                <div class="flex flex-col gap-1.5">
+                  <Kicker tone="accent">{f.role}</Kicker>
+                  <p class="m-0 text-xl font-medium">{f.family}</p>
+                  <code class="font-typewriter text-xs">var({f.cssVar})</code>
+                  <p class="m-0 font-typewriter text-xs">Fallback: {f.fallback}</p>
+                  <p class="m-0 font-typewriter text-xs">
+                    {f.google ? (
+                      <span>Google Fonts</span>
+                    ) : f.loaded ? (
+                      <span>✓ File loaded</span>
+                    ) : (
+                      <span style="color: var(--c-text-accent)">
+                        ✕ Missing: {f.files.map((x) => x.file).join(', ')} (showing fallback)
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <p
+                  class:list={['m-0 leading-[0.95] break-words', sample.size]}
+                  style={`font-family: var(${f.cssVar}); ${sample.transform ? `text-transform: ${sample.transform};` : ''}`}
+                >
+                  {sample.text}
+                </p>
+              </div>
+            );
+          })
+        }
+      </div>
+
+      <div class="mt-16 grid gap-12 lg:grid-cols-2">
+        <div class="flex flex-col gap-6">
+          <Kicker rule>Components</Kicker>
+          <DisplayTitle lines={['Main', 'Screening']} tone="dark" size="lg" />
+          <DisplayTitle lines={['Short Film', 'Competition']} script="the" scriptAlign="end" scriptOffset="0em" size="md" />
+          <div class="flex flex-col gap-3">
+            <Kicker>Kicker · default</Kicker>
+            <Kicker tone="accent" rule>Kicker · accent + rules</Kicker>
+          </div>
+        </div>
+        <div class="flex flex-col gap-6">
+          <Kicker rule>Body text</Kicker>
+          <BodyText size="lead"><p>Lead: the festival returns to ACMI with a week of features, shorts and conversations.</p></BodyText>
+          <BodyText dropcap>
+            <p>
+              Base with drop cap. For more than two decades the Indonesian Film Festival has brought the archipelago's
+              cinema to Melbourne, run entirely by students who give their evenings and weekends to it.
+            </p>
+            <p>Each event carries its own colour, but the paper underneath stays the same.</p>
+          </BodyText>
+          <BodyText size="small"><p>Small: captions, credits, fine print and footnotes.</p></BodyText>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PLACEHOLDERS ============ -->
+    <section aria-labelledby="sg-media">
+      <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4 border-b border-ink pb-3">
+        <h2 id="sg-media" class="heading-condensed">03 · Media placeholders</h2>
+        <Kicker as="span">{mediaKeys.length} keys · src/content/media.json</Kicker>
+      </div>
+
+      <div class="grid items-start gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          mediaKeys.map((key) => {
+            const m = media[key];
+            return (
+              <figure class="m-0 flex flex-col gap-2">
+                <Media id={key} />
+                <figcaption class="font-typewriter text-xs leading-snug">
+                  <strong class="font-normal" style="color: var(--c-text-accent)">{key}</strong> · {m.type} · {m.ratio}
+                  {mediaDelivered(key) ? (getHalftone(key) ? ' · ✓ halftone' : ' · ✓ file present') : ' · placeholder'}
+                  <br />
+                  {m.location}
+                  <br />
+                  Recommended: {m.recommended}
+                </figcaption>
+              </figure>
+            );
+          })
+        }
+      </div>
+
+      <div class="mt-12 grid gap-6 md:grid-cols-4">
+        {
+          themes.map((t) => (
+            <div data-theme={t.id} class="flex flex-col gap-2">
+              <Media id="trailer-main" />
+              <Kicker as="span">{t.name} tint</Kicker>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+    <!-- ============ HALFTONE PIPELINE ============ -->
+    <section aria-labelledby="sg-halftone" class="mt-24">
+      <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4 border-b border-ink pb-3">
+        <h2 id="sg-halftone" class="heading-condensed">04 · Halftone pipeline</h2>
+        <Kicker as="span">
+          npm run halftone · dot {halftoneConfig.dotSize}px · {halftoneConfig.angle}° · fade {Math.round(halftoneConfig.fade * 100)}%
+        </Kicker>
+      </div>
+
+      {
+        halftoneKeys.length === 0 ? (
+          <BodyText>
+            <p>
+              No photos processed yet. Drop a photo named after its media key into <code>src/assets/raw</code> (e.g.{' '}
+              <code>hero-home.jpg</code>) and run <code>npm run halftone</code>. It also runs automatically before{' '}
+              <code>npm run dev</code> and <code>npm run build</code>.
+            </p>
+          </BodyText>
+        ) : (
+          halftoneKeys.map((key) => (
+            <div class="mb-16">
+              <Kicker tone="accent" class="mb-4">{key}</Kicker>
+              <div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+                {toneDemos.map((tone) => (
+                  <figure class="m-0 flex flex-col gap-2">
+                    <Media id={key} tone={tone} sizes="(min-width: 1280px) 16vw, (min-width: 768px) 33vw, 50vw" />
+                    <figcaption class="font-typewriter text-xs">tone="{tone}"</figcaption>
+                  </figure>
+                ))}
+                <figure class="m-0 flex flex-col gap-2" data-theme="uts">
+                  <Media id={key} />
+                  <figcaption class="font-typewriter text-xs">tone="theme" inside data-theme="uts"</figcaption>
+                </figure>
+              </div>
+            </div>
+          ))
+        )
+      }
+    </section>
+    <!-- ============ MOTION ============ -->
+    <section aria-labelledby="sg-motion" class="mt-24">
+      <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4 border-b border-ink pb-3">
+        <h2 id="sg-motion" class="heading-condensed">05 · Motion</h2>
+        <Kicker as="span">data-reveal · kill switch in the footer</Kicker>
+      </div>
+      <BodyText class="mb-10">
+        <p>
+          Add <code>data-reveal="type"</code> to any element to animate it in when it scrolls into view. Options:{' '}
+          <code>data-reveal-delay="0.2"</code>, <code>data-reveal-children</code> (stagger each child) and{' '}
+          <code>data-reveal-stagger="0.1"</code>. With JS off, reduced motion, or the footer toggle off, everything is
+          simply visible.
+        </p>
+      </BodyText>
+
+      <div class="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+        {
+          revealDemos.map((demo) => (
+            <article class="flex flex-col gap-4 border border-ink/40 p-5">
+              <div class="flex items-center justify-between gap-3">
+                <Kicker tone="accent">{demo.type}</Kicker>
+                <button type="button" class="btn btn--ghost cursor-pointer text-xs" data-reveal-replay={`demo-${demo.type}`} hidden>
+                  Replay
+                </button>
+              </div>
+              <div class="min-h-56">
+                {demo.type === 'fade-up' && (
+                  <div id="demo-fade-up" data-reveal="fade-up" class="flex flex-col gap-3">
+                    <h3 class="heading-condensed">Doors open 6 PM</h3>
+                    <BodyText size="small"><p>Rises into place. The default for blocks of copy, cards and buttons.</p></BodyText>
+                  </div>
+                )}
+                {demo.type === 'misregister' && (
+                  <div id="demo-misregister" data-reveal="misregister">
+                    <DisplayTitle lines={['Out of', 'Register']} size="lg" />
+                  </div>
+                )}
+                {demo.type === 'typewriter' && (
+                  <p id="demo-typewriter" data-reveal="typewriter" class="m-0 font-typewriter text-xl leading-relaxed">
+                    Fri 19 Mar · 7:00 PM · ACMI Cinema 1 · Opening night: Senandika
+                  </p>
+                )}
+                {demo.type === 'fold' && (
+                  <div id="demo-fold" data-reveal="fold" class="clipping__paper flex flex-col gap-2 p-5">
+                    <span class="font-typewriter text-xs uppercase">Classifieds</span>
+                    <p class="m-0 font-condensed text-2xl uppercase">Wanted: one 16mm projector</p>
+                    <p class="m-0 text-sm">Unfolds from the top edge like a newspaper.</p>
+                  </div>
+                )}
+                {demo.type === 'halftone-grow' && (
+                  <div id="demo-halftone-grow" data-reveal="halftone-grow">
+                    <Media id="about-hero" />
+                  </div>
+                )}
+                {demo.type === 'children' && (
+                  <ul id="demo-children" data-reveal="fade-up" data-reveal-children data-reveal-stagger="0.12" class="m-0 flex list-none flex-col gap-2 p-0">
+                    {themes.map((t) => (
+                      <li data-theme={t.id} class="flex items-center gap-3 border-b border-ink/30 pb-2">
+                        <span class="chip">{t.name}</span>
+                        <span class="font-condensed text-xl uppercase">{t.event}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <code class="font-typewriter text-xs">{demo.code}</code>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+</BaseLayout>

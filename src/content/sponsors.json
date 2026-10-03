@@ -1,0 +1,15 @@
+{
+  "$comment": "PLACEHOLDER sponsors. `tier` is major | partner | community. `logo` is an optional media key (set \"halftone\": false on it in media.json); without one, the name is shown as a wordmark.",
+  "items": [
+    { "id": "major-a", "name": "Major Sponsor A", "tier": "major", "url": "#", "logo": null },
+    { "id": "major-b", "name": "Major Sponsor B", "tier": "major", "url": "#", "logo": null },
+    { "id": "partner-c", "name": "Partner C", "tier": "partner", "url": "#", "logo": null },
+    { "id": "partner-d", "name": "Partner D", "tier": "partner", "url": "#", "logo": null },
+    { "id": "partner-e", "name": "Partner E", "tier": "partner", "url": "#", "logo": null },
+    { "id": "partner-f", "name": "Partner F", "tier": "partner", "url": "#", "logo": null },
+    { "id": "community-g", "name": "Community G", "tier": "community", "url": "#", "logo": null },
+    { "id": "community-h", "name": "Community H", "tier": "community", "url": "#", "logo": null },
+    { "id": "community-i", "name": "Community I", "tier": "community", "url": "#", "logo": null },
+    { "id": "community-j", "name": "Community J", "tier": "community", "url": "#", "logo": null }
+  ]
+}

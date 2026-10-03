@@ -1,0 +1,15 @@
+{
+  "$comment": "Settings for `npm run halftone`. Photos go in src/assets/raw, named after their media key (e.g. hero-home.jpg). Per-image overrides go under `overrides`.",
+  "input": "src/assets/raw",
+  "output": "public/images/halftone",
+  "maxWidth": 1600,
+  "dotSize": 8,
+  "angle": 45,
+  "contrast": 1.15,
+  "gamma": 1.0,
+  "fade": 0.28,
+  "smallWidths": [800],
+  "overrides": {
+    "hero-home": { "dotSize": 10 }
+  }
+}

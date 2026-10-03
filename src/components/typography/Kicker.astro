@@ -1,0 +1,16 @@
+---
+/** Small typewriter label (Special Elite) above titles and sections. */
+interface Props {
+  tone?: 'ink' | 'accent';
+  /** Short horizontal rules either side. */
+  rule?: boolean;
+  as?: 'p' | 'span' | 'div';
+  class?: string;
+}
+
+const { tone = 'ink', rule = false, as: Tag = 'p', class: className } = Astro.props;
+---
+
+<Tag class:list={['kicker', className]} data-tone={tone} data-rule={String(rule)}>
+  <slot />
+</Tag>

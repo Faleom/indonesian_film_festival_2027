@@ -1,0 +1,67 @@
+/*
+ * Event themes. Switch with data-theme on <body> (or any element: the
+ * styleguide scopes one theme per column).
+ *
+ * Palette columns come straight from the concept doc. The extra tokens
+ * below them exist for WCAG AA on the offwhite paper (#EAE4D8):
+ *   --c-display-top / --c-display-bottom : big titles (large text, needs 3:1)
+ *   --c-text-accent                      : small accent text (needs 4.5:1)
+ *   --c-on-primary                       : text on a primary fill (buttons, chips)
+ * Every theme uses palette colours except UTS, where pink fails on paper
+ * (#FA26B2 = 2.77:1), so it gets a deeper derived magenta (#A3166F = 5.72:1).
+ */
+:root,
+[data-theme='base'] {
+  --c-primary: #7200b8;
+  --c-dark: #632e89;
+  --c-light: #c59dd8;
+  --c-offwhite: #eae4d8;
+  --c-black: #000000;
+  --c-beige: #e1c892;
+
+  --c-display-top: var(--c-dark); /* 7.27:1 */
+  --c-display-bottom: var(--c-primary); /* 6.89:1 */
+  --c-text-accent: var(--c-primary);
+  --c-on-primary: var(--c-offwhite); /* 6.89:1 */
+}
+
+[data-theme='main'] {
+  --c-primary: #d80d1e;
+  --c-dark: #7b000b;
+  --c-light: #e47d86;
+
+  --c-display-top: var(--c-dark); /* 8.98:1 */
+  --c-display-bottom: var(--c-dark); /* prototype keeps both lines dark red */
+  --c-text-accent: var(--c-dark); /* primary is 4.15:1, large text only */
+  --c-on-primary: #ffffff; /* 5.17:1 (offwhite would be 4.15:1) */
+}
+
+[data-theme='uts'] {
+  --c-primary: #fa26b2;
+  --c-dark: #db41a6;
+  --c-light: #ffbee5;
+
+  --c-display-top: #a3166f; /* derived, 5.72:1 */
+  --c-display-bottom: var(--c-dark); /* 3.12:1, display sizes only */
+  --c-text-accent: #a3166f;
+  --c-on-primary: var(--c-black); /* 6.0:1, white on pink fails */
+}
+
+[data-theme='sfc'] {
+  --c-primary: #004bb6;
+  --c-dark: #273e60;
+  --c-light: #9dbed8;
+
+  --c-display-top: var(--c-dark); /* 8.53:1 */
+  --c-display-bottom: var(--c-primary); /* 6.18:1 */
+  --c-text-accent: var(--c-primary);
+  --c-on-primary: var(--c-offwhite); /* 6.18:1 */
+}
+
+/* Every theme shares offwhite, black and beige; re-declared so a nested
+   [data-theme] always resolves the full set. */
+[data-theme] {
+  --c-offwhite: #eae4d8;
+  --c-black: #000000;
+  --c-beige: #e1c892;
+}

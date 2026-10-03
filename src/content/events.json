@@ -1,0 +1,87 @@
+{
+  "$comment": "The three festival events, in journey order (SFC -> UTS -> Main). `id` is also the colour theme. `title` lines + `script` build the big display title. Media keys refer to media.json.",
+  "items": [
+    {
+      "id": "sfc",
+      "order": 1,
+      "slug": "sfc",
+      "name": "Short Film Competition",
+      "shortName": "SFC",
+      "title": [
+        "Short Film",
+        "Competition"
+      ],
+      "script": "the",
+      "kicker": "Event 01 · Short Film Competition",
+      "tagline": "New voices, short stories, one night.",
+      "summary": "Emerging Indonesian and Indonesian-Australian filmmakers compete with short films judged by an industry panel. Finalists are screened on the night and winners announced live.",
+      "description": [
+        "The Short Film Competition opens the festival journey. Every year we call for short films from students, first-time directors and independent filmmakers across Indonesia and Australia.",
+        "Finalists screen in front of a live audience and an industry jury. Awards include Best Short Film, Best Director and the Audience Choice Award, voted on the night.",
+        "Submission details for the 21st edition will be announced soon."
+      ],
+      "date": "2027-02-20",
+      "dateLabel": "Saturday 20 February 2027 (TBC)",
+      "time": "6:30 PM",
+      "venue": "ACMI, Federation Square",
+      "hero": "hero-sfc",
+      "trailer": "trailer-sfc",
+      "ticketUrl": "#",
+      "lineupTitle": "The finalists"
+    },
+    {
+      "id": "uts",
+      "order": 2,
+      "slug": "uts",
+      "name": "UTS Screening",
+      "shortName": "UTS",
+      "title": [
+        "UTS",
+        "Screening"
+      ],
+      "script": "the",
+      "kicker": "Event 02 · UTS Screening",
+      "tagline": "A night between the shorts and the main event.",
+      "summary": "A special screening event bridging the competition and the main festival: a feature film, conversation and community night.",
+      "description": [
+        "The UTS Screening is the second stop on the festival journey: a feature screening followed by a conversation with the filmmakers.",
+        "Full details for the 21st edition will be announced soon."
+      ],
+      "date": "2027-03-05",
+      "dateLabel": "Friday 5 March 2027 (TBC)",
+      "time": "7:00 PM",
+      "venue": "Venue TBC",
+      "hero": "hero-uts",
+      "trailer": null,
+      "ticketUrl": "#",
+      "lineupTitle": "The film"
+    },
+    {
+      "id": "main",
+      "order": 3,
+      "slug": "main-screening",
+      "name": "Main Screening",
+      "shortName": "Main",
+      "title": [
+        "Main",
+        "Screening"
+      ],
+      "script": "the",
+      "kicker": "Event 03 · Main Screening",
+      "tagline": "Three days of Indonesian cinema at ACMI.",
+      "summary": "The heart of the festival: feature films from Indonesia's most exciting filmmakers, panel discussions and Q&As at ACMI.",
+      "description": [
+        "The Main Screening is the festival's flagship weekend at ACMI: a curated program of recent Indonesian features, many screening in Australia for the first time.",
+        "Between screenings, join panels and Q&As with directors, actors and producers. All films screen with English subtitles."
+      ],
+      "date": "2027-03-19",
+      "dateLabel": "19 to 21 March 2027 (TBC)",
+      "time": "Various sessions",
+      "venue": "ACMI, Federation Square",
+      "hero": "hero-main-screening",
+      "trailer": "trailer-main",
+      "ticketUrl": "#",
+      "lineupTitle": "The lineup"
+    }
+  ]
+}

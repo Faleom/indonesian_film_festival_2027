@@ -1,0 +1,54 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+import MotionHead from '../components/layout/MotionHead.astro';
+import Fonts from '../components/layout/Fonts.astro';
+import Newsprint from '../components/layout/Newsprint.astro';
+import Navbar from '../components/layout/Navbar.astro';
+import Footer from '../components/layout/Footer.astro';
+import Toast from '../components/layout/Toast.astro';
+import site from '../content/site.json';
+
+export type Theme = 'base' | 'sfc' | 'uts' | 'main';
+
+interface Props {
+  title: string;
+  description?: string;
+  theme?: Theme;
+}
+
+const { title, description = site.description, theme = 'base' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <MotionHead />
+    <Fonts />
+    <ClientRouter />
+  </head>
+  <body class="paper" data-theme={theme}>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <Newsprint />
+    <div class="page">
+      <Navbar />
+      <main id="main">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+    <Toast />
+    <div class="grain" aria-hidden="true"></div>
+    <div class="riso-plate" aria-hidden="true"></div>
+    <script>
+      import '../scripts/motion/index';
+    </script>
+  </body>
+</html>

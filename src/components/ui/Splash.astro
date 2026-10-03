@@ -1,0 +1,18 @@
+---
+/** Organic ink blob for riso colour overlays. Colour = currentColor. */
+interface Props {
+  variant?: 1 | 2 | 3;
+  class?: string;
+}
+
+const { variant = 1, class: className } = Astro.props;
+const paths = {
+  1: 'M421 87c62 44 91 132 72 213-19 80-85 152-170 177-85 26-188 4-246-58C19 357 5 259 39 182 73 105 155 49 241 38c71-9 118 8 180 49z',
+  2: 'M389 62c71 31 116 116 106 197-9 82-73 160-154 194-80 34-178 25-238-31C42 366 20 275 47 196c27-79 104-146 186-158 59-9 99 0 156 24z',
+  3: 'M445 141c39 70 30 168-23 232-54 64-152 94-237 76C100 431 27 365 13 287 0 209 47 119 120 70 194 21 296 13 362 42c36 16 61 52 83 99z',
+};
+---
+
+<svg class={className} viewBox="0 0 512 512" aria-hidden="true" focusable="false">
+  <path fill="currentColor" d={paths[variant]}></path>
+</svg>

@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import TeamGrid from '../components/sections/TeamGrid.astro';
+import SectionHead from '../components/ui/SectionHead.astro';
+import BodyText from '../components/typography/BodyText.astro';
+import Kicker from '../components/typography/Kicker.astro';
+import pages from '../content/pages.json';
+import { getTeam } from '../lib/content';
+
+const page = pages.about;
+const team = await getTeam();
+---
+
+<BaseLayout title={page.metaTitle} description={page.metaDescription}>
+  <Hero title={page.title} script={page.script} kicker={page.kicker} media={page.hero} />
+
+  <section class="container-page grid gap-12 py-8 lg:grid-cols-[1.6fr_1fr] lg:gap-16" aria-label="Our story">
+    <BodyText size="lead" dropcap>
+      {page.story.map((p) => <p>{p}</p>)}
+    </BodyText>
+    <aside class="self-start border-y-[3px] border-double border-ink py-6" aria-labelledby="editions">
+      <h2 id="editions" class="kicker mb-4" data-tone="accent">{page.editionsTitle}</h2>
+      <ol class="m-0 flex list-none flex-col gap-4 p-0">
+        {
+          page.editions.map((ed) => (
+            <li class="grid grid-cols-[4.5rem_1fr] gap-3">
+              <span class="font-display text-4xl leading-none" style="color: var(--c-display-top)">{ed.label}</span>
+              <span>
+                <span class="block font-typewriter text-xs">{ed.year}</span>
+                <span class="font-condensed text-lg leading-tight uppercase">{ed.title}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </aside>
+  </section>
+
+  <section class="container-page py-16 md:py-24" aria-labelledby="team">
+    <SectionHead title={page.teamTitle} kicker={page.teamKicker} id="team" />
+    <TeamGrid members={team} />
+  </section>
+</BaseLayout>

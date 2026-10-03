@@ -1,0 +1,158 @@
+{
+  "$comment": "Copy for each page: hero title lines, script word, kicker, intro text, SEO title/description. Event pages take most of their copy from events.json.",
+  "home": {
+    "metaTitle": "21st Indonesian Film Festival · Melbourne",
+    "kicker": "Melbourne · March 2027 (TBC)",
+    "title": [
+      "Indonesian",
+      "Film Festival"
+    ],
+    "script": "the 21st",
+    "hero": "hero-home",
+    "intro": "A non-profit, student-run celebration of Indonesian cinema in Melbourne. Three events, one journey: from new voices in short film to the best of Indonesian features on the big screen.",
+    "journeyKicker": "The festival journey",
+    "journeyTitle": "Three events, one journey",
+    "trailerKicker": "Watch",
+    "trailerTitle": "Festival trailer",
+    "filmsKicker": "Now showing",
+    "filmsTitle": "Main Screening lineup",
+    "sponsorsKicker": "With thanks to",
+    "newsletterTitle": "Stay in the loop",
+    "newsletterText": "Program announcements, ticket releases and calls for volunteers, straight to your inbox."
+  },
+  "program": {
+    "metaTitle": "Program · IFF 21",
+    "metaDescription": "Full schedule of screenings, panels and Q&As at the 21st Indonesian Film Festival.",
+    "kicker": "All sessions · All events",
+    "title": [
+      "The",
+      "Program"
+    ],
+    "script": "full",
+    "hero": "program-hero",
+    "intro": "Every screening, panel and Q&A across the festival. Times are placeholders until the official program launch."
+  },
+  "faq": {
+    "metaTitle": "FAQ · IFF 21",
+    "metaDescription": "Tickets, venue, accessibility, films and getting involved: answers to common questions about the Indonesian Film Festival.",
+    "kicker": "Need to know",
+    "title": [
+      "Frequently",
+      "Questions"
+    ],
+    "script": "Asked",
+    "hero": "faq-hero",
+    "intro": "Can't find what you're looking for?",
+    "contactPrompt": "Email us and we'll get back to you.",
+    "contactSubjects": [
+      "Tickets",
+      "Accessibility",
+      "Films & submissions",
+      "Sponsorship",
+      "Media",
+      "Other"
+    ],
+    "contactTitle": "Ask us directly"
+  },
+  "about": {
+    "metaTitle": "About · IFF 21",
+    "metaDescription": "The story of the Indonesian Film Festival, a non-profit, student-run festival in Melbourne.",
+    "kicker": "Since the first edition",
+    "title": [
+      "About",
+      "the Festival"
+    ],
+    "script": "all",
+    "hero": "about-hero",
+    "story": [
+      "The Indonesian Film Festival (IFF) is a non-profit festival run entirely by students in Melbourne. For more than two decades, it has brought the best of Indonesian cinema to Australian audiences, usually at ACMI in Federation Square.",
+      "Each year a new committee programs the festival from scratch: watching hundreds of films, inviting filmmakers, and building a week of screenings, conversations and community.",
+      "We exist to share Indonesian stories, support emerging filmmakers through our Short Film Competition, and connect the Indonesian community in Melbourne with everyone curious about its cinema."
+    ],
+    "editionsTitle": "Editions",
+    "editions": [
+      {
+        "label": "20th",
+        "year": "2026",
+        "title": "Arunika: The Ascending Light of Cinema"
+      },
+      {
+        "label": "21st",
+        "year": "2027",
+        "title": "Theme TBC"
+      }
+    ],
+    "teamKicker": "The committee",
+    "teamTitle": "Who makes it happen"
+  },
+  "sponsors": {
+    "metaTitle": "Sponsors · IFF 21",
+    "metaDescription": "The partners who make the Indonesian Film Festival possible, and how to join them.",
+    "kicker": "Partners & supporters",
+    "title": [
+      "Our",
+      "Sponsors"
+    ],
+    "script": "with thanks",
+    "hero": "sponsors-hero",
+    "intro": "The festival is free of profit, not of cost. These partners make it possible.",
+    "tiers": {
+      "major": "Major partners",
+      "partner": "Partners",
+      "community": "Community partners"
+    },
+    "ctaTitle": "Become a sponsor",
+    "ctaText": "Put your brand in front of a passionate audience of film lovers, students and the Indonesian community in Melbourne. Packages for every size of organisation.",
+    "ctaButton": "Email the sponsorship team",
+    "deckLabel": "Sponsorship deck (coming soon)"
+  },
+  "volunteer": {
+    "metaTitle": "Volunteer · IFF 21",
+    "metaDescription": "Join the crew behind the Indonesian Film Festival in Melbourne.",
+    "kicker": "Join the crew",
+    "title": [
+      "Volunteer",
+      "With Us"
+    ],
+    "script": "come",
+    "hero": "volunteer-hero",
+    "intro": "The festival runs on volunteers. Meet filmmakers, see films for free, and get real event experience.",
+    "rolesTitle": "Roles",
+    "roles": [
+      {
+        "title": "Front of house",
+        "text": "Welcome guests, scan tickets and keep sessions running on time."
+      },
+      {
+        "title": "Guest relations",
+        "text": "Look after visiting filmmakers and panellists during the festival."
+      },
+      {
+        "title": "Photo & video",
+        "text": "Capture the festival for our socials and archive."
+      },
+      {
+        "title": "Bump in / bump out",
+        "text": "Help set up and pack down signage, merch and the foyer."
+      }
+    ],
+    "perksTitle": "What you get",
+    "perks": [
+      "Free entry to sessions you're not rostered on",
+      "Festival shirt and lanyard",
+      "Volunteer certificate and reference",
+      "Closing night party"
+    ],
+    "formTitle": "Register your interest"
+  },
+  "notFound": {
+    "metaTitle": "Page not found · IFF 21",
+    "kicker": "Error 404",
+    "title": [
+      "Lost",
+      "the Reel"
+    ],
+    "script": "we",
+    "text": "This page has been cut from the final edit."
+  }
+}

@@ -1,0 +1,21 @@
+---
+/** Section title row with a double newspaper rule underneath. */
+import Kicker from '../typography/Kicker.astro';
+
+interface Props {
+  title: string;
+  kicker?: string;
+  id?: string;
+  as?: 'h2' | 'h3';
+}
+
+const { title, kicker, id, as: Tag = 'h2' } = Astro.props;
+---
+
+<div class="section-head">
+  <div class="flex flex-col gap-2">
+    {kicker && <Kicker tone="accent">{kicker}</Kicker>}
+    <Tag id={id} class="heading-condensed">{title}</Tag>
+  </div>
+  <slot />
+</div>

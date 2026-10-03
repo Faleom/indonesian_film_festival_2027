@@ -1,0 +1,23 @@
+---
+/** Link styled as a button. `primary` = theme colour fill, `ghost` = outline. */
+interface Props {
+  href: string;
+  variant?: 'primary' | 'ghost';
+  /** Opens in a new tab (external ticketing). */
+  external?: boolean;
+  class?: string;
+}
+
+const { href, variant = 'primary', external = false, class: className } = Astro.props;
+const isExternal = external && href !== '#';
+---
+
+<a
+  href={href}
+  class:list={['btn', `btn--${variant}`, className]}
+  target={isExternal ? '_blank' : undefined}
+  rel={isExternal ? 'noopener' : undefined}
+>
+  <slot />
+  {isExternal && <span class="sr-only">(opens in a new tab)</span>}
+</a>

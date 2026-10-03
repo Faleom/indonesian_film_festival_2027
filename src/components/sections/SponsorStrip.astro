@@ -1,0 +1,47 @@
+---
+/** Sponsors as wordmarks (or logos once provided). `tiered` groups by tier. */
+import type { CollectionEntry } from 'astro:content';
+import Media from '../media/Media.astro';
+import Kicker from '../typography/Kicker.astro';
+
+type Tier = CollectionEntry<'sponsors'>['data']['tier'];
+
+interface Props {
+  sponsors: CollectionEntry<'sponsors'>[];
+  tiered?: boolean;
+  tierLabels?: Record<Tier, string>;
+}
+
+const { sponsors, tiered = false, tierLabels } = Astro.props;
+const tiers: Tier[] = ['major', 'partner', 'community'];
+const groups = tiered
+  ? tiers.map((tier) => ({ tier, items: sponsors.filter((s) => s.data.tier === tier) })).filter((g) => g.items.length)
+  : [{ tier: undefined, items: sponsors }];
+const cols: Record<Tier, string> = {
+  major: 'sm:grid-cols-2',
+  partner: 'grid-cols-2 lg:grid-cols-4',
+  community: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5',
+};
+---
+
+<div class="flex flex-col gap-12">
+  {
+    groups.map((g) => (
+      <div>
+        {g.tier && tierLabels && <Kicker rule class="mb-5">{tierLabels[g.tier]}</Kicker>}
+        <ul class:list={['m-0 grid list-none gap-3 p-0', g.tier ? cols[g.tier] : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5']}>
+          {g.items.map((s) => (
+            <li>
+              <a
+                href={s.data.url}
+                class:list={['wordmark', tiered && s.data.tier === 'major' && 'wordmark--major']}
+              >
+                {s.data.logo ? <Media id={s.data.logo} alt={s.data.name} /> : s.data.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</div>

@@ -1,0 +1,19 @@
+---
+/** Video in a film-strip frame. Placeholder-aware through <Media>. */
+import Media from '../media/Media.astro';
+
+interface Props {
+  id: string;
+  caption?: string;
+  class?: string;
+}
+
+const { id, caption, class: className } = Astro.props;
+---
+
+<figure class:list={['m-0', className]}>
+  <div class="film-strip">
+    <Media id={id} />
+  </div>
+  {caption && <figcaption class="mt-3 font-typewriter text-sm">{caption}</figcaption>}
+</figure>

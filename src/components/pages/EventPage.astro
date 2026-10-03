@@ -1,0 +1,117 @@
+---
+/** Shared template for /sfc, /uts and /main-screening. All copy comes from events.json. */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../sections/Hero.astro';
+import FilmCard from '../sections/FilmCard.astro';
+import ScheduleTable from '../sections/ScheduleTable.astro';
+import VideoPlayer from '../sections/VideoPlayer.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import Button from '../ui/Button.astro';
+import BodyText from '../typography/BodyText.astro';
+import Kicker from '../typography/Kicker.astro';
+import site from '../../content/site.json';
+import { eventHref, getEvent, getEvents, getFilms, getSessions, type EventId } from '../../lib/content';
+
+interface Props {
+  id: EventId;
+}
+
+const event = await getEvent(Astro.props.id);
+const e = event.data;
+const [films, sessions, events] = await Promise.all([getFilms(event.id as EventId), getSessions({ event: event.id as EventId }), getEvents()]);
+const index = events.findIndex((x) => x.id === event.id);
+const next = events[index + 1];
+const prev = events[index - 1];
+---
+
+<BaseLayout title={`${e.name} · ${site.shortName} ${site.editionNumber}`} description={e.summary} theme={event.id as EventId}>
+  <Hero
+    title={e.title}
+    script={e.script}
+    kicker={e.kicker}
+    intro={e.tagline}
+    media={e.hero}
+    meta={[
+      { label: 'Date', value: e.dateLabel },
+      { label: 'Time', value: e.time },
+      { label: 'Venue', value: e.venue },
+    ]}
+  >
+    <Fragment slot="actions">
+      <Button href={e.ticketUrl} external>Get tickets</Button>
+      <Button href="#schedule" variant="ghost">Schedule</Button>
+    </Fragment>
+  </Hero>
+
+  <section class="container-page py-12 md:py-20" aria-labelledby="about-event">
+    <SectionHead title={`About ${e.shortName}`} id="about-event" />
+    <div class="grid gap-12 lg:grid-cols-[1.6fr_1fr]">
+      <BodyText size="lead" dropcap>
+        {e.description.map((p) => <p>{p}</p>)}
+      </BodyText>
+      <aside class="self-start border border-ink p-6" aria-label="Event details">
+        <Kicker tone="accent" class="mb-4">At a glance</Kicker>
+        <dl class="m-0 grid gap-3 font-typewriter text-sm">
+          <div><dt class="uppercase tracking-widest">Date</dt><dd class="m-0 text-base">{e.dateLabel}</dd></div>
+          <div><dt class="uppercase tracking-widest">Time</dt><dd class="m-0 text-base">{e.time}</dd></div>
+          <div><dt class="uppercase tracking-widest">Venue</dt><dd class="m-0 text-base">{e.venue}</dd></div>
+          <div><dt class="uppercase tracking-widest">Films</dt><dd class="m-0 text-base">{films.length}</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+  {
+    e.trailer && (
+      <section class="container-page py-12 md:py-20" aria-labelledby="trailer">
+        <SectionHead title="Trailer" kicker="Watch" id="trailer" />
+        <VideoPlayer id={e.trailer} class="mx-auto max-w-5xl" />
+      </section>
+    )
+  }
+
+  {
+    films.length > 0 && (
+      <section class="container-page py-12 md:py-20" aria-labelledby="lineup">
+        <SectionHead title={e.lineupTitle} kicker={`${films.length} ${films.length === 1 ? 'film' : 'films'}`} id="lineup" />
+        <ul class="clipping-grid m-0 grid list-none grid-cols-2 gap-x-4 gap-y-10 p-0 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-3 xl:grid-cols-4">
+          {films.map((film) => (
+            <li>
+              <FilmCard film={film} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    sessions.length > 0 && (
+      <section class="container-page py-12 md:py-20" aria-labelledby="schedule-title" id="schedule">
+        <SectionHead title="Schedule" kicker={e.dateLabel} id="schedule-title">
+          <a href="/program" class="font-typewriter text-sm uppercase underline underline-offset-4">Full program →</a>
+        </SectionHead>
+        <ScheduleTable sessions={sessions} showEvent={false} headingLevel="h3" />
+      </section>
+    )
+  }
+
+  <nav class="container-page grid gap-4 py-12 md:grid-cols-2" aria-label="Festival journey">
+    {
+      prev ? (
+        <a href={eventHref(prev)} data-theme={prev.id} class="group flex flex-col gap-2 border border-ink p-6 text-ink no-underline hover:bg-primary hover:text-on-primary">
+          <span class="font-typewriter text-xs tracking-widest uppercase">← Previously on the journey</span>
+          <span class="font-display text-4xl leading-none uppercase md:text-5xl">{prev.data.name}</span>
+        </a>
+      ) : <span class="hidden md:block" />
+    }
+    {
+      next && (
+        <a href={eventHref(next)} data-theme={next.id} class="group flex flex-col gap-2 border border-ink p-6 text-right text-ink no-underline hover:bg-primary hover:text-on-primary">
+          <span class="font-typewriter text-xs tracking-widest uppercase">Next on the journey →</span>
+          <span class="font-display text-4xl leading-none uppercase md:text-5xl">{next.data.name}</span>
+        </a>
+      )
+    }
+  </nav>
+</BaseLayout>

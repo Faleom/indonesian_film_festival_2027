@@ -1,0 +1,157 @@
+/*
+ * Motion styles. Everything here is gated on html[data-motion='on'] or the
+ * classes the motion scripts add, so with JS off or motion off the site is
+ * fully static and readable.
+ */
+
+/* ---------- Reveal starting state (only while the engine is expected) ---------- */
+html.motion-js [data-reveal]:not([data-reveal-children]):not(.is-revealed),
+html.motion-js [data-reveal-children]:not(.is-revealed) > * {
+  opacity: 0;
+}
+
+/* misregister: two colour plates offset by --mis (1 = out of register, 0 = aligned) */
+.reveal-mis {
+  filter:
+    drop-shadow(calc(var(--mis, 0) * 7px) calc(var(--mis, 0) * -5px) 0 color-mix(in srgb, var(--c-primary) 80%, transparent))
+    drop-shadow(calc(var(--mis, 0) * -6px) calc(var(--mis, 0) * 4px) 0 color-mix(in srgb, var(--c-light) 85%, transparent));
+}
+
+/* halftone-grow: dots of radius --ht on a 16px grid; >= 11.4px is solid */
+.reveal-ht {
+  -webkit-mask: radial-gradient(circle, #000 calc(var(--ht, 0px) - 0.5px), transparent var(--ht, 0px)) 0 0 / 16px 16px;
+  mask: radial-gradient(circle, #000 calc(var(--ht, 0px) - 0.5px), transparent var(--ht, 0px)) 0 0 / 16px 16px;
+}
+
+/* typewriter caret on the character being typed */
+.tw-caret {
+  box-shadow: 0.08em 0 0 0 var(--c-text-accent);
+}
+
+/* ---------- Animated grain: the noise tile jitters at ~8fps, like film ---------- */
+html[data-motion='on'] .grain {
+  inset: -50%;
+  animation: grain-jitter 1s steps(8) infinite;
+}
+
+@keyframes grain-jitter {
+  0% { transform: translate(0, 0); }
+  12% { transform: translate(-3%, -5%); }
+  25% { transform: translate(4%, 2%); }
+  37% { transform: translate(-6%, 4%); }
+  50% { transform: translate(2%, -6%); }
+  62% { transform: translate(-2%, 6%); }
+  75% { transform: translate(5%, -2%); }
+  87% { transform: translate(-5%, -3%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ---------- Halftone cursor + ink trail (desktop only, see cursor.ts) ---------- */
+html.has-cursor,
+html.has-cursor a,
+html.has-cursor button,
+html.has-cursor summary,
+html.has-cursor label {
+  cursor: none;
+}
+
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10001;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle, var(--c-primary) 0 1.6px, transparent 2.1px) 0 0 / 5px 5px;
+  border: 1.5px solid var(--c-primary);
+  mix-blend-mode: multiply;
+  transition: opacity 0.2s ease, width 0.2s ease, height 0.2s ease, margin 0.2s ease, background-color 0.2s ease;
+}
+.cursor.is-visible { opacity: 1; }
+.cursor.is-hover {
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  background-color: color-mix(in srgb, var(--c-primary) 25%, transparent);
+}
+.cursor.is-down { width: 18px; height: 18px; margin: -9px 0 0 -9px; }
+.cursor.is-field { opacity: 0; }
+
+.cursor-trail {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.8;
+}
+
+/* ---------- Page transition: riso plate ----------
+ * The next page's theme colour prints over the old page as halftone dots that
+ * grow to solid, then the new page is revealed slightly out of register and
+ * settles. The plate element (.riso-plate in BaseLayout) only displays while
+ * html[data-printing] is set during a navigation.
+ */
+@property --plate-dot {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+.riso-plate {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background: var(--c-primary);
+  view-transition-name: riso-plate;
+}
+html[data-printing] .riso-plate { display: block; }
+
+html[data-motion='on']::view-transition-old(root) {
+  animation: riso-old 0.9s linear both;
+}
+html[data-motion='on']::view-transition-new(root) {
+  animation: riso-new 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+html[data-motion='on']::view-transition-new(riso-plate) {
+  mix-blend-mode: multiply;
+  -webkit-mask: radial-gradient(circle, #000 calc(var(--plate-dot) - 0.5px), transparent var(--plate-dot)) 0 0 / 18px 18px;
+  mask: radial-gradient(circle, #000 calc(var(--plate-dot) - 0.5px), transparent var(--plate-dot)) 0 0 / 18px 18px;
+  animation: riso-plate 0.9s ease-in-out both;
+}
+
+@keyframes riso-old {
+  0%, 48% { opacity: 1; }
+  52%, 100% { opacity: 0; }
+}
+@keyframes riso-new {
+  0%, 48% { opacity: 0; transform: translate(7px, -5px); }
+  52% { opacity: 1; transform: translate(7px, -5px); }
+  100% { opacity: 1; transform: translate(0, 0); }
+}
+@keyframes riso-plate {
+  0% { --plate-dot: 0px; }
+  45%, 55% { --plate-dot: 13px; }
+  100% { --plate-dot: 0px; }
+}
+
+/* ---------- Kill switch ---------- */
+html[data-motion='off'] *,
+html[data-motion='off'] *::before,
+html[data-motion='off'] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+html[data-motion='off']::view-transition-group(*),
+html[data-motion='off']::view-transition-old(*),
+html[data-motion='off']::view-transition-new(*) {
+  animation: none !important;
+}

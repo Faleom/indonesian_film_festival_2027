@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import ContactForm from '../components/forms/ContactForm.astro';
+import site from '../content/site.json';
+import pages from '../content/pages.json';
+import { getFaq } from '../lib/content';
+
+const page = pages.faq;
+const items = await getFaq();
+---
+
+<BaseLayout title={page.metaTitle} description={page.metaDescription}>
+  <Hero title={page.title} script={page.script} kicker={page.kicker} media={page.hero} />
+
+  <div class="container-page grid gap-16 lg:grid-cols-[1.6fr_1fr]">
+    <FaqAccordion items={items} />
+
+    <aside class="flex flex-col gap-5 self-start border border-ink p-6 md:p-8 lg:sticky lg:top-8" aria-labelledby="contact">
+      <h2 id="contact" class="heading-condensed">{page.contactTitle}</h2>
+      <p class="m-0">
+        {page.intro} {page.contactPrompt}
+        <a href={`mailto:${site.email}`} class="text-accent-text underline underline-offset-4">{site.email}</a>
+      </p>
+      <ContactForm />
+    </aside>
+  </div>
+</BaseLayout>

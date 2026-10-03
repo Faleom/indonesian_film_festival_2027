@@ -1,0 +1,36 @@
+---
+/**
+ * Emits @font-face only for font files that exist in /public/fonts.
+ * Missing files get a local()-only rule (uses the font if the visitor has it
+ * installed, never 404s), and the CSS stacks fall back to the Google Fonts.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import fontData from '../../content/fonts.json';
+
+const fontsDir = path.join(process.cwd(), 'public', 'fonts');
+
+const faces = fontData.fonts
+  .filter((f) => !f.google)
+  .flatMap((f) =>
+    f.files.map((file) => {
+      const exists = fs.existsSync(path.join(fontsDir, file.file));
+      const src = exists
+        ? `url('/fonts/${file.file}') format('woff2'), local('${f.family}')`
+        : `local('${f.family}')`;
+      return `@font-face{font-family:'${f.family}';src:${src};font-weight:${file.weight};font-style:${file.style};font-display:swap;}`;
+    }),
+  )
+  .join('\n');
+
+const preloads = fontData.fonts
+  .filter((f) => f.cssVar === '--ff-display' || f.cssVar === '--ff-body')
+  .flatMap((f) => f.files.slice(0, 1))
+  .filter((file) => fs.existsSync(path.join(fontsDir, file.file)));
+---
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href={fontData.googleFontsUrl} />
+{preloads.map((file) => <link rel="preload" href={`/fonts/${file.file}`} as="font" type="font/woff2" crossorigin />)}
+<style is:inline set:html={faces}></style>

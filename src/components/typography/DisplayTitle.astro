@@ -1,0 +1,73 @@
+---
+/**
+ * Huge Rushford title, with an optional Military Script word overlapping it
+ * at an angle in beige/gold (the FAQ prototype treatment).
+ *
+ *   <DisplayTitle lines={['Frequently', 'Questions']} script="Asked" />
+ *
+ * The script word sits between `lines[scriptAfter - 1]` and `lines[scriptAfter]`
+ * in the DOM, so screen readers hear "Frequently Asked Questions".
+ */
+interface Props {
+  lines: string[];
+  script?: string;
+  /** Index of the line the script word precedes. Default 1. */
+  scriptAfter?: number;
+  scriptAlign?: 'start' | 'center' | 'end';
+  /** Rotation in degrees. Default -14. */
+  scriptRotate?: number;
+  /** Horizontal nudge for the script word, any CSS length. */
+  scriptOffset?: string;
+  /** split = top line dark, bottom line primary (per theme tokens). */
+  tone?: 'split' | 'dark' | 'primary';
+  size?: 'xl' | 'lg' | 'md';
+  align?: 'start' | 'center' | 'end';
+  as?: 'h1' | 'h2' | 'h3' | 'p';
+  class?: string;
+}
+
+const {
+  lines,
+  script,
+  scriptAfter = 1,
+  scriptAlign = 'start',
+  scriptRotate,
+  scriptOffset,
+  tone = 'split',
+  size = 'xl',
+  align = 'start',
+  as: Tag = 'h2',
+  class: className,
+} = Astro.props;
+
+const style = [
+  scriptRotate !== undefined && `--script-rotate: ${scriptRotate}deg`,
+  scriptOffset && `--script-x: ${scriptOffset}`,
+]
+  .filter(Boolean)
+  .join('; ');
+---
+
+<div class:list={['display-title-wrap', className]}>
+  <Tag
+    class="display-title"
+    data-tone={tone}
+    data-size={size}
+    data-align={align}
+    data-script-align={scriptAlign}
+    style={style || undefined}
+  >
+    {
+      lines.map((line, i) => (
+        <Fragment>
+          {script && i === scriptAfter && (
+            <span class="display-title__script-slot">
+              <span class="display-title__script"> {script} </span>
+            </span>
+          )}
+          <span class="display-title__line">{line}</span>{' '}
+        </Fragment>
+      ))
+    }
+  </Tag>
+</div>

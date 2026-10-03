@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DisplayTitle from '../components/typography/DisplayTitle.astro';
+import Kicker from '../components/typography/Kicker.astro';
+import Button from '../components/ui/Button.astro';
+import pages from '../content/pages.json';
+
+const page = pages.notFound;
+---
+
+<BaseLayout title={page.metaTitle}>
+  <section class="container-page flex min-h-[60vh] flex-col justify-center gap-6 py-20">
+    <Kicker rule tone="accent">{page.kicker}</Kicker>
+    <DisplayTitle as="h1" lines={page.title} script={page.script} />
+    <p class="m-0 text-lg">{page.text}</p>
+    <div><Button href="/">Back to home</Button></div>
+  </section>
+</BaseLayout>

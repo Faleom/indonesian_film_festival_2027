@@ -1,0 +1,40 @@
+---
+/** FAQ grouped by category. Native <details>, so it works without JS. */
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  items: CollectionEntry<'faq'>[];
+}
+
+const { items } = Astro.props;
+const categories = [...new Set(items.map((i) => i.data.category))];
+---
+
+<div class="flex flex-col gap-14">
+  {
+    categories.map((category) => (
+      <section aria-labelledby={`faq-${category.toLowerCase().replace(/\W+/g, '-')}`}>
+        <h2
+          id={`faq-${category.toLowerCase().replace(/\W+/g, '-')}`}
+          class="kicker mb-2 border-b-[3px] border-double border-ink pb-2"
+          data-tone="accent"
+        >
+          {category}
+        </h2>
+        {items
+          .filter((i) => i.data.category === category)
+          .map((i) => (
+            <details class="faq-item" id={i.id}>
+              <summary>
+                <span>{i.data.question}</span>
+                <span class="faq-item__icon" aria-hidden="true">+</span>
+              </summary>
+              <div class="faq-item__answer body-text" data-size="base">
+                <p>{i.data.answer}</p>
+              </div>
+            </details>
+          ))}
+      </section>
+    ))
+  }
+</div>

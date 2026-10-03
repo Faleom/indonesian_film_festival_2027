@@ -1,0 +1,23 @@
+---
+/**
+ * Form shell. UI only for now: a valid submit shows the "coming soon" toast
+ * (see layout/Toast.astro) instead of sending anything.
+ * data-astro-reload stops the page router from treating the submit as a navigation.
+ * TODO(backend): point `action` at the real endpoint and drop data-coming-soon.
+ */
+interface Props {
+  name: string;
+  submitLabel: string;
+  class?: string;
+}
+
+const { name, submitLabel, class: className } = Astro.props;
+---
+
+<form class:list={['flex flex-col gap-5', className]} name={name} method="get" action="#" data-coming-soon data-astro-reload>
+  <slot />
+  <div class="flex flex-wrap items-center gap-4">
+    <button type="submit" class="btn btn--primary cursor-pointer">{submitLabel}</button>
+    <noscript><span class="font-typewriter text-xs">Online forms are coming soon.</span></noscript>
+  </div>
+</form>

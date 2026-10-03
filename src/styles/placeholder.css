@@ -1,0 +1,149 @@
+/*
+ * Halftone placeholder for media that hasn't been delivered yet.
+ *
+ * How the dots work: a blurry radial-dot grid is multiplied with a tonal
+ * "subject" gradient, then thresholded with contrast() — darker tones give
+ * bigger dots, like a real halftone screen. A primary-colour layer in
+ * `screen` mode turns the black dots into the theme colour, and the whole
+ * group is multiplied onto the paper so white disappears.
+ */
+.media {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--ratio, 16 / 9);
+  overflow: hidden;
+}
+
+.media > img,
+.media > video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ph {
+  isolation: isolate;
+  background: var(--c-offwhite);
+  outline: 1px solid rgb(0 0 0 / 0.25);
+  outline-offset: -1px;
+}
+
+.ph__ink {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+  mix-blend-mode: multiply;
+}
+
+.ph__dots {
+  position: absolute;
+  inset: -4px;
+  background:
+    radial-gradient(circle at 50% 50%, #000 0, #fff var(--dot-blur, 3.6px)) 0 0 / var(--dot, 8px) var(--dot, 8px),
+    var(--ph-tone);
+  background-blend-mode: multiply;
+  filter: contrast(14);
+}
+
+.ph__tint {
+  position: absolute;
+  inset: 0;
+  background: var(--c-primary);
+  mix-blend-mode: screen;
+}
+
+/* Default "subject": a figure-like blob that melts into solid colour at the
+   bottom edge, echoing the FAQ prototype. */
+.ph {
+  --ph-tone:
+    linear-gradient(to top, #333 0%, #8a8a8a 16%, transparent 45%),
+    radial-gradient(ellipse 38% 50% at 54% 62%, #6a6a6a 0%, #a8a8a8 45%, transparent 75%),
+    radial-gradient(circle at 42% 34%, #707070 0%, #b0b0b0 12%, transparent 20%),
+    linear-gradient(115deg, #e0e0e0, #f6f6f6 60%, #d8d8d8);
+}
+
+.ph[data-type='video'] {
+  --ph-tone:
+    linear-gradient(to top, #222 0%, #666 18%, transparent 48%),
+    radial-gradient(ellipse 60% 50% at 50% 45%, #7a7a7a 0%, transparent 75%),
+    linear-gradient(#e6e6e6, #e6e6e6);
+}
+
+.ph__label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  max-width: calc(100% - 1.5rem);
+  transform: translate(-50%, -50%);
+  padding: 0.35em 0.7em;
+  font-family: var(--ff-typewriter);
+  font-size: clamp(0.6875rem, 1.6cqi + 0.4rem, 0.9375rem);
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--c-black);
+  background: var(--c-offwhite);
+  border: 1px solid var(--c-black);
+  box-shadow: 3px 3px 0 var(--c-primary);
+  overflow-wrap: anywhere;
+}
+
+.ph[data-type='video'] .ph__label {
+  top: auto;
+  bottom: 0.75rem;
+  transform: translateX(-50%);
+}
+
+.ph__play {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  z-index: 2;
+  width: clamp(2.75rem, 14cqi, 5.5rem);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--c-offwhite);
+  border: 2px solid var(--c-black);
+  box-shadow: 4px 4px 0 var(--c-primary);
+}
+
+.ph__play svg {
+  width: 38%;
+  margin-left: 8%;
+  fill: var(--c-black);
+}
+
+.media-wrap {
+  container-type: inline-size;
+}
+
+/* ---------- Processed halftone images (npm run halftone) ---------- */
+.media--halftone > img {
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+.media > video {
+  background: var(--c-offwhite);
+}
+
+/* tone="theme": black dots used as a mask over the theme primary, so one
+   file follows whatever data-theme is in scope. */
+.ht-mask {
+  background: var(--c-primary);
+  -webkit-mask: var(--ht-sm) center bottom / cover no-repeat;
+  mask: var(--ht-sm) center bottom / cover no-repeat;
+}
+
+@media (min-width: 48rem) {
+  .ht-mask {
+    -webkit-mask-image: var(--ht-lg);
+    mask-image: var(--ht-lg);
+  }
+}

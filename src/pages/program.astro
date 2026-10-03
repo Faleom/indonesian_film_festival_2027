@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import ScheduleTable from '../components/sections/ScheduleTable.astro';
+import pages from '../content/pages.json';
+import { eventHref, getEvents, getSessions } from '../lib/content';
+
+const page = pages.program;
+const [sessions, events] = await Promise.all([getSessions(), getEvents()]);
+---
+
+<BaseLayout title={page.metaTitle} description={page.metaDescription}>
+  <Hero title={page.title} script={page.script} kicker={page.kicker} intro={page.intro} media={page.hero} layout="stack">
+    <Fragment slot="actions">
+      <ul class="m-0 flex list-none flex-wrap gap-2 p-0" aria-label="Events">
+        {
+          events.map((e) => (
+            <li data-theme={e.id}>
+              <a href={eventHref(e)} class="chip no-underline">{e.data.name} →</a>
+            </li>
+          ))
+        }
+      </ul>
+    </Fragment>
+  </Hero>
+
+  <section class="container-page" aria-label="Schedule">
+    <ScheduleTable sessions={sessions} />
+  </section>
+</BaseLayout>

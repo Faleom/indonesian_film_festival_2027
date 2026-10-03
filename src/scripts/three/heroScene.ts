@@ -41,11 +41,14 @@ export interface HeroOptions {
   lines: string[];
   /** Script word drawn across the first line break, e.g. "the 21st". */
   script?: string;
+  /** Phones/tablets: fewer particles, lower resolution. */
+  lite?: boolean;
 }
 
 const CAMERA_DISTANCE = 12;
 const FOV = 35;
 const TARGET_POINTS = 7500;
+const LITE_POINTS = 4000;
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const smooth = (a: number, b: number, v: number) => {
@@ -55,9 +58,10 @@ const smooth = (a: number, b: number, v: number) => {
 
 export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<SceneHandle> {
   const stage = (host.querySelector('[data-hero-stage]') as HTMLElement) ?? host;
-  const [model, title] = await Promise.all([loadModel(opts.modelUrl), sampleTitle(opts.lines, opts.script)]);
+  const target = opts.lite ? LITE_POINTS : TARGET_POINTS;
+  const [model, title] = await Promise.all([loadModel(opts.modelUrl), sampleTitle(opts.lines, opts.script, target)]);
 
-  const count = Math.max(TARGET_POINTS, title.count);
+  const count = Math.max(target, title.count);
   const cam = sampleModel(model, count);
   disposeModel(model);
 
@@ -92,7 +96,7 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
   geometry.setAttribute('aScript', new BufferAttribute(script, 1));
   geometry.setAttribute('aRand', new BufferAttribute(rand, 1));
 
-  const { renderer, canvas, dpr } = createRenderer(stage, { maxDpr: 2 });
+  const { renderer, canvas, dpr } = createRenderer(stage, { maxDpr: opts.lite ? 1.5 : 2 });
   const uniforms = {
     uRot: { value: new Matrix3() },
     uCamScale: { value: 1 },
@@ -311,10 +315,10 @@ function disposeModel(model: Object3D) {
 
 /**
  * Renders the title with the site's display + script fonts and samples it
- * on a staggered grid. Returns normalised positions (x in -1..1), a size per
+ * on a staggered grid (about targetPoints dots). Returns normalised positions (x in -1..1), a size per
  * dot from ink coverage, and which dots belong to the script word.
  */
-async function sampleTitle(lines: string[], scriptWord?: string) {
+async function sampleTitle(lines: string[], scriptWord: string | undefined, targetPoints: number) {
   const root = getComputedStyle(document.documentElement);
   const display = root.getPropertyValue('--ff-display').trim() || 'sans-serif';
   const scriptFont = root.getPropertyValue('--ff-script').trim() || 'cursive';
@@ -362,7 +366,7 @@ async function sampleTitle(lines: string[], scriptWord?: string) {
   let filled = 0;
   for (let i = 3; i < text.length; i += 4 * 9) if (text[i] > 128 || scr[i] > 128) filled++;
   const area = filled * 9;
-  const step = Math.max(5, Math.sqrt(area / TARGET_POINTS));
+  const step = Math.max(5, Math.sqrt(area / targetPoints));
 
   const pts: number[] = [];
   const sizes: number[] = [];

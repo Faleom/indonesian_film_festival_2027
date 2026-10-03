@@ -32,7 +32,6 @@ export default defineConfig({
         'gsap',
         'gsap/ScrollTrigger',
         'gsap/SplitText',
-        'gsap/Draggable',
         'lenis',
       ],
     },

@@ -162,7 +162,7 @@ async function main() {
     const settingsHash = hash(JSON.stringify({ settings, themes, v: PIPELINE_VERSION }));
     const variants = ['black', ...Object.keys(themes)];
 
-    if (!mediaKeys.has(key)) {
+    if (!mediaKeys.has(key) && !key.startsWith('team-')) {
       console.warn(`[halftone] "${file}" doesn't match a key in media.json; processed anyway as "${key}".`);
     }
 

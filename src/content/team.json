@@ -1,13 +1,53 @@
 {
-  "$comment": "PLACEHOLDER committee. Replace names. `photo` is a media key in media.json. Order in this list = order on the About page.",
+  "$comment": "PLACEHOLDER committee, replace names. Add as many people as you like (60+ is fine). Shown on the About page grouped by `division`, in the order divisions first appear here. Photo: save it as src/assets/raw/team-<id>.jpg (e.g. team-festival-director.jpg); no other setup. People without a photo get an initials badge.",
   "items": [
-    { "id": "festival-director", "name": "Name TBC", "role": "Festival Director", "division": "Executive", "photo": "team-festival-director" },
-    { "id": "deputy-director", "name": "Name TBC", "role": "Deputy Director", "division": "Executive", "photo": "team-deputy-director" },
-    { "id": "programming-lead", "name": "Name TBC", "role": "Programming Lead", "division": "Programming", "photo": "team-programming-lead" },
-    { "id": "events-lead", "name": "Name TBC", "role": "Events & Operations Lead", "division": "Events", "photo": "team-events-lead" },
-    { "id": "marketing-lead", "name": "Name TBC", "role": "Marketing Lead", "division": "Marketing", "photo": "team-marketing-lead" },
-    { "id": "design-lead", "name": "Name TBC", "role": "Design Lead", "division": "Creative", "photo": "team-design-lead" },
-    { "id": "sponsorship-lead", "name": "Name TBC", "role": "Sponsorship Lead", "division": "Partnerships", "photo": "team-sponsorship-lead" },
-    { "id": "treasurer", "name": "Name TBC", "role": "Treasurer", "division": "Executive", "photo": "team-treasurer" }
+    {
+      "id": "festival-director",
+      "name": "Name TBC",
+      "role": "Festival Director",
+      "division": "Executive"
+    },
+    {
+      "id": "deputy-director",
+      "name": "Name TBC",
+      "role": "Deputy Director",
+      "division": "Executive"
+    },
+    {
+      "id": "programming-lead",
+      "name": "Name TBC",
+      "role": "Programming Lead",
+      "division": "Programming"
+    },
+    {
+      "id": "events-lead",
+      "name": "Name TBC",
+      "role": "Events & Operations Lead",
+      "division": "Events"
+    },
+    {
+      "id": "marketing-lead",
+      "name": "Name TBC",
+      "role": "Marketing Lead",
+      "division": "Marketing"
+    },
+    {
+      "id": "design-lead",
+      "name": "Name TBC",
+      "role": "Design Lead",
+      "division": "Creative"
+    },
+    {
+      "id": "sponsorship-lead",
+      "name": "Name TBC",
+      "role": "Sponsorship Lead",
+      "division": "Partnerships"
+    },
+    {
+      "id": "treasurer",
+      "name": "Name TBC",
+      "role": "Treasurer",
+      "division": "Executive"
+    }
   ]
 }

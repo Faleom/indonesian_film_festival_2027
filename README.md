@@ -75,8 +75,8 @@ Changing a setting re-processes the affected photos on the next run. Unchanged p
 
 `<HalftoneCamera />` (`src/components/three/`) renders a 3D model through a halftone shader (`src/scripts/three/`): dots in the theme's primary colour, a slightly misregistered key plate in the theme's dark colour, and grain. It turns towards the mouse; scrolling turns it and enlarges the dots near the screen edges.
 
-- Three.js is lazy-loaded only when the block is near the viewport, and only on desktop (fine pointer, 768px+) with motion on.
-- Phones, reduced motion and no-JS show the static fallback `public/images/camera-fallback.png`, recoloured per theme with a CSS mask. It's also shown until the live scene is ready.
+- Three.js is lazy-loaded only when the block is near the viewport, and only with motion on (phones/tablets get lighter versions).
+- Reduced motion and no-JS show the static fallback `public/images/camera-fallback.png`, recoloured per theme with a CSS mask. It's also shown until the live scene is ready.
 - Each scene renders only while visible, and its WebGL context is released when you leave the page.
 - Use `live={false}` for extra copies that should only ever show the static image. Heavy 3D is limited to 3 hero spots site-wide.
 
@@ -84,7 +84,7 @@ Changing a setting re-processes the affected photos on the next run. Unchanged p
 
 ### Home page 3D (Phase 7)
 
-Two pinned, scroll-driven scenes on the home page (desktop with motion on; phones and reduced motion get the static layouts):
+Two pinned, scroll-driven scenes on the home page (with motion on; phones and tablets run lighter versions; reduced motion and no-JS get the static layouts):
 
 - **Hero** (`src/components/home/HomeHero.astro`, `src/scripts/three/heroScene.ts`): the film camera made of halftone dots turns, explodes and reassembles into the festival title. The title text comes from `pages.json` (`home.title` + `home.script`), drawn in the site fonts.
 - **Journey film strip** (`src/components/home/FilmStripJourney.astro`, `src/scripts/three/filmStrip.ts`): a curved 3D film strip with, per event, a title card, its b-roll (`broll-<event>` in `media.json`) and up to two film posters. The site re-inks in each event's colours as its frames pass the centre.
@@ -100,7 +100,7 @@ Built into the shared components, so new pages get it for free. All of it is off
 - **Film clippings** tilt toward the pointer (desktop).
 - **FAQ** answers unfold like folded paper.
 - **Sponsors (home):** a marquee whose speed follows your scrolling (`<SponsorStrip variant="marquee" />`).
-- **Team (about):** a draggable paper stack with Back/Next buttons.
+- **Team (about):** grouped by division in a compact grid of paper clippings that fold in; photos optional (`src/assets/raw/team-<id>.jpg`).
 - **Event pages** re-print in their colour on a direct visit (`<BaseLayout reprint>`).
 
 Effects live in `src/scripts/motion/effects.ts`.

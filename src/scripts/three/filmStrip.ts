@@ -47,12 +47,13 @@ const PICTURE_ASPECT = 1.6 / 1.2;
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
-export async function mountFilmStrip(host: HTMLElement, data: StripData): Promise<SceneHandle> {
+export async function mountFilmStrip(host: HTMLElement, data: StripData, { lite = false } = {}): Promise<SceneHandle> {
   const stage = (host.querySelector('[data-strip-stage]') as HTMLElement) ?? host;
   // Full device resolution (up to 2x) so it's crisp on retina; drops if frames run slow.
-  const { renderer, canvas, dpr: maxDpr } = createRenderer(stage, { maxDpr: 2 });
+  // Phones/tablets (lite) start lower and use slightly bigger dots.
+  const { renderer, canvas, dpr: maxDpr } = createRenderer(stage, { maxDpr: lite ? 1.25 : 2 });
   let dpr = maxDpr;
-  const BASE_DOT = 4.5;
+  const BASE_DOT = lite ? 5 : 4.5;
   const pass = createHalftonePass(renderer, dpr, { dotSize: BASE_DOT, keyStrength: 0.55 });
   const { uniforms } = pass;
 

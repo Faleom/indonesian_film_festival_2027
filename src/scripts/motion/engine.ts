@@ -9,7 +9,7 @@ import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 import { buildReveal, type RevealHandle } from './reveals';
 import { startCursor, type CursorHandle } from './cursor';
-import { clippingTilt, foldingAccordions, marquees, reprint, scrollDots, teamStacks } from './effects';
+import { clippingTilt, foldingAccordions, marquees, reprint, scrollDots } from './effects';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -43,7 +43,7 @@ export function start({ navigated = false } = {}) {
 
   document.addEventListener('toggle', onToggle, true);
   cursor = startCursor();
-  cleanups = [scrollDots(), clippingTilt(), foldingAccordions(), marquees(lenis), teamStacks(), reprint(navigated)];
+  cleanups = [scrollDots(), clippingTilt(), foldingAccordions(), marquees(lenis), reprint(navigated)];
   ScrollTrigger.refresh();
 }
 

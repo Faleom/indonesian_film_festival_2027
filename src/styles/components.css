@@ -592,37 +592,24 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
 .marquee.is-running .marquee__track > li { flex: none; width: 15rem; }
 .marquee.is-running .marquee__dup { display: block; }
 
-/* ---------- Team paper stack (TeamGrid) ----------
- * Grid without motion; effects.ts adds .is-stack and lays the cards on top of
- * each other (grid-area overlap), draggable from the top.
- */
-.team__controls { display: none; }
-.team.is-stack .team__list {
+/* ---------- Team initials badge (member without a photo) ---------- */
+.team-initials {
+  position: relative;
   display: grid;
-  grid-template-columns: 1fr;
-  grid-template-areas: 'stack';
-  gap: 0;
-  width: min(22rem, 80vw);
-  margin-inline: auto;
-  padding-block: 1rem 2rem;
+  place-items: center;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--c-primary) 55%, transparent) 0 1.4px, transparent 1.9px) 0 0 / 7px 7px,
+    var(--c-offwhite);
 }
-.team.is-stack .team__card { grid-area: stack; touch-action: none; }
-.team.is-stack .team__card .clipping { --tilt: 0deg; }
-.team.is-stack .team__card:first-child { cursor: grab; }
-.team.is-stack .team__card:first-child:active { cursor: grabbing; }
-.team.is-stack .team__controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.25rem;
-  margin-top: 1.5rem;
-}
-.team__counter {
-  min-width: 14rem;
-  margin: 0;
-  font-family: var(--ff-typewriter);
-  font-size: 0.875rem;
-  text-align: center;
+.team-initials span {
+  font-family: var(--ff-display);
+  font-size: clamp(2.5rem, 7vw, 3.5rem);
+  line-height: 1;
+  color: var(--c-display-top);
+  background: var(--c-offwhite);
+  padding: 0.15em 0.3em 0.05em;
 }
 
 /* ---------- Event page re-print (effects.ts) ---------- */

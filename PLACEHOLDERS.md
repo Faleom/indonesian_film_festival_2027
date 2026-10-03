@@ -9,7 +9,7 @@ Until the real file exists, `<Media id="key" />` renders a halftone placeholder 
 
 Then run `npm run placeholders` to refresh this list. To use a different filename, change `src` for that key in `media.json`.
 
-_48 of 48 still pending. Generated from media.json; don't edit by hand._
+_40 of 40 still pending. Generated from media.json; don't edit by hand._
 
 | Key | Type | Location | Ratio | Recommended size | File path (as-is) | Status |
 |---|---|---|---|---|---|---|
@@ -37,14 +37,6 @@ _48 of 48 still pending. Generated from media.json; don't edit by hand._
 | `poster-pasar-malam` | image | Film card + /films/pasar-malam | 2:3 | 1000x1500 | `public/images/posters/pasar-malam.jpg` | ⬜ placeholder |
 | `trailer-pasar-malam` | video | /films/pasar-malam | 16:9 | 1920x1080 H.264, under 25 MB | `public/videos/trailer-pasar-malam.mp4` | ⬜ placeholder |
 | `poster-kabut-di-dieng` | image | Film card + /films/kabut-di-dieng | 2:3 | 1000x1500 | `public/images/posters/kabut-di-dieng.jpg` | ⬜ placeholder |
-| `team-festival-director` | image | /about team grid | 4:5 | 800x1000 | `public/images/team/festival-director.jpg` | ⬜ placeholder |
-| `team-deputy-director` | image | /about team grid | 4:5 | 800x1000 | `public/images/team/deputy-director.jpg` | ⬜ placeholder |
-| `team-programming-lead` | image | /about team grid | 4:5 | 800x1000 | `public/images/team/programming-lead.jpg` | ⬜ placeholder |
-| `team-events-lead` | image | /about team grid | 4:5 | 800x1000 | `public/images/team/events-lead.jpg` | ⬜ placeholder |
-| `team-marketing-lead` | image | /about team grid | 4:5 | 800x1000 | `public/images/team/marketing-lead.jpg` | ⬜ placeholder |
-| `team-design-lead` | image | /about team grid | 4:5 | 800x1000 | `public/images/team/design-lead.jpg` | ⬜ placeholder |
-| `team-sponsorship-lead` | image | /about team grid | 4:5 | 800x1000 | `public/images/team/sponsorship-lead.jpg` | ⬜ placeholder |
-| `team-treasurer` | image | /about team grid | 4:5 | 800x1000 | `public/images/team/treasurer.jpg` | ⬜ placeholder |
 | `broll-sfc` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-sfc.mp4` | ⬜ placeholder |
 | `broll-uts` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-uts.mp4` | ⬜ placeholder |
 | `broll-edu` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-edu.mp4` | ⬜ placeholder |
@@ -66,5 +58,6 @@ _48 of 48 still pending. Generated from media.json; don't edit by hand._
 
 | Item | Location | Notes |
 |---|---|---|
+| Team photos | /about | One per person, no setup: save as `src/assets/raw/team-<id>.jpg` (id from `src/content/team.json`). People without a photo show an initials badge. Recommended 800x1000 portrait |
 | 3D camera model | `<HalftoneCamera />` (styleguide now, home hero in Phase 7) | Procedural low-poly camera until `public/models/camera.glb` is provided. After adding it, run `npm run render:3d-fallback` with the site running to refresh the static fallback (`public/images/camera-fallback.png`) |
-| Fonts | `public/fonts` | See `src/content/fonts.json` for exact filenames. Missing files fall back to Bebas Neue / Oswald / Jost / cursive |
+| Fonts | `public/fonts` | See `src/content/fonts.json` for exact filenames. Missing files fall back to Oswald / Jost / cursive |

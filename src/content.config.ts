@@ -81,7 +81,6 @@ const team = defineCollection({
     name: z.string(),
     role: z.string(),
     division: z.string(),
-    photo: mediaKey,
   }),
 });
 

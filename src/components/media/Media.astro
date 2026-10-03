@@ -9,11 +9,13 @@
  * data-theme is in scope, using the black dots as a CSS mask. "black" or a
  * theme name uses that pre-rendered file instead.
  */
-import { getHalftone, getMedia, mediaExists, ratioToCss, srcsetOf, type HalftoneTone } from '../../lib/media';
+import { getHalftone, getMedia, mediaExists, ratioToCss, srcsetOf, type HalftoneTone, type MediaEntry } from '../../lib/media';
 
 interface Props {
   /** Key in src/content/media.json */
   id: string;
+  /** Use this entry instead of looking the key up in media.json (e.g. team photos). */
+  entry?: MediaEntry;
   /** Override the ratio from media.json, e.g. "1:1" */
   ratio?: string;
   /** Override the alt text from media.json */
@@ -30,7 +32,7 @@ interface Props {
 }
 
 const { id, ratio, alt, tone: toneProp, priority = false, sizes = '100vw', background = false, class: className } = Astro.props;
-const entry = getMedia(id);
+const entry = Astro.props.entry ?? getMedia(id);
 
 if (!entry) {
   console.warn(`[Media] Unknown media key "${id}". Add it to src/content/media.json.`);

@@ -72,7 +72,7 @@ Font files go in `/public/fonts` (Latin-subset .woff2; originals in `src/assets/
 
 ### Motion rules (non-negotiable)
 - Heavy 3D only in **max 3 hero spots**. Everything else uses GSAP + SVG/CSS.
-- **Mobile** gets lighter fallbacks (e.g. a static or looped halftone image instead of a live 3D scene).
+- **Mobile** runs lighter versions of the 3D (fewer particles, lower resolution, adaptive quality). Reduced motion and no-JS get the static fallbacks.
 - Respect **`prefers-reduced-motion`**: there is a global kill switch that disables all motion.
 - Content must render and be readable **without JS**.
 - Target 60fps on mid-range phones. Lazy-load Three.js and dispose WebGL contexts on page leave.

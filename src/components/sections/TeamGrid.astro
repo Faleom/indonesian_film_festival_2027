@@ -1,40 +1,73 @@
 ---
 /**
- * Committee. A grid of paper photos by default; with motion on it becomes a
- * messy stack you can drag (or step through with the buttons). Every member
- * stays in the list for screen readers.
+ * Committee, grouped by division (in the order divisions first appear in
+ * team.json). Built for a big team: compact paper clippings in a dense grid.
+ * Photos are optional (src/assets/raw/team-<id>.jpg); without one, a halftone
+ * initials badge is shown instead of a placeholder.
  */
 import type { CollectionEntry } from 'astro:content';
 import Media from '../media/Media.astro';
+import { teamPhoto } from '../../lib/media';
 
 interface Props {
   members: CollectionEntry<'team'>[];
 }
 
 const { members } = Astro.props;
+const divisions = [...new Set(members.map((m) => m.data.division))].map((division) => ({
+  division,
+  people: members.filter((m) => m.data.division === division),
+}));
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter((w) => /^[A-Za-z]/.test(w) && w !== 'TBC')
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join('') || '·';
+const slug = (s: string) => s.toLowerCase().replace(/\W+/g, '-');
 ---
 
-<div class="team" data-team-stack data-reveal="fade-up">
-  <ul class="team__list clipping-grid m-0 grid list-none grid-cols-2 gap-x-5 gap-y-10 p-0 md:grid-cols-3 lg:grid-cols-4" data-team-list>
-    {
-      members.map((m, i) => (
-        <li class="team__card" data-name={`${m.data.name}, ${m.data.role}`} data-seed={i + 1}>
-          <figure class="clipping m-0">
-            <div class="clipping__paper flex flex-col gap-3">
-              <Media id={m.data.photo} sizes="(min-width: 1024px) 22vw, (min-width: 768px) 30vw, 45vw" />
-              <figcaption class="flex flex-col gap-1">
-                <span class="font-condensed text-xl leading-none uppercase md:text-2xl">{m.data.name}</span>
-                <span class="font-typewriter text-xs text-accent-text uppercase">{m.data.role}</span>
-              </figcaption>
-            </div>
-          </figure>
-        </li>
-      ))
-    }
-  </ul>
-  <div class="team__controls">
-    <button type="button" class="btn btn--ghost cursor-pointer" data-team-prev>← Back</button>
-    <p class="team__counter" data-team-counter aria-live="polite"></p>
-    <button type="button" class="btn btn--primary cursor-pointer" data-team-next>Next →</button>
-  </div>
+<div class="flex flex-col gap-14">
+  {
+    divisions.map(({ division, people }) => (
+      <section aria-labelledby={`team-${slug(division)}`}>
+        <div class="mb-5 flex items-baseline justify-between gap-4 border-b border-ink pb-2">
+          <h3 id={`team-${slug(division)}`} class="kicker" data-tone="accent">
+            {division}
+          </h3>
+          <span class="font-typewriter text-xs">{people.length}</span>
+        </div>
+        <ul
+          class="clipping-grid m-0 grid list-none grid-cols-3 gap-x-3 gap-y-5 p-0 sm:grid-cols-4 sm:gap-x-4 md:grid-cols-5 lg:grid-cols-6"
+          data-reveal="fold"
+          data-reveal-children
+          data-reveal-stagger="0.04"
+        >
+          {people.map((m) => {
+            const photo = teamPhoto(m.id, m.data.name, m.data.role);
+            return (
+              <li>
+                <figure class="clipping m-0">
+                  <div class="clipping__paper flex flex-col gap-2">
+                    {photo ? (
+                      <Media id={photo.key} entry={photo.entry} sizes="(min-width: 1024px) 15vw, (min-width: 640px) 30vw, 45vw" />
+                    ) : (
+                      <div class="team-initials" aria-hidden="true">
+                        <span>{initials(m.data.name)}</span>
+                      </div>
+                    )}
+                    <figcaption class="flex flex-col gap-0.5">
+                      <span class="font-condensed text-base leading-tight uppercase md:text-lg">{m.data.name}</span>
+                      <span class="font-typewriter text-[0.6875rem] leading-snug text-accent-text uppercase">{m.data.role}</span>
+                    </figcaption>
+                  </div>
+                </figure>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    ))
+  }
 </div>

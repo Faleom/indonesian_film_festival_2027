@@ -6,14 +6,10 @@
  *   .clipping                    3D tilt + lift following the pointer (desktop)
  *   details.faq-item             answers unfold like folded paper
  *   [data-marquee]               sponsor marquee, speed follows scroll velocity
- *   [data-team-stack]            team as a draggable paper stack
  *   body[data-reprint]           theme colour re-prints over the page on load
  */
 import gsap from 'gsap';
-import { Draggable } from 'gsap/Draggable';
 import type Lenis from 'lenis';
-
-gsap.registerPlugin(Draggable);
 
 type Cleanup = () => void;
 const desktop = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -135,104 +131,6 @@ export function marquees(lenis: Lenis | undefined): Cleanup {
       gsap.ticker.remove(tick);
       root.classList.remove('is-running');
       gsap.set(track, { clearProps: 'transform' });
-    });
-  });
-  return () => offs.forEach((f) => f());
-}
-
-/**
- * Team as a messy stack of paper photos. Drag (or use the buttons) to throw
- * the top card; it slides to the back. All members stay in the list for
- * screen readers; the counter announces who's on top.
- */
-export function teamStacks(): Cleanup {
-  const offs: Cleanup[] = [];
-  document.querySelectorAll<HTMLElement>('[data-team-stack]').forEach((root) => {
-    const list = root.querySelector<HTMLElement>('[data-team-list]');
-    const counter = root.querySelector<HTMLElement>('[data-team-counter]');
-    const next = root.querySelector<HTMLButtonElement>('[data-team-next]');
-    const prev = root.querySelector<HTMLButtonElement>('[data-team-prev]');
-    if (!list) return;
-    const cards = () => [...list.children] as HTMLElement[];
-    const total = cards().length;
-    root.classList.add('is-stack');
-    let index = 0;
-    let drag: Draggable | undefined;
-
-    const layout = (animate = true) => {
-      cards().forEach((card, i) => {
-        const depth = i; // 0 = top
-        const seed = Number(card.dataset.seed ?? i);
-        gsap.to(card, {
-          x: depth === 0 ? 0 : Math.sin(seed * 12.9) * 18,
-          y: depth * 6,
-          rotation: depth === 0 ? -1.5 : Math.sin(seed * 7.3) * 7,
-          scale: 1 - Math.min(depth, 4) * 0.025,
-          zIndex: total - depth,
-          duration: animate ? 0.5 : 0,
-          ease: 'power3.out',
-        });
-        card.setAttribute('aria-hidden', depth === 0 ? 'false' : 'true');
-      });
-      const top = cards()[0];
-      if (counter && top) counter.textContent = `${index + 1} / ${total} · ${top.dataset.name ?? ''}`;
-      bindDrag();
-    };
-
-    const throwTop = (dir: number) => {
-      const top = cards()[0];
-      if (!top) return;
-      drag?.kill();
-      gsap.to(top, {
-        x: dir * (root.clientWidth * 0.7),
-        rotation: dir * 25,
-        opacity: 0,
-        duration: 0.35,
-        ease: 'power2.in',
-        onComplete: () => {
-          list.append(top); // to the back of the stack
-          gsap.set(top, { opacity: 1 });
-          index = (index + 1) % total;
-          layout();
-        },
-      });
-    };
-
-    const back = () => {
-      const last = cards().at(-1);
-      if (!last) return;
-      list.prepend(last);
-      gsap.fromTo(last, { x: -root.clientWidth * 0.6, rotation: -20, opacity: 0 }, { opacity: 1, duration: 0.01 });
-      index = (index - 1 + total) % total;
-      layout();
-    };
-
-    function bindDrag() {
-      drag?.kill();
-      const top = cards()[0];
-      if (!top) return;
-      [drag] = Draggable.create(top, {
-        type: 'x,y',
-        onDrag() {
-          gsap.set(top, { rotation: this.x / 12 });
-        },
-        onRelease() {
-          if (Math.abs(this.x) > root.clientWidth * 0.18) throwTop(Math.sign(this.x));
-          else layout();
-        },
-      });
-    }
-
-    const onNext = () => throwTop(1);
-    next?.addEventListener('click', onNext);
-    prev?.addEventListener('click', back);
-    layout(false);
-    offs.push(() => {
-      drag?.kill();
-      next?.removeEventListener('click', onNext);
-      prev?.removeEventListener('click', back);
-      root.classList.remove('is-stack');
-      cards().forEach((c) => (gsap.set(c, { clearProps: 'all' }), c.removeAttribute('aria-hidden')));
     });
   });
   return () => offs.forEach((f) => f());

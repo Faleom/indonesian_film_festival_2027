@@ -40,6 +40,7 @@ ${rows.map((r) => `| \`${r.key}\` | ${r.type} | ${r.location} | ${r.ratio} | ${r
 
 | Item | Location | Notes |
 |---|---|---|
+| Team photos | /about | One per person, no setup: save as \`src/assets/raw/team-<id>.jpg\` (id from \`src/content/team.json\`). People without a photo show an initials badge. Recommended 800x1000 portrait |
 | 3D camera model | \`<HalftoneCamera />\` (styleguide now, home hero in Phase 7) | Procedural low-poly camera until \`public/models/camera.glb\` is provided. After adding it, run \`npm run render:3d-fallback\` with the site running to refresh the static fallback (\`public/images/camera-fallback.png\`) |
 | Fonts | \`public/fonts\` | See \`src/content/fonts.json\` for exact filenames. Missing files fall back to Oswald / Jost / cursive |
 `;

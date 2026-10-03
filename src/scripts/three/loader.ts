@@ -6,8 +6,9 @@
  *   filmstrip  <FilmStripJourney />    3D b-roll film strip (pinned)
  *
  * - Three.js is only downloaded when a block is near the viewport
- * - only on desktop-class devices (fine pointer, >= 768px) with motion on;
- *   everyone else keeps the static fallback layout
+ * - only with motion on and WebGL available; phones and tablets get lighter
+ *   versions ("lite": fewer particles, lower resolution). Reduced motion and
+ *   no-JS keep the static fallback layout
  * - blocks with data-live-layout get .is-3d straight away (pinned layout),
  *   and .is-live once the first frame has rendered
  * - renders only while on screen; disposed (WebGL released) on page leave
@@ -25,6 +26,8 @@ interface Instance {
 const instances = new Map<HTMLElement, Instance>();
 let themeObserver: MutationObserver | undefined;
 const exportMode = new URLSearchParams(location.search).has('export-3d');
+/** Phones/tablets: lighter scenes. */
+const lite = () => !matchMedia('(min-width: 1024px) and (pointer: fine)').matches;
 
 const mounters: Record<string, (el: HTMLElement) => Promise<SceneHandle>> = {
   camera: async (el) =>
@@ -38,8 +41,9 @@ const mounters: Record<string, (el: HTMLElement) => Promise<SceneHandle>> = {
       modelUrl: el.dataset.model || undefined,
       lines: JSON.parse(el.dataset.title || '[]'),
       script: el.dataset.script || undefined,
+      lite: lite(),
     }),
-  filmstrip: async (el) => (await import('./filmStrip')).mountFilmStrip(el, JSON.parse(el.dataset.strip || '{}')),
+  filmstrip: async (el) => (await import('./filmStrip')).mountFilmStrip(el, JSON.parse(el.dataset.strip || '{}'), { lite: lite() }),
 };
 
 function webglAvailable(): boolean {
@@ -53,11 +57,7 @@ function webglAvailable(): boolean {
 
 function canRunLive(): boolean {
   if (exportMode) return true;
-  return (
-    document.documentElement.dataset.motion === 'on' &&
-    matchMedia('(min-width: 768px) and (pointer: fine)').matches &&
-    webglAvailable()
-  );
+  return document.documentElement.dataset.motion === 'on' && webglAvailable();
 }
 
 async function mount(el: HTMLElement, inst: Instance) {

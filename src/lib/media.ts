@@ -60,6 +60,24 @@ export function mediaDelivered(key: string): boolean {
 }
 
 /**
+ * A committee member's photo, by convention: src/assets/raw/team-<id>.jpg
+ * (halftoned) or public/images/team/<id>.jpg (as-is). No media.json entry needed.
+ * Returns undefined when there's no photo yet.
+ */
+export function teamPhoto(id: string, name: string, role: string): { key: string; entry: MediaEntry } | undefined {
+  const key = `team-${id}`;
+  const entry: MediaEntry = {
+    type: 'image',
+    src: `/images/team/${id}.jpg`,
+    ratio: '4:5',
+    alt: `${name}, ${role}`,
+    location: '/about team',
+    recommended: '800x1000',
+  };
+  return getHalftone(key, entry) || mediaExists(entry) ? { key, entry } : undefined;
+}
+
+/**
  * Source for a WebGL texture (3D film strip): video file, the pipeline's
  * greyscale texture, or the original image. null = draw a placeholder.
  */

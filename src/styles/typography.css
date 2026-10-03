@@ -5,7 +5,7 @@
 :root {
   --ff-display: 'Rushford Printed', 'Bebas Neue', 'Oswald', sans-serif;
   --ff-script: 'Military Script', cursive;
-  --ff-condensed: 'Etna Condensed', 'Oswald', sans-serif;
+  --ff-condensed: 'Oswald', 'Arial Narrow', sans-serif;
   --ff-typewriter: 'Special Elite', monospace;
   --ff-body: 'Futura', 'Jost', sans-serif;
 
@@ -125,7 +125,7 @@
   background: currentColor;
 }
 
-/* ---------- Condensed heading (Etna) ---------- */
+/* ---------- Condensed heading (Oswald) ---------- */
 .heading-condensed {
   margin: 0;
   font-family: var(--ff-condensed);

@@ -1,5 +1,5 @@
 {
-  "$comment": "Font registry. Drop the licensed font files into /public/fonts using one of the `names` listed (any of .woff2, .woff, .otf, .ttf; woff2 is smallest). Missing files fall back to the stack in src/styles/typography.css. Rushford, Military Script/Scribe, Etna and Futura need a web licence before launch.",
+  "$comment": "Font registry. Drop the licensed font files into /public/fonts using one of the `names` listed (any of .woff2, .woff, .otf, .ttf; woff2 is smallest). Missing files fall back to the stack in src/styles/typography.css. Rushford, Military Script/Scribe and Futura need a web licence before launch. Original .otf/.ttf files live in src/assets/fonts-src (not deployed); public/fonts holds Latin-subset .woff2 copies.",
   "googleFontsUrl": "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:wght@400;500;700&family=Oswald:wght@400;600&family=Special+Elite&display=swap",
   "fonts": [
     {
@@ -45,22 +45,12 @@
       ]
     },
     {
-      "family": "Etna Condensed",
+      "family": "Oswald",
       "role": "Condensed headings",
       "cssVar": "--ff-condensed",
-      "fallback": "Oswald, sans-serif",
-      "files": [
-        {
-          "weight": 400,
-          "style": "normal",
-          "names": [
-            "EtnaCondensed",
-            "Etna-Condensed",
-            "Etna Condensed",
-            "Etna"
-          ]
-        }
-      ]
+      "fallback": "Arial Narrow, sans-serif",
+      "google": true,
+      "files": []
     },
     {
       "family": "Special Elite",

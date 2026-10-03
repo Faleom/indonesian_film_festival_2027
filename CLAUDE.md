@@ -57,11 +57,11 @@ Source: `/docs/konsep_iff_21.pdf` (read it and the reference images in `/docs`).
 |---|---|---|
 | Display / big titles | Rushford Printed | Bebas Neue, Oswald, sans-serif |
 | Script accent | Military Script | cursive |
-| Condensed headings | Etna Condensed | Oswald, sans-serif |
+| Condensed headings | Oswald (Google Fonts; Etna Condensed dropped, it's paid) | Arial Narrow, sans-serif |
 | Typewriter / kicker / schedule | Special Elite (Google Fonts) | monospace |
 | Body | Futura | Jost (Google Fonts), sans-serif |
 
-Font files go in `/public/fonts`. Rushford, Military Script, Etna, and Futura need a valid web license before launch.
+Font files go in `/public/fonts` (Latin-subset .woff2; originals in `src/assets/fonts-src`). Rushford, Military Script/Scribe and Futura need a valid web license before launch.
 
 ## Motion direction
 - Rich, **site-wide** motion. Not just the hero: every page and section gets some.

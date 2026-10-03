@@ -222,37 +222,6 @@
   border: 1px solid currentColor;
 }
 
-/* ---------- Schedule (classified ads) ---------- */
-.classifieds__day {
-  font-family: var(--ff-condensed);
-  text-transform: uppercase;
-  border-top: 3px double var(--c-black);
-  border-bottom: 1px solid var(--c-black);
-}
-.classifieds__row {
-  display: grid;
-  gap: 0.25rem 1.5rem;
-  padding-block: 1rem;
-  border-bottom: 1px dashed rgb(0 0 0 / 0.45);
-  grid-template-columns: 5.5rem 1fr;
-  grid-template-areas:
-    'time title'
-    'time venue'
-    'time action';
-}
-@media (min-width: 48rem) {
-  .classifieds__row {
-    align-items: baseline;
-    grid-template-columns: 7rem minmax(0, 1fr) 13rem 9rem;
-    grid-template-areas: 'time title venue action';
-  }
-}
-.classifieds__time { grid-area: time; font-family: var(--ff-typewriter); }
-.classifieds__title { grid-area: title; }
-.classifieds__venue { grid-area: venue; font-family: var(--ff-typewriter); font-size: 0.875rem; }
-.classifieds__action { grid-area: action; }
-@media (min-width: 48rem) { .classifieds__action { text-align: right; } }
-
 /* ---------- FAQ accordion ---------- */
 .faq-item {
   border-bottom: 1px solid var(--c-black);

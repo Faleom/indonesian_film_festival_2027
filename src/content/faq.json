@@ -5,13 +5,13 @@
       "id": "buy-tickets",
       "category": "Tickets",
       "question": "Where do I buy tickets?",
-      "answer": "Tickets are sold through the venue. Use the Get Tickets button on any event or film page. Ticket links will go live when the program is announced."
+      "answer": "Tickets are sold through the venue. Use the Get Tickets button on any event or film page. Ticket links will go live when the lineup is announced."
     },
     {
       "id": "ticket-prices",
       "category": "Tickets",
       "question": "How much are tickets?",
-      "answer": "Prices will be announced with the program. Student and concession prices are available for most sessions."
+      "answer": "Prices will be announced with the lineup."
     },
     {
       "id": "refunds",
@@ -29,13 +29,13 @@
       "id": "accessibility",
       "category": "At the venue",
       "question": "Is the venue accessible?",
-      "answer": "ACMI cinemas are wheelchair accessible and offer companion card seating. Contact us before the event if you have specific access needs and we'll do our best to help."
+      "answer": "Contact us before the event if you have specific access needs and we'll do our best to help."
     },
     {
       "id": "arrive",
       "category": "At the venue",
       "question": "When should I arrive?",
-      "answer": "Please arrive 15 to 20 minutes before your session. Late entry may not be possible once a film has started."
+      "answer": "Please arrive a little before your screening starts. Late entry may not be possible once a film has started."
     },
     {
       "id": "subtitles",
@@ -53,19 +53,13 @@
       "id": "schools",
       "category": "Get involved",
       "question": "Can schools attend the Educational Screening?",
-      "answer": "Yes. The Educational Screening is designed for students and young audiences. Email us to register a school or group and to request discussion notes."
+      "answer": "Yes. The Educational Screening is designed for students and young audiences. Email us to ask about bringing a school or group."
     },
     {
       "id": "submit",
       "category": "Get involved",
       "question": "How do I submit a film to the Short Film Competition?",
-      "answer": "Submission details for the 21st edition will be announced on the Short Film Competition page and our socials. Follow us to be the first to know."
-    },
-    {
-      "id": "volunteer",
-      "category": "Get involved",
-      "question": "Can I volunteer?",
-      "answer": "Yes, we'd love your help. Visit the Volunteer page to see the roles and register your interest."
+      "answer": "Submission details for the 21st edition will be announced on the Short Film Competition page and our socials."
     },
     {
       "id": "sponsor",

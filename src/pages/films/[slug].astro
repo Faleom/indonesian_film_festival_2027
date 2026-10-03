@@ -11,9 +11,8 @@ import Button from '../../components/ui/Button.astro';
 import SectionHead from '../../components/ui/SectionHead.astro';
 import FilmCard from '../../components/sections/FilmCard.astro';
 import VideoPlayer from '../../components/sections/VideoPlayer.astro';
-import ScheduleTable from '../../components/sections/ScheduleTable.astro';
 import site from '../../content/site.json';
-import { eventHref, formatDate, formatRuntime, getEvent, getFilms, getSessions, themeOf, type EventId, type FilmEntry } from '../../lib/content';
+import { eventHref, formatDate, formatRuntime, getEvent, getFilms, themeOf, type EventId, type FilmEntry } from '../../lib/content';
 
 export const getStaticPaths = (async () => {
   const films = await getCollection('films');
@@ -27,7 +26,7 @@ interface Props {
 const { film } = Astro.props;
 const f = film.data;
 const eventId = f.event.id as EventId;
-const [event, sessions, siblings] = await Promise.all([getEvent(eventId), getSessions({ film: film.id }), getFilms(eventId)]);
+const [event, siblings] = await Promise.all([getEvent(eventId), getFilms(eventId)]);
 const more = siblings.filter((s) => s.id !== film.id).slice(0, 4);
 
 const facts = [
@@ -71,13 +70,13 @@ const facts = [
         </dl>
 
         <div class="flex flex-col gap-1 font-typewriter">
-          <span class="text-xs tracking-widest uppercase">Session</span>
+          <span class="text-xs tracking-widest uppercase">Screening</span>
           <span class="text-lg">{formatDate(f.date)} · {f.time}</span>
           <span>{f.venue}</span>
         </div>
         <div class="flex flex-wrap gap-3">
           <Button href={f.ticketUrl} external>Get tickets</Button>
-          <Button href="/program" variant="ghost">Full program</Button>
+          <Button href={eventHref(event)} variant="ghost">{event.data.name}</Button>
         </div>
       </div>
     </div>
@@ -91,14 +90,6 @@ const facts = [
       )
     }
 
-    {
-      sessions.length > 0 && (
-        <section class="container-page py-12 md:py-16" aria-labelledby="sessions">
-          <SectionHead title="Sessions" id="sessions" />
-          <ScheduleTable sessions={sessions} showEvent={false} headingLevel="h3" />
-        </section>
-      )
-    }
   </article>
 
   {

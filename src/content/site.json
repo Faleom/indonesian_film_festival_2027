@@ -17,10 +17,6 @@
   "acknowledgement": "The Indonesian Film Festival acknowledges the Wurundjeri Woi-wurrung people of the Kulin Nation, the Traditional Owners of the land on which we gather, screen and work. We pay our respects to Elders past and present. Sovereignty was never ceded.",
   "nav": [
     {
-      "label": "Program",
-      "href": "/program"
-    },
-    {
       "label": "SFC",
       "href": "/sfc",
       "theme": "sfc"
@@ -51,10 +47,6 @@
     {
       "label": "Sponsors",
       "href": "/sponsors"
-    },
-    {
-      "label": "Volunteer",
-      "href": "/volunteer"
     }
   ],
   "socials": [

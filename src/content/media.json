@@ -84,14 +84,6 @@
       "location": "/about hero",
       "recommended": "2100x1400"
     },
-    "program-hero": {
-      "type": "image",
-      "src": "/images/program-hero.jpg",
-      "ratio": "21:9",
-      "alt": "Audience in a cinema",
-      "location": "/program header",
-      "recommended": "2520x1080"
-    },
     "sponsors-hero": {
       "type": "image",
       "src": "/images/sponsors-hero.jpg",
@@ -99,14 +91,6 @@
       "alt": "Festival night crowd",
       "location": "/sponsors header",
       "recommended": "2100x1400"
-    },
-    "volunteer-hero": {
-      "type": "image",
-      "src": "/images/volunteer-hero.jpg",
-      "ratio": "4:5",
-      "alt": "Volunteers at the festival front desk",
-      "location": "/volunteer hero",
-      "recommended": "1600x2000"
     },
     "og-default": {
       "type": "image",

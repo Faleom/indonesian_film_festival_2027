@@ -6,7 +6,6 @@ import { z } from 'astro/zod';
 const items = (text: string) => JSON.parse(text).items;
 
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD');
-const time24 = z.string().regex(/^\d{2}:\d{2}$/, 'Use 24h HH:MM');
 const mediaKey = z.string();
 
 const events = defineCollection({
@@ -55,21 +54,6 @@ const films = defineCollection({
   }),
 });
 
-const schedule = defineCollection({
-  loader: file('src/content/schedule.json', { parser: items }),
-  schema: z.object({
-    date,
-    start: time24,
-    end: time24.optional(),
-    title: z.string(),
-    event: reference('events'),
-    type: z.enum(['screening', 'panel', 'qa', 'ceremony', 'social']),
-    film: reference('films').nullable(),
-    venue: z.string(),
-    ticketUrl: z.string().nullable(),
-  }),
-});
-
 const sponsors = defineCollection({
   loader: file('src/content/sponsors.json', { parser: items }),
   schema: z.object({
@@ -114,4 +98,4 @@ const media = defineCollection({
   }),
 });
 
-export const collections = { events, films, schedule, sponsors, faq, team, media };
+export const collections = { events, films, sponsors, faq, team, media };

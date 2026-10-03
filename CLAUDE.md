@@ -14,7 +14,7 @@
 ## Current scope: FRONTEND ONLY
 - No backend, no database, no auth, no CMS, no payments.
 - Tickets = external link (placeholder `#` or ACMI URL in content data).
-- Forms (volunteer, contact, newsletter): build the UI only. Submit does nothing yet; show a "coming soon" toast. Leave a clear `TODO(backend)` comment.
+- Forms (contact, newsletter): build the UI only. Submit does nothing yet; show a "coming soon" toast. Leave a clear `TODO(backend)` comment.
 - All content comes from local files in `src/content` (JSON / Markdown).
 
 ## Placeholders (IMPORTANT)
@@ -82,12 +82,12 @@ Font files go in `/public/fonts`. Rushford, Military Script, Etna, and Futura ne
 - `/`: home (base theme)
 - `/sfc`, `/uts`, `/edu-screening`, `/main-screening`: event pages (own theme each)
 - `/films/[slug]`: film detail
-- `/program`: schedule
-- `/faq`, `/about`, `/sponsors`, `/volunteer`
+- `/faq`, `/about`, `/sponsors`
+- No `/program` (schedule) or `/volunteer` pages. Don't invent sessions, schedules or event details that aren't in the content or on the official site.
 - `/styleguide`: internal page showing all themes, fonts, components, and motion demos
 
 ## Content rules
-- **Never hardcode content in components.** Films, schedule, events, sponsors, FAQ, team, and media all live in `src/content`.
+- **Never hardcode content in components.** Films, events, sponsors, FAQ, team, and media all live in `src/content`.
 - Film fields: title, year, director, synopsis, runtime, rating, poster (media key), trailer (media key), event, date, venue, ticketUrl.
 - Next year's committee must be able to update the site by editing content files only (see `HANDOVER.md`).
 

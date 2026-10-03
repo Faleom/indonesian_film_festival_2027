@@ -43,14 +43,14 @@ Hook into `npm run build`, add `npm run halftone`. If /raw is empty, skip gracef
 
 ## Phase 3: Content + components
 ```
-Create content collections with placeholder data: films, events, schedule, sponsors, faq, team, media.
-Build components: Navbar, Footer, Hero (one big halftone image + DisplayTitle + color splash overlay), FilmCard (newspaper-clipping style), ScheduleTable (classified-ad style), FAQ accordion, SponsorStrip, TeamGrid, VideoPlayer (placeholder-aware), Forms (UI only, TODO(backend), "coming soon" toast).
+Create content collections with placeholder data: films, events, sponsors, faq, team, media.
+Build components: Navbar, Footer, Hero (one big halftone image + DisplayTitle + color splash overlay), FilmCard (newspaper-clipping style), FAQ accordion, SponsorStrip, TeamGrid, VideoPlayer (placeholder-aware), Forms (UI only, TODO(backend), "coming soon" toast).
 One main image per section, lots of negative space.
 ```
 
 ## Phase 4: Pages (static, no motion yet)
 ```
-Build all pages: /, /sfc, /uts, /main-screening, /films/[slug], /program, /faq, /about, /sponsors, /volunteer.
+Build all pages: /, /sfc, /uts, /edu-screening, /main-screening, /films/[slug], /faq, /about, /sponsors.
 Each event page uses its own data-theme. Home uses base and includes a strip showing the journey SFC → UTS → Main.
 Everything must look good and be fully usable WITHOUT any animation. Check 375/768/1440.
 ```
@@ -82,7 +82,6 @@ Apply motion across ALL pages using the data-reveal system (not one-off code):
 - misregistration reveal on every DisplayTitle
 - halftone dot size tied to scroll on section images
 - film cards: paper clippings with 3D tilt + lift on hover
-- schedule rows type in (Special Elite, typewriter)
 - FAQ accordion unfolds like folded paper
 - sponsor marquee, speed follows scroll velocity
 - team photos as a draggable paper stack
@@ -104,7 +103,7 @@ Fix all issues found.
 ## Phase 10: Deploy + handover
 ```
 Prepare for Vercel deploy. Write HANDOVER.md for next year's webmaster explaining, without code knowledge, how to:
-- update films, schedule, FAQ, sponsors, team
+- update films, FAQ, sponsors, team
 - swap placeholders for real photos/videos (using PLACEHOLDERS.md + media.json)
 - run the halftone pipeline on new photos
 - change theme colors/fonts for a new edition
@@ -124,4 +123,4 @@ I've added real assets to /src/assets/raw and /public/videos. Update media.json 
 - If performance drops, ask: "profile and reduce the motion cost without removing the effect".
 
 ## Later (not now): backend
-- Volunteer/contact form submissions, newsletter, possibly a CMS so committee members can edit without Git.
+- Contact form submissions, newsletter, possibly a CMS so committee members can edit without Git.

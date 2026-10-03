@@ -8,15 +8,6 @@ export type EventId = 'sfc' | 'uts' | 'edu' | 'main';
 export type Theme = 'sfc' | 'uts' | 'main' | 'base';
 export type EventEntry = CollectionEntry<'events'>;
 export type FilmEntry = CollectionEntry<'films'>;
-export type SessionEntry = CollectionEntry<'schedule'>;
-
-/** A schedule item with its event and (optional) film resolved. */
-export interface Session {
-  id: string;
-  data: SessionEntry['data'];
-  event: EventEntry;
-  film?: FilmEntry;
-}
 
 /** Events in journey order: SFC -> UTS -> Main. */
 export async function getEvents(): Promise<EventEntry[]> {
@@ -65,32 +56,6 @@ export async function getFilms(eventId?: EventId): Promise<FilmEntry[]> {
   return films.sort((a, b) => a.data.date.localeCompare(b.data.date) || toMinutes(a.data.time) - toMinutes(b.data.time));
 }
 
-/** Schedule sorted chronologically with event + film resolved. */
-export async function getSessions(filter?: { event?: EventId; film?: string }): Promise<Session[]> {
-  const [items, events, films] = await Promise.all([
-    getCollection('schedule'),
-    getCollection('events'),
-    getCollection('films'),
-  ]);
-  return items
-    .filter((s) => !filter?.event || s.data.event.id === filter.event)
-    .filter((s) => !filter?.film || s.data.film?.id === filter.film)
-    .sort((a, b) => a.data.date.localeCompare(b.data.date) || a.data.start.localeCompare(b.data.start))
-    .map((s) => ({
-      id: s.id,
-      data: s.data,
-      event: events.find((e) => e.id === s.data.event.id)!,
-      film: s.data.film ? films.find((f) => f.id === s.data.film!.id) : undefined,
-    }));
-}
-
-/** Groups sessions by date, keeping chronological order. */
-export function groupByDate(sessions: Session[]): { date: string; sessions: Session[] }[] {
-  const groups = new Map<string, Session[]>();
-  for (const s of sessions) groups.set(s.data.date, [...(groups.get(s.data.date) ?? []), s]);
-  return [...groups].map(([date, list]) => ({ date, sessions: list }));
-}
-
 const dateFormat = new Intl.DateTimeFormat('en-AU', {
   weekday: 'long',
   day: 'numeric',
@@ -110,12 +75,6 @@ export const formatDate = (iso: string) => dateFormat.format(new Date(`${iso}T00
 /** "2027-03-19" -> "Fri 19 Mar" */
 export const formatShortDate = (iso: string) => shortDateFormat.format(new Date(`${iso}T00:00:00Z`)).replace(',', '');
 
-/** "19:00" -> "7:00 PM" */
-export function formatTime(hhmm: string): string {
-  const [h, m] = hhmm.split(':').map(Number);
-  return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
-}
-
 /** Parses "7:00 PM" or "19:00" into minutes for sorting; unknown text sorts last. */
 function toMinutes(time: string): number {
   const m = time.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
@@ -129,11 +88,3 @@ function toMinutes(time: string): number {
 
 export const formatRuntime = (minutes: number) =>
   minutes < 60 ? `${minutes} min` : `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')} min`;
-
-export const sessionTypeLabel: Record<SessionEntry['data']['type'], string> = {
-  screening: 'Screening',
-  panel: 'Panel',
-  qa: 'Q&A',
-  ceremony: 'Ceremony',
-  social: 'Social',
-};

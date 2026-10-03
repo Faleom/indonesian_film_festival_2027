@@ -3,14 +3,13 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../sections/Hero.astro';
 import FilmCard from '../sections/FilmCard.astro';
-import ScheduleTable from '../sections/ScheduleTable.astro';
 import VideoPlayer from '../sections/VideoPlayer.astro';
 import SectionHead from '../ui/SectionHead.astro';
 import Button from '../ui/Button.astro';
 import BodyText from '../typography/BodyText.astro';
 import Kicker from '../typography/Kicker.astro';
 import site from '../../content/site.json';
-import { eventHref, getEvent, getEvents, getFilms, getSessions, type EventId } from '../../lib/content';
+import { eventHref, getEvent, getEvents, getFilms, type EventId } from '../../lib/content';
 
 interface Props {
   id: EventId;
@@ -18,7 +17,7 @@ interface Props {
 
 const event = await getEvent(Astro.props.id);
 const e = event.data;
-const [films, sessions, events] = await Promise.all([getFilms(event.id as EventId), getSessions({ event: event.id as EventId }), getEvents()]);
+const [films, events] = await Promise.all([getFilms(event.id as EventId), getEvents()]);
 const index = events.findIndex((x) => x.id === event.id);
 const next = events[index + 1];
 const prev = events[index - 1];
@@ -39,7 +38,7 @@ const prev = events[index - 1];
   >
     <Fragment slot="actions">
       <Button href={e.ticketUrl} external>Get tickets</Button>
-      <Button href="#schedule" variant="ghost">Schedule</Button>
+      {films.length > 0 && <Button href="#lineup" variant="ghost">{e.lineupTitle}</Button>}
     </Fragment>
   </Hero>
 
@@ -81,17 +80,6 @@ const prev = events[index - 1];
             </li>
           ))}
         </ul>
-      </section>
-    )
-  }
-
-  {
-    sessions.length > 0 && (
-      <section class="container-page py-12 md:py-20" aria-labelledby="schedule-title" id="schedule">
-        <SectionHead title="Schedule" kicker={e.dateLabel} id="schedule-title">
-          <a href="/program" class="font-typewriter text-sm uppercase underline underline-offset-4">Full program →</a>
-        </SectionHead>
-        <ScheduleTable sessions={sessions} showEvent={false} headingLevel="h3" />
       </section>
     )
   }

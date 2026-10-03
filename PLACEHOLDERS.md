@@ -9,7 +9,7 @@ Until the real file exists, `<Media id="key" />` renders a halftone placeholder 
 
 Then run `npm run placeholders` to refresh this list. To use a different filename, change `src` for that key in `media.json`.
 
-_34 of 34 still pending. Generated from media.json; don't edit by hand._
+_32 of 32 still pending. Generated from media.json; don't edit by hand._
 
 | Key | Type | Location | Ratio | Recommended size | File path (as-is) | Status |
 |---|---|---|---|---|---|---|
@@ -23,9 +23,7 @@ _34 of 34 still pending. Generated from media.json; don't edit by hand._
 | `trailer-sfc` | video | /sfc trailer | 16:9 | 1920x1080 H.264, under 25 MB | `public/videos/trailer-sfc.mp4` | ⬜ placeholder |
 | `faq-hero` | image | /faq hero | 4:5 | 1600x2000 | `public/images/faq-hero.jpg` | ⬜ placeholder |
 | `about-hero` | image | /about hero | 3:2 | 2100x1400 | `public/images/about-hero.jpg` | ⬜ placeholder |
-| `program-hero` | image | /program header | 21:9 | 2520x1080 | `public/images/program-hero.jpg` | ⬜ placeholder |
 | `sponsors-hero` | image | /sponsors header | 3:2 | 2100x1400 | `public/images/sponsors-hero.jpg` | ⬜ placeholder |
-| `volunteer-hero` | image | /volunteer hero | 4:5 | 1600x2000 | `public/images/volunteer-hero.jpg` | ⬜ placeholder |
 | `og-default` | image | Social share image (meta og:image) | 1200:630 | 1200x630 | `public/images/og-default.jpg` | ⬜ placeholder |
 | `poster-garam-dan-gula` | image | Film card + /films/garam-dan-gula | 2:3 | 1000x1500 | `public/images/posters/garam-dan-gula.jpg` | ⬜ placeholder |
 | `poster-ombak-terakhir` | image | Film card + /films/ombak-terakhir | 2:3 | 1000x1500 | `public/images/posters/ombak-terakhir.jpg` | ⬜ placeholder |

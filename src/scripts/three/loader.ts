@@ -19,6 +19,7 @@ import type { SceneHandle } from './scene';
 
 interface Instance {
   handle?: SceneHandle;
+  visible?: boolean;
   observers: IntersectionObserver[];
   disposed: boolean;
 }
@@ -100,8 +101,12 @@ async function mount(el: HTMLElement, inst: Instance) {
   if (inst.disposed) return inst.handle.dispose();
   el.classList.add('is-live');
 
-  // Animate only while visible.
-  const visible = new IntersectionObserver(([entry]) => inst.handle?.setActive(entry.isIntersecting));
+  // Animate only while visible, and not while the loading screen covers the
+  // page (its first frame is already drawn for when the loader opens up).
+  const visible = new IntersectionObserver(([entry]) => {
+    inst.visible = entry.isIntersecting;
+    applyActive(inst);
+  });
   visible.observe(el);
   inst.observers.push(visible);
 
@@ -109,6 +114,11 @@ async function mount(el: HTMLElement, inst: Instance) {
     (window as any).__ht3dExport = () => el.querySelector('canvas')!.toDataURL('image/png');
   }
 }
+
+const covered = () => document.documentElement.dataset.loading === 'on';
+const applyActive = (inst: Instance) => inst.handle?.setActive(!!inst.visible && !covered());
+// The loading screen starts to open (data-loading on -> out / removed): start rendering.
+let loadingObserver: MutationObserver | undefined;
 
 /** Tells the loading screen (Loader.astro) that every 3D block has built (or failed). */
 function settle() {
@@ -151,6 +161,14 @@ function init() {
   });
 
   Promise.allSettled(builds).then(settle);
+  if (loading) {
+    loadingObserver = new MutationObserver(() => {
+      if (covered()) return;
+      loadingObserver?.disconnect();
+      instances.forEach(applyActive);
+    });
+    loadingObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-loading'] });
+  }
 
   // Theme switches (styleguide buttons) refresh ink colours. Not the film
   // strip re-inking its own stage: that used to make the off-screen hero
@@ -179,6 +197,7 @@ function disposeAll() {
   });
   instances.clear();
   themeObserver?.disconnect();
+  loadingObserver?.disconnect();
 }
 
 document.addEventListener('astro:page-load', init);

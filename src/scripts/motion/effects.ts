@@ -111,7 +111,11 @@ export function foldingAccordions(): Cleanup {
   return () => offs.forEach((f) => f());
 }
 
-/** Infinite marquee; scrolling the page pushes it faster, in the scroll direction. */
+/**
+ * Infinite marquee; scrolling the page pushes it faster, in the scroll direction.
+ * Runs only while on screen, and the loop width is cached (reading scrollWidth
+ * every frame forced a layout on frames shared with the 3D and the rules).
+ */
 export function marquees(lenis: Lenis | undefined): Cleanup {
   const offs: Cleanup[] = [];
   document.querySelectorAll<HTMLElement>('[data-marquee]').forEach((root) => {
@@ -121,16 +125,27 @@ export function marquees(lenis: Lenis | undefined): Cleanup {
     let x = 0;
     let boost = 0;
     const base = Number(root.dataset.marqueeSpeed ?? 40); // px per second
+    let half = track.scrollWidth / 2; // track holds the items twice
+    const ro = new ResizeObserver(() => (half = track.scrollWidth / 2));
+    ro.observe(track);
     const tick = (_t: number, dtMs: number) => {
       const v = lenis?.velocity ?? 0;
       boost += (v * 25 - boost) * 0.1;
       x -= ((base + Math.abs(boost)) * Math.sign(boost || 1) * dtMs) / 1000;
-      const half = track.scrollWidth / 2; // track holds the items twice
       if (half > 0) x = ((x % half) - half) % half;
       gsap.set(track, { x });
     };
-    gsap.ticker.add(tick);
+    let running = false;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting === running) return;
+      running = entry.isIntersecting;
+      if (running) gsap.ticker.add(tick);
+      else gsap.ticker.remove(tick);
+    });
+    io.observe(root);
     offs.push(() => {
+      io.disconnect();
+      ro.disconnect();
       gsap.ticker.remove(tick);
       root.classList.remove('is-running');
       gsap.set(track, { clearProps: 'transform' });

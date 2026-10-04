@@ -183,6 +183,9 @@ export async function mountFilmStrip(
   const panels = [...host.querySelectorAll<HTMLElement>('[data-strip-panel]')];
   const segments = [...host.querySelectorAll<HTMLElement>('[data-strip-seg]')];
   const timecode = host.querySelector<HTMLElement>('[data-strip-timecode]');
+  // Last values written to the HUD: rewriting unchanged text still forces a layout.
+  let lastTimecode = '';
+  const lastFill: string[] = [];
   const eventFrames = data.events.map((_, i) => data.frames.map((fr, idx) => (fr.event === i ? idx : -1)).filter((x) => x >= 0));
   let currentEvent = -1;
 
@@ -280,15 +283,16 @@ export async function mountFilmStrip(
     // HUD: per-event progress bars and a running timecode (24 fps).
     segments.forEach((seg, i) => {
       const own = eventFrames[i];
-      const fill = own.length ? clamp01((offset - own[0] + 0.5) / own.length) : 0;
-      seg.style.setProperty('--fill', fill.toFixed(3));
+      const fill = (own.length ? clamp01((offset - own[0] + 0.5) / own.length) : 0).toFixed(3);
+      if (fill !== lastFill[i]) seg.style.setProperty('--fill', (lastFill[i] = fill));
     });
     if (timecode) {
       const total = Math.floor(offset * 48);
       const ff = total % 24;
       const ss = Math.floor(total / 24) % 60;
       const mm = Math.floor(total / 1440);
-      timecode.textContent = `00:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}:${String(ff).padStart(2, '0')}`;
+      const text = `00:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}:${String(ff).padStart(2, '0')}`;
+      if (text !== lastTimecode) timecode.textContent = lastTimecode = text;
     }
 
     look.render(renderer, scene, camera);

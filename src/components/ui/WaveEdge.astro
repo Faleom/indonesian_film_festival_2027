@@ -1,0 +1,45 @@
+---
+/**
+ * Soft wave edge: a paper-coloured band that fades in from transparent and
+ * ends in a broad, slowly rolling wave, with a faint theme-colour sliver
+ * under the wave (the second riso plate, out of register). With motion on
+ * the wave rolls on its own and swells toward the pointer
+ * (scripts/motion/waveEdge.ts). Without JS or with reduced motion it's a
+ * static wave.
+ *
+ * Used as the bottom of the home hero, so the hero flows into the next
+ * section instead of stopping at a straight line.
+ *
+ * Built in two parts so only the moving part repaints: a static CSS fade
+ * (top 140px) and the animated SVG wave band (bottom 160px).
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+// Band coordinates: viewBox units = px, 0 = top of the band (140px down the edge).
+const H = 160;
+const id = Math.random().toString(36).slice(2, 8);
+const curve = 'M0 96 C 160 112, 300 130, 460 126 C 620 122, 700 74, 900 68 C 1080 63, 1200 110, 1360 112 C 1460 113, 1540 96, 1600 88';
+const band = `${curve} L1600 0 L0 0 Z`;
+---
+
+<div class:list={['wave-edge', className]} data-wave-edge aria-hidden="true">
+  <div class="wave-edge__fade"></div>
+  <svg viewBox={`0 0 1600 ${H}`} preserveAspectRatio="none" focusable="false">
+    <defs>
+      <!-- Continues the CSS fade: 58.7% at the band top, 88% from 70px down. -->
+      <linearGradient id={`wave-fill-${id}`} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="70">
+        <stop offset="0" stop-color="var(--c-offwhite)" stop-opacity="0.587" />
+        <stop offset="1" stop-color="var(--c-offwhite)" stop-opacity="0.88" />
+      </linearGradient>
+      <linearGradient id={`wave-plate-${id}`} gradientUnits="userSpaceOnUse" x1="0" y1="10" x2="0" y2="100">
+        <stop offset="0" stop-color="var(--c-primary)" stop-opacity="0" />
+        <stop offset="1" stop-color="var(--c-primary)" stop-opacity="0.3" />
+      </linearGradient>
+    </defs>
+    <path class="wave-edge__plate" d={band} fill={`url(#wave-plate-${id})`} transform="translate(0 6)" />
+    <path class="wave-edge__fill" d={band} fill={`url(#wave-fill-${id})`} />
+  </svg>
+</div>

@@ -14,17 +14,28 @@
 
 .paper {
   background-color: var(--c-offwhite);
+}
+/* The paper sits still while the page scrolls over it. A fixed, composited
+   layer instead of background-attachment: fixed, which repaints the whole
+   viewport on every scroll frame (same look, no repaint). */
+.paper::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--c-offwhite);
   background-image:
     radial-gradient(ellipse at 50% 40%, transparent 55%, rgb(150 120 70 / 0.16) 100%),
     var(--paper-speckle),
     var(--paper-crumple);
   background-blend-mode: normal, normal, multiply;
-  background-attachment: fixed;
   background-size:
     100% 100%,
     240px 240px,
     cover;
   background-position: center;
+  will-change: transform;
 }
 
 /* Page content layer. */

@@ -23,7 +23,7 @@ export const cssVar = (el: Element, name: string) => getComputedStyle(el).getPro
 /** The shaders write raw values, so take hex colours as-is to print exact brand colours. */
 export const setInk = (c: Color, value: string) => c.setStyle(value || '#000000', LinearSRGBColorSpace);
 
-export function createRenderer(host: HTMLElement, { preserve = false, maxDpr = 1.5, forceDpr = 0 } = {}) {
+export function createRenderer(host: HTMLElement, { preserve = false, maxDpr = 1.5, forceDpr = 0, antialias = false } = {}) {
   const canvas = document.createElement('canvas');
   canvas.className = 'ht3d__canvas';
   canvas.setAttribute('aria-hidden', 'true');
@@ -31,7 +31,7 @@ export function createRenderer(host: HTMLElement, { preserve = false, maxDpr = 1
   const renderer = new WebGLRenderer({
     canvas,
     alpha: true,
-    antialias: false,
+    antialias,
     premultipliedAlpha: false,
     preserveDrawingBuffer: preserve,
     powerPreference: 'high-performance',
@@ -48,6 +48,13 @@ export interface HalftonePassOptions {
   grain?: number;
 }
 
+/**
+ * The halftone screen only reads the scene's tone at each dot's centre, so the
+ * scene is rendered at a few texels per dot instead of full device resolution
+ * (e.g. ~1/5 of the pixels on a 2x screen). The printed dots look the same.
+ */
+const TEXELS_PER_DOT = 4;
+
 export function createHalftonePass(renderer: WebGLRenderer, dpr: number, opts: HalftonePassOptions) {
   const target = new WebGLRenderTarget(1, 1, { depthBuffer: true });
   const uniforms = {
@@ -61,6 +68,7 @@ export function createHalftonePass(renderer: WebGLRenderer, dpr: number, opts: H
     uMisregister: { value: new Vector2(3 * dpr, -2 * dpr) },
     uGrain: { value: opts.grain ?? 1 },
     uTime: { value: 0 },
+    uTone: { value: 1 },
   };
   const quad = new Mesh(
     new PlaneGeometry(2, 2),
@@ -73,21 +81,87 @@ export function createHalftonePass(renderer: WebGLRenderer, dpr: number, opts: H
   return {
     uniforms,
     setSize(width: number, height: number, pixelRatio = dpr) {
-      target.setSize(Math.round(width * pixelRatio), Math.round(height * pixelRatio));
+      const scale = Math.min(1, TEXELS_PER_DOT / (opts.dotSize * pixelRatio));
+      target.setSize(Math.max(1, Math.round(width * pixelRatio * scale)), Math.max(1, Math.round(height * pixelRatio * scale)));
       uniforms.uResolution.value.set(width * pixelRatio, height * pixelRatio);
     },
-    render(scene: Object3D, camera: Camera) {
+    /** clearScreen: false keeps what's already on screen (e.g. a backdrop drawn first). */
+    render(scene: Object3D, camera: Camera, clearScreen = true) {
       renderer.setRenderTarget(target);
       renderer.clear();
       renderer.render(scene, camera);
       renderer.setRenderTarget(null);
-      renderer.clear();
+      if (clearScreen) renderer.clear();
       renderer.render(postScene, postCamera);
     },
     dispose() {
       quad.geometry.dispose();
       (quad.material as ShaderMaterial).dispose();
       target.dispose();
+    },
+  };
+}
+
+/**
+ * requestAnimationFrame loop for the 3D scenes:
+ *   - capped at maxFps (default 60). On 120/144 Hz screens this halves the GPU
+ *     work; the animations are time-based, so motion stays as smooth
+ *   - onSlow() fires when the average frame time stays over budget (~45 fps)
+ *     for two windows in a row (~2-3 s), so a scene can lower its resolution. Load spikes
+ *     (shader compiles, first texture uploads) are ignored: nothing is
+ *     measured in the first 2 s after starting. Never fires on devices that
+ *     keep up. ?quality=full turns it off (for measuring).
+ */
+const fixedQuality = typeof location !== 'undefined' && new URLSearchParams(location.search).get('quality') === 'full';
+
+export function frameLoop(render: () => void, { maxFps = 60, onSlow }: { maxFps?: number; onSlow?: () => void } = {}) {
+  const interval = 1000 / maxFps;
+  const WINDOW = 60; // frames averaged
+  let raf = 0;
+  let running = false;
+  let last = 0; // cadence anchor
+  let prevRender = 0; // for measuring real frame times
+  let warmUntil = 0;
+  let sum = 0;
+  let count = 0;
+  let slowWindows = 0;
+  const tick = (now: number) => {
+    if (!running) return;
+    raf = requestAnimationFrame(tick);
+    const elapsed = now - last;
+    if (elapsed < interval - 1) return;
+    // Keep the cadence even on 144 Hz (mix of 2- and 3-refresh gaps averages 60).
+    // A frame that lands just under the interval (60 Hz jitter) re-anchors at now.
+    last = elapsed >= interval ? now - (elapsed % interval) : now;
+    const frameTime = now - prevRender;
+    prevRender = now;
+    if (onSlow && !fixedQuality && now > warmUntil && frameTime < 250) {
+      sum += frameTime;
+      if (++count >= WINDOW) {
+        slowWindows = sum / count > 22 ? slowWindows + 1 : 0;
+        if (slowWindows >= 2) {
+          onSlow();
+          slowWindows = 0;
+          warmUntil = now + 1000; // let the new resolution settle before judging again
+        }
+        sum = count = 0;
+      }
+    }
+    render();
+  };
+  return {
+    start() {
+      if (running) return;
+      running = true;
+      last = performance.now() - interval;
+      prevRender = performance.now();
+      warmUntil = performance.now() + 2000;
+      sum = count = slowWindows = 0;
+      raf = requestAnimationFrame(tick);
+    },
+    stop() {
+      running = false;
+      cancelAnimationFrame(raf);
     },
   };
 }

@@ -18,6 +18,30 @@
       "location": "/ (home) hero, mobile fallback for 3D",
       "recommended": "1080x1920, under 4 MB, muted loop"
     },
+    "hero-bg-video": {
+      "type": "video",
+      "src": "/videos/hero-bg.mp4",
+      "ratio": "16:9",
+      "alt": "Festival footage playing behind the hero camera",
+      "location": "/ (home) hero, full-screen backdrop behind the 3D camera (printed as halftone dots)",
+      "recommended": "1920x1080 H.264, 10-20 s silent loop, under 8 MB; keep the subject centred (phones crop the sides)"
+    },
+    "hero-side-video": {
+      "type": "video",
+      "src": "/videos/hero-side.mp4",
+      "ratio": "4:5",
+      "alt": "Looping festival clip",
+      "location": "/ (home) hero, left of the 3D camera (desktop)",
+      "recommended": "1080x1350, 6-10 s silent loop, under 4 MB"
+    },
+    "hero-side-photo": {
+      "type": "image",
+      "src": "/images/hero-side.jpg",
+      "ratio": "4:5",
+      "alt": "Festival photo",
+      "location": "/ (home) hero, right of the 3D camera (desktop)",
+      "recommended": "1600x2000"
+    },
     "hero-sfc": {
       "type": "image",
       "src": "/images/hero-sfc.jpg",

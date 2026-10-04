@@ -32,7 +32,7 @@ import {
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
 import { particleFragment, particleVertex } from './particleShader';
-import { createRenderer, cssVar, releaseRenderer, setInk } from './post';
+import { createRenderer, cssVar, frameLoop, releaseRenderer, setInk } from './post';
 import { loadModel, type SceneHandle } from './scene';
 
 export interface HeroOptions {
@@ -43,15 +43,19 @@ export interface HeroOptions {
   script?: string;
   /** Phones/tablets: fewer particles, lower resolution. */
   lite?: boolean;
+  /** Solid variant: background video printed behind the camera (undefined = placeholder pattern). */
+  bgVideo?: string;
+  /** Upper bound on the pixel ratio (low-end devices start lower). */
+  maxDpr?: number;
 }
 
-const CAMERA_DISTANCE = 12;
-const FOV = 35;
-const TARGET_POINTS = 7500;
-const LITE_POINTS = 4000;
+export const CAMERA_DISTANCE = 12;
+export const FOV = 35;
+export const TARGET_POINTS = 7500;
+export const LITE_POINTS = 4000;
 
-const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
-const smooth = (a: number, b: number, v: number) => {
+export const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+export const smooth = (a: number, b: number, v: number) => {
   const t = clamp01((v - a) / (b - a));
   return t * t * (3 - 2 * t);
 };
@@ -96,10 +100,11 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
   geometry.setAttribute('aScript', new BufferAttribute(script, 1));
   geometry.setAttribute('aRand', new BufferAttribute(rand, 1));
 
-  const { renderer, canvas, dpr } = createRenderer(stage, { maxDpr: opts.lite ? 1.5 : 2 });
+  const { renderer, canvas, dpr } = createRenderer(stage, { maxDpr: opts.maxDpr ?? (opts.lite ? 1.5 : 2) });
   const uniforms = {
     uRot: { value: new Matrix3() },
     uCamScale: { value: 1 },
+    uCamOffset: { value: new Vector3() },
     uTitleHalf: { value: 1 },
     uTitleOffset: { value: new Vector2() },
     uExplode: { value: 0 },
@@ -110,6 +115,8 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
     uRefDepth: { value: CAMERA_DISTANCE },
     uKeyPass: { value: 0 },
     uMisregister: { value: new Vector2(3 * dpr, -2.5 * dpr) },
+    uBreath: { value: 0.12 },
+    uGrainFps: { value: 12 },
     uResolution: { value: new Vector2(1, 1) },
     uTime: { value: 0 },
     uInk: { value: new Color() },
@@ -137,6 +144,7 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
   keyPoints.renderOrder = 1;
   colourPoints.frustumCulled = keyPoints.frustumCulled = false;
   group.add(colourPoints, keyPoints);
+  const shadowMat = addScriptShadow(geometry, colourMat, uniforms, group);
   scene.add(group);
   const camera = new PerspectiveCamera(FOV, 1, 0.1, 100);
   camera.position.set(0, 0, CAMERA_DISTANCE);
@@ -192,7 +200,6 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
   const m4 = new Matrix4();
   let smoothP = progress();
   let active = false;
-  let frame = 0;
   const start = performance.now();
 
   // Body theme colours animate (registered CSS properties), so after a theme
@@ -216,16 +223,15 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
     uniforms.uTime.value = t;
     group.rotation.set(pointer.sy * 0.05, pointer.sx * 0.1, 0);
     host.style.setProperty('--hero-p', p.toFixed(3));
+    decor?.style.setProperty('--mx', pointer.sx.toFixed(3));
+    decor?.style.setProperty('--my', pointer.sy.toFixed(3));
 
     renderer.clear();
     renderer.render(scene, camera);
   };
 
-  const loop = () => {
-    if (!active) return;
-    render();
-    frame = requestAnimationFrame(loop);
-  };
+  const decor = host.querySelector<HTMLElement>('.hero3d__decor');
+  const loop = frameLoop(render);
   render();
 
   return {
@@ -236,9 +242,9 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
         // The theme may have changed while off screen.
         refreshColours();
         colourUntil = performance.now() + 900;
-        loop();
+        loop.start();
       }
-      else cancelAnimationFrame(frame);
+      else loop.stop();
     },
     refreshColours() {
       refreshColours();
@@ -247,12 +253,13 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
     },
     dispose() {
       active = false;
-      cancelAnimationFrame(frame);
+      loop.stop();
       window.removeEventListener('pointermove', onPointer);
       ro.disconnect();
       geometry.dispose();
       colourMat.dispose();
       keyMat.dispose();
+      shadowMat.dispose();
       releaseRenderer(renderer, canvas);
     },
   };
@@ -260,8 +267,24 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
 
 // ---------------------------------------------------------------------------
 
+/**
+ * Third draw of the particles: the script word's shadow in the theme dark,
+ * out of register, between the title dots and the script dots. Keeps the
+ * beige script readable over both the paper and the title ink.
+ */
+export function addScriptShadow(geometry: BufferGeometry, colourMat: ShaderMaterial, uniforms: object, group: Group) {
+  const mat = colourMat.clone();
+  mat.uniforms = { ...uniforms, uKeyPass: { value: 2 } };
+  mat.depthWrite = true;
+  const points = new Points(geometry, mat);
+  points.renderOrder = -1;
+  points.frustumCulled = false;
+  group.add(points);
+  return mat;
+}
+
 /** Samples points evenly over a model's surface, with normals and a grey tone per part. */
-function sampleModel(model: Object3D, count: number) {
+export function sampleModel(model: Object3D, count: number) {
   model.updateMatrixWorld(true);
   const parts: BufferGeometry[] = [];
   model.traverse((o) => {
@@ -318,7 +341,7 @@ function disposeModel(model: Object3D) {
  * on a staggered grid (about targetPoints dots). Returns normalised positions (x in -1..1), a size per
  * dot from ink coverage, and which dots belong to the script word.
  */
-async function sampleTitle(lines: string[], scriptWord: string | undefined, targetPoints: number) {
+export async function sampleTitle(lines: string[], scriptWord: string | undefined, targetPoints: number) {
   const root = getComputedStyle(document.documentElement);
   const display = root.getPropertyValue('--ff-display').trim() || 'sans-serif';
   const scriptFont = root.getPropertyValue('--ff-script').trim() || 'cursive';
@@ -353,9 +376,13 @@ async function sampleTitle(lines: string[], scriptWord: string | undefined, targ
     const x = W / 2 - line2Width / 2 - fs * 0.05;
     // Just under line 1's baseline, overlapping both lines like DisplayTitle.
     const y = fs * 0.2 + lh * scale + fs * scale * 0.2;
-    scriptCtx.font = `400 ${fs * scale * 0.62}px ${scriptFont}`;
+    scriptCtx.font = `400 ${fs * scale * 0.7}px ${scriptFont}`;
     scriptCtx.translate(x, y);
     scriptCtx.rotate((-14 * Math.PI) / 180);
+    // Thicken the thin script strokes so they survive being sampled as dots.
+    scriptCtx.lineWidth = fs * scale * 0.03;
+    scriptCtx.lineJoin = 'round';
+    scriptCtx.strokeText(scriptWord, 0, 0);
     scriptCtx.fillText(scriptWord, 0, 0);
   }
 
@@ -371,18 +398,22 @@ async function sampleTitle(lines: string[], scriptWord: string | undefined, targ
   const pts: number[] = [];
   const sizes: number[] = [];
   const isScript: number[] = [];
-  let row = 0;
-  for (let y = step / 2; y < H; y += step * 0.866, row++) {
-    for (let x = (row % 2 ? step / 2 : 0) + step / 2; x < W; x += step) {
-      const idx = (Math.floor(y) * W + Math.floor(x)) * 4 + 3;
-      const s = scr[idx] / 255;
-      const a = Math.max(text[idx] / 255, s);
-      if (a < 0.15) continue;
-      pts.push((x - W / 2) / (W / 2), -(y - H / 2) / (W / 2));
-      sizes.push(Math.sqrt(a));
-      isScript.push(s > 0.4 ? 1 : 0);
+  // Staggered (hex) grid over one canvas; size is relative to the title step.
+  const sampleGrid = (data: Uint8ClampedArray, gridStep: number, script: boolean) => {
+    let row = 0;
+    for (let y = gridStep / 2; y < H; y += gridStep * 0.866, row++) {
+      for (let x = (row % 2 ? gridStep / 2 : 0) + gridStep / 2; x < W; x += gridStep) {
+        const a = data[(Math.floor(y) * W + Math.floor(x)) * 4 + 3] / 255;
+        if (a < 0.15) continue;
+        pts.push((x - W / 2) / (W / 2), -(y - H / 2) / (W / 2));
+        sizes.push(Math.sqrt(a) * (gridStep / step));
+        isScript.push(script ? 1 : 0);
+      }
     }
-  }
+  };
+  sampleGrid(text, step, false);
+  // The script is thin: sample it about twice as finely so it stays legible.
+  sampleGrid(scr, Math.max(2.5, step * 0.45), true);
   return {
     points: new Float32Array(pts),
     sizes: new Float32Array(sizes),

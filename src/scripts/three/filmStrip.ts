@@ -16,9 +16,12 @@ import {
   PerspectiveCamera,
   PlaneGeometry,
   Scene,
+  type Camera,
+  type Material,
   type Texture,
+  type WebGLRenderer,
 } from 'three';
-import { createHalftonePass, createRenderer, releaseRenderer, setInk } from './post';
+import { createHalftonePass, createRenderer, frameLoop, releaseRenderer, setInk } from './post';
 import { coverFit, filmFrameTexture, loadMediaTexture, placeholderTexture, titleCardTexture } from './textures';
 import type { SceneHandle } from './scene';
 
@@ -47,15 +50,60 @@ const PICTURE_ASPECT = 1.6 / 1.2;
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
-export async function mountFilmStrip(host: HTMLElement, data: StripData, { lite = false } = {}): Promise<SceneHandle> {
-  const stage = (host.querySelector('[data-strip-stage]') as HTMLElement) ?? host;
-  // Full device resolution (up to 2x) so it's crisp on retina; drops if frames run slow.
-  // Phones/tablets (lite) start lower and use slightly bigger dots.
-  const { renderer, canvas, dpr: maxDpr } = createRenderer(stage, { maxDpr: lite ? 1.25 : 2 });
-  let dpr = maxDpr;
+/**
+ * How the strip is printed. classic: render, then halftone the whole screen.
+ * solid (EXPERIMENT, stripSolidLook.ts): each surface prints its own dots.
+ */
+export interface StripLook {
+  ink: Color;
+  key: Color;
+  antialias?: boolean;
+  borderMaterial(tex: Texture): Material;
+  pictureMaterial(aspect: number): Material;
+  setPictureMap(mat: Material, tex: Texture): void;
+  update(speed: number, t: number, dpr: number): void;
+  setSize(width: number, height: number, dpr: number): void;
+  render(renderer: WebGLRenderer, scene: Scene, camera: Camera): void;
+  dispose(): void;
+}
+
+/** The original look: screen-space halftone post-pass over the whole strip. */
+function classicLook(renderer: WebGLRenderer, dpr: number, lite: boolean): StripLook {
   const BASE_DOT = lite ? 5 : 4.5;
   const pass = createHalftonePass(renderer, dpr, { dotSize: BASE_DOT, keyStrength: 0.55 });
   const { uniforms } = pass;
+  return {
+    ink: uniforms.uInk.value,
+    key: uniforms.uKey.value,
+    borderMaterial: (tex) => new MeshBasicMaterial({ map: tex, transparent: true, alphaTest: 0.5, side: DoubleSide }),
+    pictureMaterial: () => new MeshBasicMaterial({ color: 0xffffff, side: DoubleSide }),
+    setPictureMap(mat, tex) {
+      (mat as MeshBasicMaterial).map = tex;
+      mat.needsUpdate = true;
+    },
+    update(speed, t, dpr) {
+      uniforms.uDotSize.value = BASE_DOT * dpr * (1 + speed * 0.9);
+      uniforms.uMisregister.value.set((1.5 + speed * 9) * dpr, (-1 - speed * 6) * dpr);
+      uniforms.uTime.value = t;
+    },
+    setSize: (width, height, dpr) => pass.setSize(width, height, dpr),
+    render: (_, scene, camera) => pass.render(scene, camera),
+    dispose: () => pass.dispose(),
+  };
+}
+
+export async function mountFilmStrip(
+  host: HTMLElement,
+  data: StripData,
+  { lite = false, look: lookName = 'classic', maxDpr: dprCap }: { lite?: boolean; look?: string; maxDpr?: number } = {},
+): Promise<SceneHandle> {
+  const stage = (host.querySelector('[data-strip-stage]') as HTMLElement) ?? host;
+  const solidLook = lookName === 'solid' ? (await import('./stripSolidLook')).createSolidLook() : undefined;
+  // Full device resolution (up to 2x) so it's crisp on retina; drops if frames run slow.
+  // Phones/tablets (lite) start lower and use slightly bigger dots.
+  const { renderer, canvas, dpr: maxDpr } = createRenderer(stage, { maxDpr: dprCap ?? (lite ? 1.25 : 2), antialias: !!solidLook });
+  let dpr = maxDpr;
+  const look: StripLook = (solidLook as StripLook | undefined) ?? classicLook(renderer, dpr, lite);
 
   const scene = new Scene();
   const strip = new Group();
@@ -69,12 +117,12 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData, { lite 
   const borderTex = filmFrameTexture();
   const borderGeo = new PlaneGeometry(2.0, 1.62);
   const pictureGeo = new PlaneGeometry(1.6, 1.2);
-  const borderMat = new MeshBasicMaterial({ map: borderTex, transparent: true, alphaTest: 0.5, side: DoubleSide });
+  const borderMat = look.borderMaterial(borderTex);
   const textures: Texture[] = [borderTex];
   const videos: HTMLVideoElement[] = [];
   const frames = data.frames.map((f, i) => {
     const g = new Group();
-    const pictureMat = new MeshBasicMaterial({ color: 0xffffff, side: DoubleSide });
+    const pictureMat = look.pictureMaterial(PICTURE_ASPECT);
     const picture = new Mesh(pictureGeo, pictureMat);
     picture.position.z = -0.004;
     g.add(picture, new Mesh(borderGeo, borderMat));
@@ -82,8 +130,7 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData, { lite 
 
     const ev = data.events[f.event];
     const setMap = (t: Texture) => {
-      pictureMat.map = t;
-      pictureMat.needsUpdate = true;
+      look.setPictureMap(pictureMat, t);
       textures.push(t);
     };
     if (f.kind === 'title') {
@@ -120,8 +167,8 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData, { lite 
     return { ink, key };
   });
   probe.remove();
-  uniforms.uInk.value.copy(inks[0].ink);
-  uniforms.uKey.value.copy(inks[0].key);
+  look.ink.copy(inks[0].ink);
+  look.key.copy(inks[0].key);
 
   // ---- HUD (HTML overlay) ----
   const panels = [...host.querySelectorAll<HTMLElement>('[data-strip-panel]')];
@@ -143,7 +190,7 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData, { lite 
     if (!width || !height) return;
     renderer.setPixelRatio(dpr);
     renderer.setSize(width, height, false);
-    pass.setSize(width, height, dpr);
+    look.setSize(width, height, dpr);
     camera.aspect = width / height;
     // Keep roughly the same strip width on narrow (tablet) screens.
     camera.position.z = camera.aspect < 1.2 ? 7.2 : 5.4;
@@ -168,7 +215,6 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData, { lite 
   let offset = progress() * last;
   let velocity = 0;
   let active = false;
-  let frame = 0;
   const start = performance.now();
 
   const render = () => {
@@ -201,12 +247,9 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData, { lite 
     const pinned = isPinned();
     showEvent(ev, pinned);
     if (!pinned && document.body.dataset.theme !== pageTheme) document.body.dataset.theme = pageTheme;
-    uniforms.uInk.value.lerp(inks[ev].ink, 0.08);
-    uniforms.uKey.value.lerp(inks[ev].key, 0.08);
-
-    uniforms.uDotSize.value = BASE_DOT * dpr * (1 + speed * 0.9);
-    uniforms.uMisregister.value.set((1.5 + speed * 9) * dpr, (-1 - speed * 6) * dpr);
-    uniforms.uTime.value = t;
+    look.ink.lerp(inks[ev].ink, 0.08);
+    look.key.lerp(inks[ev].key, 0.08);
+    look.update(speed, t, dpr);
 
     // HUD: per-event progress bars and a running timecode (24 fps).
     segments.forEach((seg, i) => {
@@ -222,25 +265,17 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData, { lite 
       timecode.textContent = `00:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}:${String(ff).padStart(2, '0')}`;
     }
 
-    pass.render(scene, camera);
+    look.render(renderer, scene, camera);
   };
 
-  // Adaptive resolution: if frames average over ~22ms, step the pixel ratio down.
-  let slowFrames = 0;
-  let lastFrame = performance.now();
-  const loop = () => {
-    if (!active) return;
-    const now = performance.now();
-    slowFrames = now - lastFrame > 22 ? slowFrames + 1 : Math.max(0, slowFrames - 1);
-    lastFrame = now;
-    if (slowFrames > 40 && dpr > 1) {
+  // 60 fps cap; adaptive resolution: if frames keep running slow, step the pixel ratio down.
+  const loop = frameLoop(render, {
+    onSlow() {
+      if (dpr <= 1) return;
       dpr = Math.max(1, dpr - 0.5);
-      slowFrames = 0;
       resize();
-    }
-    render();
-    frame = requestAnimationFrame(loop);
-  };
+    },
+  });
   render();
 
   return {
@@ -248,12 +283,9 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData, { lite 
       if (next === active) return;
       active = next;
       videos.forEach((v) => (active ? v.play().catch(() => {}) : v.pause()));
-      if (active) {
-        lastFrame = performance.now();
-        loop();
-      }
+      if (active) loop.start();
       else {
-        cancelAnimationFrame(frame);
+        loop.stop();
         if (document.body.dataset.theme !== pageTheme) document.body.dataset.theme = pageTheme;
       }
     },
@@ -262,7 +294,7 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData, { lite 
     },
     dispose() {
       active = false;
-      cancelAnimationFrame(frame);
+      loop.stop();
       ro.disconnect();
       videos.forEach((v) => {
         v.pause();
@@ -270,11 +302,11 @@ export async function mountFilmStrip(host: HTMLElement, data: StripData, { lite 
         v.load();
       });
       textures.forEach((t) => t.dispose());
-      frames.forEach((f) => ((f.group.children[0] as Mesh).material as MeshBasicMaterial).dispose());
+      frames.forEach((f) => ((f.group.children[0] as Mesh).material as Material).dispose());
       borderMat.dispose();
       borderGeo.dispose();
       pictureGeo.dispose();
-      pass.dispose();
+      look.dispose();
       releaseRenderer(renderer, canvas);
       document.body.dataset.theme = pageTheme;
     },

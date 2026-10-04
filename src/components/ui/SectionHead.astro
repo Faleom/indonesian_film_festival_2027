@@ -1,6 +1,7 @@
 ---
-/** Section title row with a double newspaper rule underneath. */
+/** Section title row with a double newspaper rule underneath (an InkRule). */
 import Kicker from '../typography/Kicker.astro';
+import InkRule from './InkRule.astro';
 
 interface Props {
   title: string;
@@ -18,4 +19,5 @@ const { title, kicker, id, as: Tag = 'h2' } = Astro.props;
     <Tag id={id} class="heading-condensed" data-reveal="fade-up">{title}</Tag>
   </div>
   <slot />
+  <InkRule class="section-head__rule" />
 </div>

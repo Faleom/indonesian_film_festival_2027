@@ -53,10 +53,12 @@ export function filmFrameTexture(): CanvasTexture {
       ctx.restore();
     }
   }
-  // Edge print, light on dark (prints as paper showing through the ink).
+  // Edge print, light on dark (prints as paper showing through the ink), in
+  // the strip between the sprocket holes and the picture.
   ctx.fillStyle = '#d8d8d8';
-  ctx.font = `600 22px ${fonts().type}`;
-  ctx.fillText('INDONESIAN FILM FESTIVAL  ▸  21', wx, wy - 12);
+  ctx.font = `600 16px ${fonts().type}`;
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('INDONESIAN FILM FESTIVAL  ▸  21', wx, wy - 7);
   return finish(c);
 }
 
@@ -73,24 +75,27 @@ export function titleCardTexture(opts: { number: number; total: number; name: st
   ctx.fillText(`EVENT ${String(opts.number).padStart(2, '0')} / ${String(opts.total).padStart(2, '0')}`, 70, 100);
   ctx.fillRect(70, 125, W - 140, 4);
 
-  // Event name, wrapped onto up to 3 lines, as large as fits.
+  // Event name, wrapped onto up to 3 lines, as large as fits: every line
+  // (including a single long word) inside the margins, above the date.
   const words = opts.name.toUpperCase().split(' ');
+  const maxW = W - 140;
+  const maxH = H - 190 - 170;
   let size = 300;
   let lines: string[] = [];
-  for (; size > 80; size -= 10) {
+  for (; size > 60; size -= 6) {
     ctx.font = `400 ${size}px ${f.display}`;
     lines = [];
     let line = '';
     for (const w of words) {
       const test = line ? `${line} ${w}` : w;
-      if (ctx.measureText(test).width > W - 140 && line) {
+      if (ctx.measureText(test).width > maxW && line) {
         lines.push(line);
         line = w;
       } else line = test;
     }
     lines.push(line);
-    if (lines.length <= 2 && lines.length * size * 0.9 < H - 320) break;
-    if (size <= 160 && lines.length <= 3) break;
+    const fits = lines.every((l) => ctx.measureText(l).width <= maxW) && lines.length * size * 0.86 <= maxH;
+    if (fits && lines.length <= 3) break;
   }
   lines.forEach((l, i) => ctx.fillText(l, 66, 190 + size * 0.86 * (i + 1)));
 

@@ -28,6 +28,7 @@ export const halftoneFragment = /* glsl */ `
   uniform vec2 uMisregister;  // key plate offset in device pixels
   uniform float uGrain;       // 0..1
   uniform float uTime;
+  uniform float uTone;        // 1 = normal, 0 = no ink (dots shrink away)
 
   varying vec2 vUv;
 
@@ -41,7 +42,7 @@ export const halftoneFragment = /* glsl */ `
     // The scene renders in linear light; convert to perceptual brightness so
     // mid-greys print as mid-sized dots instead of near-solid ink.
     float lum = pow(dot(c.rgb, vec3(0.299, 0.587, 0.114)), 1.0 / 2.2);
-    return (1.0 - lum) * c.a;
+    return (1.0 - lum) * c.a * uTone;
   }
 
   // Coverage (0..1) of the halftone screen at this pixel. Checks the 3x3

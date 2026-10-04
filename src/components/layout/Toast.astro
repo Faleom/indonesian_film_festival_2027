@@ -1,7 +1,8 @@
 ---
 /**
- * "Coming soon" toast for forms. Any <form data-coming-soon> shows it on a
- * valid submit instead of sending anything.
+ * "Coming soon" toast. Any <form data-coming-soon> shows it on a valid submit
+ * instead of sending anything; any <a data-coming-soon> (e.g. a ticket link
+ * whose URL is still "#") shows it on click.
  * TODO(backend): replace with real submission handling.
  */
 import site from '../../content/site.json';
@@ -12,16 +13,33 @@ import site from '../../content/site.json';
 <script>
   let timer: number | undefined;
 
-  // Looked up per submit: page transitions replace the body, toast included.
-  document.addEventListener('submit', (e) => {
-    const form = e.target;
+  // Looked up each time: page transitions replace the body, toast included.
+  const show = (message?: string) => {
     const toast = document.getElementById('toast');
-    if (!(form instanceof HTMLFormElement) || !form.hasAttribute('data-coming-soon') || !toast) return;
-    // TODO(backend): POST the form data here instead of showing the toast.
-    e.preventDefault();
-    toast.textContent = form.dataset.comingSoon || toast.dataset.message || 'Coming soon.';
+    if (!toast) return;
+    toast.textContent = message || toast.dataset.message || 'Coming soon.';
     toast.hidden = false;
     window.clearTimeout(timer);
     timer = window.setTimeout(() => (toast.hidden = true), 6000);
+  };
+
+  document.addEventListener('submit', (e) => {
+    const form = e.target;
+    if (!(form instanceof HTMLFormElement) || !form.hasAttribute('data-coming-soon')) return;
+    // TODO(backend): POST the form data here instead of showing the toast.
+    e.preventDefault();
+    show(form.dataset.comingSoon);
   });
+
+  // Capture phase, so it runs before the page-transition router handles the link.
+  document.addEventListener(
+    'click',
+    (e) => {
+      const link = (e.target as Element | null)?.closest?.('a[data-coming-soon]');
+      if (!(link instanceof HTMLAnchorElement)) return;
+      e.preventDefault();
+      show(link.dataset.comingSoon);
+    },
+    true,
+  );
 </script>

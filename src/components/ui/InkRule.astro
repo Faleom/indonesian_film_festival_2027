@@ -1,0 +1,24 @@
+---
+/**
+ * Newspaper double rule, printed in two inks: a thick + thin black rule over
+ * a theme-colour plate slightly out of register. With motion on it behaves
+ * like a plucked string: it sways gently, bends toward the pointer and
+ * wobbles when you scroll fast (scripts/motion/inkRule.ts). Without JS or
+ * with reduced motion it stays a soft static curve.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+// Static resting curve; the motion script takes over from the same shape.
+const d = 'M0 6 C 300 4.5, 700 7.5, 1000 6';
+---
+
+<div class:list={['ink-rule', className]} data-ink-rule aria-hidden="true">
+  <svg viewBox="0 0 1000 12" preserveAspectRatio="none" focusable="false">
+    <path class="ink-rule__plate" d={d} />
+    <path class="ink-rule__thick" d={d} />
+    <path class="ink-rule__thin" d={d} />
+  </svg>
+</div>

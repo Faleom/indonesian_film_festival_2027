@@ -9,7 +9,11 @@ interface Props {
 }
 
 const { href, variant = 'primary', external = false, class: className } = Astro.props;
+import site from '../../content/site.json';
+
 const isExternal = external && href !== '#';
+// Ticket links stay "#" until sales open: show the coming-soon toast instead.
+const comingSoon = href === '#' ? site.ticketsComingSoon : undefined;
 ---
 
 <a
@@ -17,6 +21,7 @@ const isExternal = external && href !== '#';
   class:list={['btn', `btn--${variant}`, className]}
   target={isExternal ? '_blank' : undefined}
   rel={isExternal ? 'noopener' : undefined}
+  data-coming-soon={comingSoon}
 >
   <slot />
   {isExternal && <span class="sr-only">(opens in a new tab)</span>}

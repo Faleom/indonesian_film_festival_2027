@@ -10,6 +10,8 @@ import 'lenis/dist/lenis.css';
 import { buildReveal, type RevealHandle } from './reveals';
 import { startCursor, type CursorHandle } from './cursor';
 import { clippingTilt, foldingAccordions, marquees, reprint, scrollDots } from './effects';
+import { inkRules } from './inkRule';
+import { waveEdges } from './waveEdge';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -24,6 +26,21 @@ let refreshTimer: number | undefined;
 const onToggle = () => {
   window.clearTimeout(refreshTimer);
   refreshTimer = window.setTimeout(() => ScrollTrigger.refresh(), 50);
+};
+
+/**
+ * In-page anchor links (#id) scroll with Lenis. Capture phase, so the
+ * page-transition router doesn't also handle them and fight the smooth scroll.
+ */
+const onAnchorClick = (e: MouseEvent) => {
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+  const link = (e.target as Element | null)?.closest?.('a[href^="#"]');
+  const id = link?.getAttribute('href')?.slice(1);
+  const target = id ? document.getElementById(id) : null;
+  if (!lenis || !target) return;
+  e.preventDefault();
+  lenis.scrollTo(target);
+  history.replaceState(history.state, '', `#${id}`);
 };
 
 /** @param navigated true after a client-side page transition (it already printed the theme). */
@@ -42,8 +59,9 @@ export function start({ navigated = false } = {}) {
   });
 
   document.addEventListener('toggle', onToggle, true);
+  document.addEventListener('click', onAnchorClick, true);
   cursor = startCursor();
-  cleanups = [scrollDots(), clippingTilt(), foldingAccordions(), marquees(lenis), reprint(navigated)];
+  cleanups = [scrollDots(), clippingTilt(), foldingAccordions(), marquees(lenis), reprint(navigated), inkRules(lenis), waveEdges(lenis)];
   ScrollTrigger.refresh();
 }
 
@@ -54,6 +72,7 @@ export function stop() {
   cleanups = [];
   ScrollTrigger.getAll().forEach((t) => t.kill());
   document.removeEventListener('toggle', onToggle, true);
+  document.removeEventListener('click', onAnchorClick, true);
   gsap.ticker.remove(raf);
   lenis?.destroy();
   lenis = undefined;

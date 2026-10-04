@@ -8,7 +8,7 @@
  */
 import { AmbientLight, Box3, DirectionalLight, Group, PerspectiveCamera, Scene, Vector3, type Object3D } from 'three';
 import { buildCameraModel } from './cameraModel';
-import { createHalftonePass, createRenderer, cssVar, disposeObject, releaseRenderer, setInk } from './post';
+import { createHalftonePass, createRenderer, cssVar, disposeObject, frameLoop, releaseRenderer, setInk } from './post';
 
 export interface SceneOptions {
   /** URL of a GLB to use instead of the primitive camera. */
@@ -84,7 +84,6 @@ export async function mountScene(host: HTMLElement, opts: SceneOptions = {}): Pr
   };
 
   let active = false;
-  let frame = 0;
   const startTime = performance.now();
 
   const render = () => {
@@ -103,11 +102,7 @@ export async function mountScene(host: HTMLElement, opts: SceneOptions = {}): Pr
     pass.render(scene, camera);
   };
 
-  const loop = () => {
-    if (!active) return;
-    render();
-    frame = requestAnimationFrame(loop);
-  };
+  const loop = frameLoop(render);
 
   render(); // first frame right away, so the fallback can be swapped out
 
@@ -121,9 +116,9 @@ export async function mountScene(host: HTMLElement, opts: SceneOptions = {}): Pr
       active = next;
       if (active) {
         refreshColours();
-        loop();
+        loop.start();
       }
-      else cancelAnimationFrame(frame);
+      else loop.stop();
     },
     refreshColours() {
       refreshColours();
@@ -131,7 +126,7 @@ export async function mountScene(host: HTMLElement, opts: SceneOptions = {}): Pr
     },
     dispose() {
       active = false;
-      cancelAnimationFrame(frame);
+      loop.stop();
       window.removeEventListener('pointermove', onPointer);
       ro.disconnect();
       disposeObject(scene);

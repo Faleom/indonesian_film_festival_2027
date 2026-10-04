@@ -15,10 +15,23 @@ import Splash from '../ui/Splash.astro';
 import Button from '../ui/Button.astro';
 import site from '../../content/site.json';
 import pages from '../../content/pages.json';
+import WaveEdge from '../ui/WaveEdge.astro';
+import { getMedia, mediaExists } from '../../lib/media';
 
 const page = pages.home;
 const model = fs.existsSync(path.join(process.cwd(), 'public/models/camera.glb')) ? '/models/camera.glb' : undefined;
+// Full-screen video printed behind the camera (WebGL); a moving pattern until the file exists.
+const bgEntry = getMedia('hero-bg-video');
+const bgVideo = bgEntry && mediaExists(bgEntry) ? bgEntry.src : undefined;
 const hasFallback = fs.existsSync(path.join(process.cwd(), 'public/images/camera-fallback.png'));
+// Print-shop marks around the live 3D stage (decoration only).
+const slug = `${site.shortName} ${site.editionNumber} · ${site.city} · ${site.dates}`;
+const swatches = ['sfc', 'uts', 'base', 'main'];
+const regMark = (cls: string) => `
+  <svg class="${cls}" viewBox="0 0 40 40" aria-hidden="true">
+    <g class="reg__plate"><circle cx="20" cy="20" r="11"/><circle cx="20" cy="20" r="5"/><path d="M20 2v36M2 20h36"/></g>
+    <g class="reg__key"><circle cx="20" cy="20" r="11"/><circle cx="20" cy="20" r="5"/><path d="M20 2v36M2 20h36"/></g>
+  </svg>`;
 const meta = [
   { label: 'Theme', value: site.theme },
   { label: 'When', value: site.dates },
@@ -29,12 +42,46 @@ const meta = [
 <section
   class="hero3d"
   data-halftone-3d="hero"
+  data-variant="solid"
   data-live-layout
   data-title={JSON.stringify(page.title)}
   data-script={page.script}
   data-model={model}
+  data-bg-video={bgVideo}
 >
   <div class="hero3d__stage" data-hero-stage>
+    <!-- Live layout decoration: print marks that drift with the pointer and clear away as the scroll animation starts -->
+    <div class="hero3d__decor" aria-hidden="true">
+      <!-- Scrapbook clippings either side of the camera (desktop) -->
+      <div class="hero3d__clip hero3d__clip--left">
+        <Media id="hero-side-video" alt="" background />
+      </div>
+      <div class="hero3d__clip hero3d__clip--right">
+        <Media id="hero-side-photo" alt="" sizes="250px" />
+      </div>
+      {!bgVideo && <span class="hero3d__bg-label">[VIDEO: hero-bg-video 16:9]</span>}
+      <svg class="hero3d__crops" preserveAspectRatio="none" viewBox="0 0 100 100">
+        <path d="M0 6V0h6M94 0h6v6M100 94v6h-6M6 100H0v-6" />
+      </svg>
+      <div class="hero3d__side hero3d__side--left">
+        <Fragment set:html={regMark('reg')} />
+        <span class="hero3d__slug">{slug}</span>
+      </div>
+      <div class="hero3d__side hero3d__side--right">
+        <div class="hero3d__swatches">
+          {
+            swatches.map((t) => (
+              <span data-theme={t}>
+                <i />
+                <i />
+                <i />
+              </span>
+            ))
+          }
+        </div>
+        <Fragment set:html={regMark('reg')} />
+      </div>
+    </div>
     <!-- Static layout: no JS, phones, reduced motion -->
     <div class="hero3d__static container-page grid items-center gap-10 pt-10 pb-16 md:pt-16 md:pb-24 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
       <div class="flex flex-col gap-6">
@@ -53,7 +100,7 @@ const meta = [
         </dl>
         <div class="flex flex-wrap gap-3 pt-2">
           <Button href={site.ticketUrl} external>Get tickets</Button>
-          <Button href="#journey" variant="ghost">Explore the events</Button>
+          <Button href="#festival-journey" variant="ghost">Explore the events</Button>
         </div>
       </div>
       <div class="hero__media mx-auto w-full max-w-md lg:max-w-none">
@@ -78,11 +125,13 @@ const meta = [
         <BodyText size="lead" class="max-w-[46ch]"><p>{page.intro}</p></BodyText>
         <div class="flex flex-wrap gap-3">
           <Button href={site.ticketUrl} external>Get tickets</Button>
-          <Button href="#journey" variant="ghost">Explore the events</Button>
+          <Button href="#festival-journey" variant="ghost">Explore the events</Button>
         </div>
       </div>
       <p class="hero3d__cue" aria-hidden="true">Scroll to print <span>↓</span></p>
     </div>
+    <!-- Rolling wave where the hero meets the next section (follows the pointer) -->
+    <WaveEdge class="hero3d__edge" />
   </div>
 </section>
 

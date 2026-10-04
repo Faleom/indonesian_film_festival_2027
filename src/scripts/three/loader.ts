@@ -28,6 +28,16 @@ let themeObserver: MutationObserver | undefined;
 const exportMode = new URLSearchParams(location.search).has('export-3d');
 /** Phones/tablets: lighter scenes. */
 const lite = () => !matchMedia('(min-width: 1024px) and (pointer: fine)').matches;
+/**
+ * Low-end phones/tablets (≤4 cores or ≤4 GB RAM, e.g. budget Android) start
+ * at 1x resolution instead of stepping down after a laggy first few seconds.
+ * Everything else starts at full quality; frameLoop lowers it only if needed.
+ */
+const maxDpr = () => {
+  const nav = navigator as Navigator & { deviceMemory?: number };
+  const lowEnd = (nav.hardwareConcurrency || 8) <= 4 || (nav.deviceMemory || 8) <= 4;
+  return lite() && lowEnd ? 1 : undefined;
+};
 
 const mounters: Record<string, (el: HTMLElement) => Promise<SceneHandle>> = {
   camera: async (el) =>
@@ -36,14 +46,28 @@ const mounters: Record<string, (el: HTMLElement) => Promise<SceneHandle>> = {
       dotSize: Number(el.dataset.dotSize) || undefined,
       exportMode,
     }),
-  hero: async (el) =>
-    (await import('./heroScene')).mountHero(el, {
+  hero: async (el) => {
+    const opts = {
       modelUrl: el.dataset.model || undefined,
       lines: JSON.parse(el.dataset.title || '[]'),
       script: el.dataset.script || undefined,
       lite: lite(),
+      maxDpr: maxDpr(),
+      bgVideo: el.dataset.bgVideo || undefined,
+    };
+    // EXPERIMENT: ?hero=classic|solid overrides data-variant on <HomeHero />.
+    const variant = new URLSearchParams(location.search).get('hero') || el.dataset.variant;
+    return variant === 'solid'
+      ? (await import('./heroSceneSolid')).mountHeroSolid(el, opts)
+      : (await import('./heroScene')).mountHero(el, opts);
+  },
+  filmstrip: async (el) =>
+    (await import('./filmStrip')).mountFilmStrip(el, JSON.parse(el.dataset.strip || '{}'), {
+      lite: lite(),
+      maxDpr: maxDpr(),
+      // EXPERIMENT: ?strip=classic|solid overrides data-variant on <FilmStripJourney />.
+      look: new URLSearchParams(location.search).get('strip') || el.dataset.variant,
     }),
-  filmstrip: async (el) => (await import('./filmStrip')).mountFilmStrip(el, JSON.parse(el.dataset.strip || '{}'), { lite: lite() }),
 };
 
 function webglAvailable(): boolean {

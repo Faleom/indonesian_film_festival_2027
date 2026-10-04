@@ -1,9 +1,11 @@
 ---
 import site from '../../content/site.json';
 import NewsletterForm from '../forms/NewsletterForm.astro';
+import InkRule from '../ui/InkRule.astro';
 ---
 
-<footer class="mt-24 border-t-[3px] border-double border-ink md:mt-32">
+<footer class="mt-24 md:mt-32">
+  <InkRule />
   <div class="container-page py-12 md:py-16">
     <p
       data-reveal="misregister"
@@ -52,10 +54,6 @@ import NewsletterForm from '../forms/NewsletterForm.astro';
         <p class="m-0 font-typewriter text-xs leading-relaxed uppercase md:text-right">
           © {site.year} {site.name}<br />Non-profit · Student-run · {site.city}
         </p>
-        <!-- Shown by scripts/motion/index.ts; turning motion off is remembered per browser. -->
-        <button id="motion-toggle" type="button" class="btn btn--ghost cursor-pointer text-xs" hidden aria-pressed="true">
-          Motion: <span data-motion-state>On</span>
-        </button>
       </div>
     </div>
   </div>

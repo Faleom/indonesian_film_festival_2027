@@ -20,6 +20,7 @@ export const particleVertex = /* glsl */ `
 
   uniform mat3 uRot;
   uniform float uCamScale;
+  uniform vec3 uCamOffset;       // world offset of the camera (fits it between the overlay text)
   uniform float uTitleHalf;      // world half-width of the title
   uniform vec2 uTitleOffset;
   uniform float uExplode;        // 0..1
@@ -28,10 +29,11 @@ export const particleVertex = /* glsl */ `
   uniform float uDotPx;          // camera/scatter dot diameter, device px
   uniform float uTitleDotPx;     // title dot diameter, device px
   uniform float uRefDepth;       // camera distance, for perspective sizing
-  uniform float uKeyPass;
+  uniform float uKeyPass;        // 0 colour, 1 camera shadows, 2 script shadow
   uniform vec2 uMisregister;     // device px
   uniform vec2 uResolution;      // device px
   uniform float uTime;
+  uniform float uBreath;         // scatter cloud wobble, world units
 
   varying float vScript;
 
@@ -41,7 +43,7 @@ export const particleVertex = /* glsl */ `
   }
 
   void main() {
-    vec3 cam = uRot * (aCam * uCamScale);
+    vec3 cam = uRot * (aCam * uCamScale) + uCamOffset;
     vec3 n = normalize(uRot * aCamNormal);
     float lit = clamp(dot(n, normalize(vec3(0.45, 0.75, 0.6))), 0.0, 1.0);
     float dark = clamp(1.15 - aCamTone * 0.75 - lit * 0.7, 0.0, 1.0);
@@ -52,9 +54,11 @@ export const particleVertex = /* glsl */ `
     // Exploded cloud slowly spins and breathes.
     float ang = uSpin + aRand * 0.6;
     vec3 sc = vec3(aScatter.x * cos(ang) - aScatter.z * sin(ang), aScatter.y, aScatter.x * sin(ang) + aScatter.z * cos(ang));
-    sc += vec3(sin(uTime * 0.7 + aRand * 40.0), cos(uTime * 0.6 + aRand * 31.0), 0.0) * 0.12;
+    sc += vec3(sin(uTime * 0.7 + aRand * 40.0), cos(uTime * 0.6 + aRand * 31.0), 0.0) * uBreath;
 
-    vec3 title = vec3(aTitle * uTitleHalf + uTitleOffset, 0.0);
+    // Script dots sit just in front of the title (its shadow in between).
+    float layer = uKeyPass > 1.5 ? 0.03 : 0.06;
+    vec3 title = vec3(aTitle * uTitleHalf + uTitleOffset, aScript * layer);
     vec3 pos = mix(mix(cam, sc, e), title, a);
 
     float camSize = mix(0.22, 1.0, dark) * uDotPx;
@@ -65,13 +69,17 @@ export const particleVertex = /* glsl */ `
     float persp = uRefDepth / max(-mv.z, 0.1);
     float size = mix(mix(camSize * persp, scatterSize * persp, e), titleSize, a);
 
-    if (uKeyPass > 0.5) {
+    if (uKeyPass > 1.5) {
+      // Script shadow: only the script word, once it has assembled.
+      size *= aScript * a;
+    } else if (uKeyPass > 0.5) {
       // Key plate: only the camera's front-facing shadows, gone once it explodes.
       size *= step(0.6, dark) * step(0.15, n.z) * (1.0 - e);
     }
 
     gl_Position = projectionMatrix * mv;
-    if (uKeyPass > 0.5) gl_Position.xy += uMisregister / uResolution * 2.0 * gl_Position.w;
+    float shift = uKeyPass > 1.5 ? 1.6 : 1.0;
+    if (uKeyPass > 0.5) gl_Position.xy += uMisregister * shift / uResolution * 2.0 * gl_Position.w;
     gl_PointSize = size;
     vScript = aScript * a;
   }
@@ -84,6 +92,7 @@ export const particleFragment = /* glsl */ `
   uniform vec3 uScriptInk;
   uniform float uKeyPass;
   uniform float uTime;
+  uniform float uGrainFps;
   varying float vScript;
 
   float hash(vec2 p) {
@@ -95,8 +104,8 @@ export const particleFragment = /* glsl */ `
     float alpha = 1.0 - smoothstep(0.4, 0.5, d);
     if (alpha < 0.02) discard;
     vec3 colour = uKeyPass > 0.5 ? uKey : mix(uInk, uScriptInk, step(0.5, vScript));
-    // Ink grain, re-rolled ~12 times a second.
-    alpha *= 0.82 + 0.18 * hash(gl_FragCoord.xy + floor(uTime * 12.0));
+    // Ink grain, re-rolled uGrainFps times a second.
+    alpha *= 0.82 + 0.18 * hash(gl_FragCoord.xy + floor(uTime * uGrainFps));
     gl_FragColor = vec4(colour, alpha * (uKeyPass > 0.5 ? 0.85 : 1.0));
   }
 `;

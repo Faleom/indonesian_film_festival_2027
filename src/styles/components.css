@@ -60,12 +60,66 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 0.5rem 1.5rem;
-  padding-bottom: 0.75rem;
+  position: relative;
+  padding-bottom: 1rem;
   margin-bottom: 2rem;
-  border-bottom: 3px double var(--c-black);
+}
+.section-head__rule {
+  position: absolute;
+  inset: auto 0 -6px;
 }
 
+/* ---------- Ink rule (InkRule.astro, scripts/motion/inkRule.ts) ---------- */
+.ink-rule {
+  height: 12px;
+  pointer-events: none;
+}
+.ink-rule svg {
+  display: block;
+  width: 100%;
+  height: 12px;
+  overflow: visible;
+}
+
+/* ---------- Wave edge (WaveEdge.astro, scripts/motion/waveEdge.ts) ---------- */
+.wave-edge { height: 300px; pointer-events: none; }
+.wave-edge__fade {
+  height: 140px;
+  background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--c-offwhite) 58.7%, transparent));
+}
+.wave-edge svg { display: block; width: 100%; height: 160px; overflow: visible; }
+.ink-rule path {
+  fill: none;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.ink-rule__thick { stroke: var(--c-black); stroke-width: 2px; }
+.ink-rule__thin { stroke: var(--c-black); stroke-width: 1px; transform: translateY(4px); }
+/* Colour plate, out of register (the motion script moves it with a lag). */
+.ink-rule__plate {
+  stroke: var(--c-primary);
+  stroke-width: 2.5px;
+  opacity: 0.7;
+  transform: translate(2px, 1.5px);
+}
+.ink-rule.is-live .ink-rule__thin { transform: none; }
+.ink-rule.is-live .ink-rule__plate { transform: translateX(2px); }
+
 /* ---------- Navbar ---------- */
+/* Motion on/off, in the thin top bar. */
+.motion-toggle {
+  padding: 0.125rem 0.5rem;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.motion-toggle[hidden] { display: none; }
+.motion-toggle:hover { background: var(--c-black); color: var(--c-offwhite); }
+.motion-toggle:focus-visible { outline: 2px solid var(--c-primary); outline-offset: 2px; }
 .site-header {
   position: relative;
   z-index: 50;
@@ -399,16 +453,6 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
   overflow: hidden;
 }
 .hero3d.is-3d .hero3d__static { display: none; }
-/* Paper fade under the intro so flying dots never hurt readability. */
-.hero3d.is-3d .hero3d__stage::after {
-  content: '';
-  position: absolute;
-  inset: auto 0 0;
-  z-index: 1;
-  height: 34%;
-  background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--c-offwhite) 88%, transparent) 70%);
-  pointer-events: none;
-}
 .hero3d.is-3d .hero3d__overlay {
   position: absolute;
   inset: 0;
@@ -416,7 +460,8 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-block: 2rem 2.5rem;
+  /* Bottom room for the wave edge, so the intro sits on the paper band above it. */
+  padding-block: 2rem 8rem;
   pointer-events: none;
 }
 .hero3d__overlay a,
@@ -444,6 +489,165 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
 /* Narrow windows: the intro and buttons need the bottom row. */
 @media (max-width: 1023px) { .hero3d__cue { display: none; } }
 @keyframes cue-bob { 50% { transform: translateY(5px); } }
+
+/* ---- Print-shop decoration (live layout only) ----
+ * --mx/--my: smoothed pointer (-1..1) and --hero-p: scroll progress, both set
+ * by the hero scene. Everything clears away as the camera starts to explode.
+ */
+.hero3d__decor { display: none; }
+.hero3d.is-3d .hero3d__decor {
+  --clear: clamp(0, calc(1 - var(--hero-p, 0) * 5), 1);
+  display: block;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--clear);
+}
+.hero3d__decor > * { transition: none; }
+/* Parallax pieces move every frame: own compositor layers, so moving them
+   never repaints the clippings' halftone filters. */
+.hero3d__clip,
+.hero3d__side { will-change: transform; }
+/* Paper fade + rolling wave at the bottom of the pinned stage: keeps flying
+   dots off the intro text and flows into the next section. */
+.hero3d__edge { display: none; }
+.hero3d.is-3d .hero3d__edge {
+  display: block;
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+}
+/* Label for the backdrop video while it's still a placeholder. */
+.hero3d__bg-label {
+  position: absolute;
+  top: 4.25rem;
+  right: clamp(1.5rem, 4vw, 4rem);
+  font-family: var(--ff-typewriter);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  opacity: 0.55;
+}
+@media (max-width: 767px) { .hero3d__bg-label { display: none; } }
+
+/* Scrapbook clippings (media placeholders) either side of the camera. */
+.hero3d__clip {
+  position: absolute;
+  width: clamp(150px, 15vw, 250px);
+  padding: 8px 8px 26px;
+  background: var(--c-offwhite);
+  box-shadow: 3px 5px 0 color-mix(in srgb, var(--c-black) 16%, transparent);
+}
+/* A strip of tape holding each clipping to the page. */
+.hero3d__clip::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: -12px;
+  left: 50%;
+  width: 72px;
+  height: 22px;
+  background: color-mix(in srgb, var(--c-beige) 70%, transparent);
+  transform: translateX(-50%) rotate(-3deg);
+}
+.hero3d__clip--left {
+  left: clamp(6.5rem, 12vw, 13rem);
+  top: 22%;
+  rotate: -5deg;
+  transform: translate(calc(var(--mx, 0) * -22px), calc(var(--my, 0) * -14px));
+}
+.hero3d__clip--right {
+  right: clamp(6.5rem, 12vw, 13rem);
+  top: 44%;
+  rotate: 4deg;
+  transform: translate(calc(var(--mx, 0) * -30px), calc(var(--my, 0) * -18px));
+}
+:root[data-motion='on'] .hero3d__clip { animation: clip-in 0.9s 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+:root[data-motion='on'] .hero3d__clip--right { animation-delay: 0.7s; }
+@keyframes clip-in { from { opacity: 0; translate: 0 24px; } }
+@media (max-width: 1023px) { .hero3d__clip { display: none; } }
+
+/* Crop marks in the four corners, closing in on load. */
+.hero3d__crops {
+  position: absolute;
+  inset: 1rem;
+  width: calc(100% - 2rem);
+  height: calc(100% - 2rem);
+  overflow: visible;
+}
+.hero3d__crops path {
+  fill: none;
+  stroke: var(--c-black);
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+}
+:root[data-motion='on'] .hero3d__crops {
+  animation: crop-in 1.2s 0.2s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes crop-in { from { opacity: 0; transform: scale(1.06); } }
+/* Side columns: registration target + slug (left), colour strip + target (right). */
+.hero3d__side {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+.hero3d__side--left {
+  left: clamp(1.5rem, 4vw, 4rem);
+  transform: translate(calc(var(--mx, 0) * 10px), calc(-50% + var(--my, 0) * 8px));
+}
+.hero3d__side--right {
+  right: clamp(1.5rem, 4vw, 4rem);
+  transform: translate(calc(var(--mx, 0) * 14px), calc(-50% + var(--my, 0) * 10px));
+}
+.hero3d .reg { width: 2.5rem; height: 2.5rem; overflow: visible; }
+.reg g { fill: none; stroke-width: 1.4px; }
+.reg__key { stroke: var(--c-black); }
+.reg__plate {
+  stroke: var(--c-primary);
+  transform: translate(calc(1.5px + var(--mx, 0) * 2px), calc(1px + var(--my, 0) * 2px));
+}
+:root[data-motion='on'] .hero3d .reg { animation: reg-spin 40s linear infinite; }
+@keyframes reg-spin { to { rotate: 360deg; } }
+.hero3d__slug {
+  font-family: var(--ff-typewriter);
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+  white-space: nowrap;
+}
+/* Riso colour control strip: each event ink at 100 / 60 / 25 %. */
+.hero3d__swatches { display: flex; flex-direction: column; gap: 0.35rem; }
+.hero3d__swatches span { display: flex; flex-direction: column; }
+.hero3d__swatches i {
+  display: block;
+  width: 1.1rem;
+  height: 1.1rem;
+  background: var(--c-primary);
+}
+.hero3d__swatches i:nth-child(2) { opacity: 0.6; }
+.hero3d__swatches i:nth-child(3) { opacity: 0.25; }
+:root[data-motion='on'] .hero3d__swatches span {
+  animation: swatch-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+:root[data-motion='on'] .hero3d__swatches span:nth-child(2) { animation-delay: 0.1s; }
+:root[data-motion='on'] .hero3d__swatches span:nth-child(3) { animation-delay: 0.2s; }
+:root[data-motion='on'] .hero3d__swatches span:nth-child(4) { animation-delay: 0.3s; }
+@keyframes swatch-in { from { clip-path: inset(0 0 100% 0); } }
+/* Phones: the sides sit in the top corners, sideways strip, smaller marks. */
+@media (max-width: 767px) {
+  .hero3d__side { top: 4.5rem; gap: 0.75rem; }
+  .hero3d__side--left { left: 1rem; transform: translate(calc(var(--mx, 0) * 6px), 0); }
+  .hero3d__side--right { right: 1rem; transform: translate(calc(var(--mx, 0) * 6px), 0); }
+  .hero3d__slug { display: none; }
+  .hero3d .reg { width: 1.75rem; height: 1.75rem; }
+  .hero3d__swatches, .hero3d__swatches span { flex-direction: row; }
+  .hero3d__swatches i { width: 0.8rem; height: 0.8rem; }
+  .hero3d__crops { display: none; }
+}
 
 /* Static camera shown while the 3D scene loads. */
 .hero3d.is-3d .hero3d__poster {

@@ -9,7 +9,14 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href
   <div class="site-header__bar">
     <div class="container-page flex items-center justify-between gap-4 py-1.5">
       <span>{site.edition} edition · {site.city}</span>
-      <span class="hidden sm:inline">{site.dates}</span>
+      <span class="flex items-center gap-4">
+        <span class="hidden sm:inline">{site.dates}</span>
+        <!-- Top of every page, so slow devices can switch motion off right away.
+             Shown by scripts/motion/index.ts; the choice is remembered per browser. -->
+        <button id="motion-toggle" type="button" class="motion-toggle" hidden aria-pressed="true">
+          Motion: <span data-motion-state>On</span>
+        </button>
+      </span>
     </div>
   </div>
 
@@ -39,7 +46,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href
     </nav>
 
     <div class="flex items-center gap-3">
-      <a href={site.ticketUrl} class="btn btn--primary hidden sm:inline-flex">Tickets</a>
+      <a href={site.ticketUrl} data-coming-soon={site.ticketUrl === '#' ? site.ticketsComingSoon : undefined} class="btn btn--primary hidden sm:inline-flex">Tickets</a>
       <details class="nav-menu xl:hidden">
         <summary class="btn btn--ghost" aria-label="Menu">
           <span class="nav-menu__icon-open">Menu</span>
@@ -62,7 +69,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href
               ))
             }
           </ul>
-          <a href={site.ticketUrl} class="btn btn--primary mt-5 w-full sm:hidden">Tickets</a>
+          <a href={site.ticketUrl} data-coming-soon={site.ticketUrl === '#' ? site.ticketsComingSoon : undefined} class="btn btn--primary mt-5 w-full sm:hidden">Tickets</a>
         </nav>
       </details>
     </div>

@@ -9,12 +9,15 @@ Until the real file exists, `<Media id="key" />` renders a halftone placeholder 
 
 Then run `npm run placeholders` to refresh this list. To use a different filename, change `src` for that key in `media.json`.
 
-_40 of 40 still pending. Generated from media.json; don't edit by hand._
+_43 of 43 still pending. Generated from media.json; don't edit by hand._
 
 | Key | Type | Location | Ratio | Recommended size | File path (as-is) | Status |
 |---|---|---|---|---|---|---|
 | `hero-home` | image | / (home) hero | 16:9 | 2400x1350 | `public/images/hero-home.jpg` | ⬜ placeholder |
 | `hero-loop` | video | / (home) hero, mobile fallback for 3D | 9:16 | 1080x1920, under 4 MB, muted loop | `public/videos/hero-loop.mp4` | ⬜ placeholder |
+| `hero-bg-video` | video | / (home) hero, full-screen backdrop behind the 3D camera (printed as halftone dots) | 16:9 | 1920x1080 H.264, 10-20 s silent loop, under 8 MB; keep the subject centred (phones crop the sides) | `public/videos/hero-bg.mp4` | ⬜ placeholder |
+| `hero-side-video` | video | / (home) hero, left of the 3D camera (desktop) | 4:5 | 1080x1350, 6-10 s silent loop, under 4 MB | `public/videos/hero-side.mp4` | ⬜ placeholder |
+| `hero-side-photo` | image | / (home) hero, right of the 3D camera (desktop) | 4:5 | 1600x2000 | `public/images/hero-side.jpg` | ⬜ placeholder |
 | `hero-sfc` | image | /sfc hero | 4:5 | 1600x2000 | `public/images/hero-sfc.jpg` | ⬜ placeholder |
 | `hero-uts` | image | /uts hero | 4:5 | 1600x2000 | `public/images/hero-uts.jpg` | ⬜ placeholder |
 | `hero-edu-screening` | image | /edu-screening hero | 4:5 | 1600x2000 | `public/images/hero-edu-screening.jpg` | ⬜ placeholder |

@@ -17,7 +17,9 @@ const desktop = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
 /** Placeholder dots shrink as an image scrolls to the centre; real halftones drift in scale. */
 export function scrollDots(): Cleanup {
   const tweens: gsap.core.Tween[] = [];
-  document.querySelectorAll<HTMLElement>('.ph').forEach((el) => {
+  // Not the hero's clippings: they sit in a pinned stage, so the tween would
+  // repaint their blur/contrast filters on every frame of the hero animation.
+  document.querySelectorAll<HTMLElement>('.ph:not(.hero3d__decor .ph)').forEach((el) => {
     tweens.push(
       gsap.fromTo(
         el,
@@ -32,6 +34,7 @@ export function scrollDots(): Cleanup {
     );
   });
   document.querySelectorAll<HTMLElement>('.media--halftone > *').forEach((el) => {
+    el.style.willChange = 'transform';
     tweens.push(
       gsap.fromTo(el, { scale: 1.12 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } }),
     );

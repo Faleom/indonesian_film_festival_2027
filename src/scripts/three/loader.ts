@@ -110,24 +110,36 @@ async function mount(el: HTMLElement, inst: Instance) {
   }
 }
 
+/** Tells the loading screen (Loader.astro) that every 3D block has built (or failed). */
+function settle() {
+  (window as any).__ht3dSettled = true;
+  document.dispatchEvent(new Event('ht3d:settled'));
+}
+
 function init() {
   const blocks = document.querySelectorAll<HTMLElement>('[data-halftone-3d]');
-  if (!blocks.length || !canRunLive()) return;
+  if (!blocks.length || !canRunLive()) return settle();
+  // Loading screen up: build everything now, behind it, instead of on approach.
+  const loading = document.documentElement.dataset.loading === 'on';
+  const builds: Promise<void>[] = [];
 
   blocks.forEach((el) => {
     const inst: Instance = { observers: [], disposed: false };
     instances.set(el, inst);
     if (el.hasAttribute('data-live-layout')) el.classList.add('is-3d');
-    let started = false;
+    let started: Promise<void> | undefined;
     const start = () => {
-      if (started || inst.disposed) return;
-      started = true;
+      if (started || inst.disposed) return started;
       near.disconnect();
-      mount(el, inst);
+      return (started = mount(el, inst));
     };
     const near = new IntersectionObserver(([entry]) => entry.isIntersecting && start(), { rootMargin: '400px' });
     near.observe(el);
     inst.observers.push(near);
+    if (loading) {
+      builds.push(start() ?? Promise.resolve());
+      return;
+    }
     // data-preload="idle": set up while the browser is idle after load, so the
     // build never lands mid-scroll (a fast swipe used to hit it and stutter).
     if (el.dataset.preload === 'idle') {
@@ -138,8 +150,15 @@ function init() {
     }
   });
 
-  // Theme switches (styleguide buttons, film strip re-inking) refresh ink colours.
-  themeObserver = new MutationObserver(() => instances.forEach((i) => i.handle?.refreshColours()));
+  Promise.allSettled(builds).then(settle);
+
+  // Theme switches (styleguide buttons) refresh ink colours. Not the film
+  // strip re-inking its own stage: that used to make the off-screen hero
+  // redraw on every event change while scrolling the strip.
+  themeObserver = new MutationObserver((records) => {
+    if (records.every((r) => (r.target as Element).closest('.strip3d__stage, .cursor'))) return;
+    instances.forEach((i) => i.handle?.refreshColours());
+  });
   themeObserver.observe(document.body, { attributes: true, attributeFilter: ['data-theme'], subtree: true });
 
   // Styleguide controls: dot size slider.

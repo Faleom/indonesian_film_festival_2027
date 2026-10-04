@@ -10,6 +10,7 @@
   "city": "Melbourne",
   "venue": "ACMI, Federation Square",
   "dates": "March 2027 (TBC)",
+  "loadingLabel": "Now printing",
   "ticketUrl": "#",
   "ticketsComingSoon": "Tickets aren't on sale yet. Check back soon!",
   "email": "hello@example.com",

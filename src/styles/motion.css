@@ -25,6 +25,8 @@
 /* ---------- Animated grain: the noise tile jitters at ~8fps, like film ---------- */
 html[data-motion='on'] .grain {
   inset: -50%;
+  height: 200vh;
+  height: 200lvh; /* -50% top + 200% tall: covers the large viewport while it jitters */
   animation: grain-jitter 1s steps(8) infinite;
 }
 
@@ -86,6 +88,101 @@ html.has-cursor label {
   opacity: 0.8;
 }
 
+/* ---------- Loading screen (Loader.astro) ----------
+ * Only exists while html[data-loading] is set (JS + motion on, first page of
+ * a visit), so without JS it never covers anything.
+ */
+@property --loader-sweep { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --loader-hole { syntax: '<length>'; inherits: false; initial-value: 0px; }
+
+.loader { display: none; }
+html[data-loading] .loader {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 100vh;
+  height: 100lvh;
+  z-index: 9990; /* under the grain and the page-transition plate */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  /* The paper, so it reads as the same sheet. */
+  background-color: var(--c-offwhite);
+  background-image:
+    radial-gradient(ellipse at 50% 40%, transparent 55%, rgb(150 120 70 / 0.16) 100%),
+    var(--paper-speckle),
+    var(--paper-crumple);
+  background-blend-mode: normal, normal, multiply;
+  background-size: 100% 100%, 240px 240px, cover;
+  background-position: center;
+}
+/* Leaves through dot-shaped holes that grow until the page shows through. */
+html[data-loading='out'] .loader {
+  -webkit-mask: radial-gradient(circle, transparent var(--loader-hole), #000 calc(var(--loader-hole) + 0.5px)) 0 0 / 20px 20px;
+  mask: radial-gradient(circle, transparent var(--loader-hole), #000 calc(var(--loader-hole) + 0.5px)) 0 0 / 20px 20px;
+  animation: loader-out 0.7s cubic-bezier(0.6, 0, 0.4, 1) forwards;
+  pointer-events: none;
+}
+@keyframes loader-out { to { --loader-hole: 15px; } }
+
+.loader__leader {
+  position: relative;
+  width: min(62vmin, 300px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+/* The sweeping hand: a wedge of halftone dots in the theme ink. */
+.loader__sweep {
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  background: conic-gradient(var(--c-primary) var(--loader-sweep), transparent 0);
+  -webkit-mask: radial-gradient(circle, #000 2.1px, transparent 2.6px) 0 0 / 7px 7px;
+  mask: radial-gradient(circle, #000 2.1px, transparent 2.6px) 0 0 / 7px 7px;
+  opacity: 0.75;
+  animation: loader-sweep 0.8s linear infinite;
+}
+@keyframes loader-sweep { to { --loader-sweep: 360deg; } }
+.loader__marks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.loader__marks circle,
+.loader__marks path {
+  fill: none;
+  stroke: var(--c-black);
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+}
+.loader__marks circle:first-child { stroke-width: 3px; }
+/* The number, printed slightly out of register. */
+.loader__count {
+  position: relative;
+  font-family: var(--ff-display);
+  font-size: min(34vmin, 170px);
+  line-height: 1;
+  color: var(--c-black);
+  text-shadow: 5px -4px 0 color-mix(in srgb, var(--c-primary) 75%, transparent);
+}
+.loader__label {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--ff-typewriter);
+  font-size: 0.8125rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.loader__label span:first-child { color: var(--c-text-accent); }
+
 /* ---------- Page transition: riso plate ----------
  * The next page's theme colour prints over the old page as halftone dots that
  * grow to solid, then the new page is revealed slightly out of register and
@@ -109,17 +206,19 @@ html.has-cursor label {
 }
 html[data-printing] .riso-plate { display: block; }
 
+/* 1.4 s with a long fully-covered middle (38-62%): time for the next page
+   (and its 3D) to set up behind the plate. */
 html[data-motion='on']::view-transition-old(root) {
-  animation: riso-old 0.9s linear both;
+  animation: riso-old 1.4s linear both;
 }
 html[data-motion='on']::view-transition-new(root) {
-  animation: riso-new 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: riso-new 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 html[data-motion='on']::view-transition-new(riso-plate) {
   mix-blend-mode: multiply;
   -webkit-mask: radial-gradient(circle, #000 calc(var(--plate-dot) - 0.5px), transparent var(--plate-dot)) 0 0 / 18px 18px;
   mask: radial-gradient(circle, #000 calc(var(--plate-dot) - 0.5px), transparent var(--plate-dot)) 0 0 / 18px 18px;
-  animation: riso-plate 0.9s ease-in-out both;
+  animation: riso-plate 1.4s ease-in-out both;
 }
 
 @keyframes riso-old {
@@ -128,12 +227,12 @@ html[data-motion='on']::view-transition-new(riso-plate) {
 }
 @keyframes riso-new {
   0%, 48% { opacity: 0; transform: translate(7px, -5px); }
-  52% { opacity: 1; transform: translate(7px, -5px); }
+  52%, 62% { opacity: 1; transform: translate(7px, -5px); }
   100% { opacity: 1; transform: translate(0, 0); }
 }
 @keyframes riso-plate {
   0% { --plate-dot: 0px; }
-  45%, 55% { --plate-dot: 13px; }
+  38%, 62% { --plate-dot: 13px; }
   100% { --plate-dot: 0px; }
 }
 

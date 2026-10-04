@@ -13,6 +13,7 @@ import Fonts from '../components/layout/Fonts.astro';
 import Navbar from '../components/layout/Navbar.astro';
 import Footer from '../components/layout/Footer.astro';
 import Toast from '../components/layout/Toast.astro';
+import Loader from '../components/layout/Loader.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 import site from '../content/site.json';
@@ -88,6 +89,7 @@ const icons = { ico: pub('favicon.ico'), svg: pub('icon.svg'), apple: pub('apple
     <Toast />
     <div class="grain" aria-hidden="true"></div>
     <div class="riso-plate" aria-hidden="true"></div>
+    <Loader />
     <script>
       import '../scripts/motion/index';
     </script>

@@ -5,6 +5,11 @@
  * with the footer toggle (stored in localStorage as iff-motion=off|on).
  * Content is never hidden here: reveals hide only off-screen elements, once
  * the motion engine has loaded (see scripts/motion/reveals.ts).
+ *
+ * Also sets data-loading="on" for the first page of a visit (motion on only),
+ * which shows the loading screen (Loader.astro) while the 3D scenes build.
+ * Without JS the attribute never exists, so the loader never shows. A
+ * fail-safe removes it after 6 s whatever happens.
  */
 ---
 
@@ -17,5 +22,16 @@
     } catch (e) {}
     var off = stored === 'off' || (stored !== 'on' && matchMedia('(prefers-reduced-motion: reduce)').matches);
     d.dataset.motion = off ? 'off' : 'on';
+
+    var seen = false;
+    try {
+      seen = sessionStorage.getItem('iff-loaded') === '1';
+    } catch (e) {}
+    if (!off && !seen) {
+      d.dataset.loading = 'on';
+      setTimeout(function () {
+        delete d.dataset.loading;
+      }, 6000);
+    }
   })();
 </script>

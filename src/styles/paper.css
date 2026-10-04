@@ -21,7 +21,12 @@
 .paper::before {
   content: '';
   position: fixed;
-  inset: 0;
+  /* Tall as the *large* viewport: with inset: 0, Android Chrome sized it to
+     the screen with the address bar showing, and once the bar slid away the
+     bottom of the screen was plain paper colour. */
+  inset: 0 0 auto;
+  height: 100vh;
+  height: 100lvh;
   z-index: -1;
   pointer-events: none;
   background-color: var(--c-offwhite);
@@ -53,7 +58,9 @@
 /* Global grain, above everything, never intercepts input. */
 .grain {
   position: fixed;
-  inset: 0;
+  inset: 0 0 auto; /* large viewport, see .paper::before */
+  height: 100vh;
+  height: 100lvh;
   z-index: 9999;
   pointer-events: none;
   background-image: var(--grain);

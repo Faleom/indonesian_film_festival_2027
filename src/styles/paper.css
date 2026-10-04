@@ -38,14 +38,17 @@
   will-change: transform;
 }
 
-/* Page content layer. */
+/* Page content layer. Deliberately no overflow clip here: an overflow-x: clip
+   ancestor makes iOS Safari recompute position: sticky on every scroll frame,
+   which shook the pinned 3D sections (home hero, film strip). */
 .page {
   position: relative;
   z-index: 1;
-  /* Hero splashes bleed past the edge on purpose. Clipped here, not on <body>,
-     because body overflow is handed to the viewport and doesn't clip reliably. */
-  overflow-x: clip;
 }
+
+/* Full-width wrapper for things that bleed past the screen edge on purpose
+   (hero splashes). Never put it around a sticky element (see .page). */
+.bleed-clip { overflow-x: clip; }
 
 /* Global grain, above everything, never intercepts input. */
 .grain {

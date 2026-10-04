@@ -26,6 +26,8 @@ interface Props {
 const { title, script, kicker, intro, media, meta = [], layout = 'split', ratio } = Astro.props;
 ---
 
+<!-- Full-width wrapper: clips the splashes at the screen edge (see .bleed-clip). -->
+<div class="bleed-clip">
 <section class="container-page pt-10 pb-16 md:pt-16 md:pb-24">
   {
     layout === 'split' ? (
@@ -78,3 +80,4 @@ const { title, script, kicker, intro, media, meta = [], layout = 'split', ratio 
     )
   }
 </section>
+</div>

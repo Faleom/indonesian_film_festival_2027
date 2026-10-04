@@ -448,6 +448,8 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
 .hero3d.is-3d .hero3d__stage {
   position: sticky;
   top: 0;
+  /* Own compositor layer: iOS keeps it in step with its threaded scrolling. */
+  will-change: transform;
   height: 100vh;
   height: 100svh;
   overflow: hidden;
@@ -684,6 +686,8 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
 .strip3d.is-3d .strip3d__stage {
   position: sticky;
   top: 0;
+  /* Own compositor layer: iOS keeps it in step with its threaded scrolling. */
+  will-change: transform;
   display: block;
   height: 100vh;
   height: 100svh;

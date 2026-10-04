@@ -98,6 +98,16 @@ Font files go in `/public/fonts` (Latin-subset .woff2; originals in `src/assets/
 - Per-page meta + OG tags, sitemap, favicon.
 - Lighthouse 90+ (performance, accessibility, SEO) on mobile.
 
+## Hard-won rules (from real-device testing, Oct 2026)
+Full story in `docs/PROJECT-LOG.md`. Break these and iPhones/mid-range Androids suffer:
+- No `overflow: clip/hidden` on any ancestor of a `position: sticky` element (home hero, film strip): iOS Safari shakes it while scrolling. Clip bleeding elements in a full-width `.bleed-clip` wrapper instead.
+- Fixed full-screen layers use `height: 100lvh`, not `inset: 0` / `100vh` alone (Android leaves the bottom bare when the address bar hides). No `background-attachment: fixed`.
+- Never re-theme `<body>` during scroll animations; the film strip re-inks only its own stage.
+- 3D: render the scene behind the halftone at dot resolution, cap at 60 fps (`frameLoop` in `src/scripts/three/post.ts`), use time-based easing (`ease`), build heavy scenes behind the loader or when idle (never as they scroll in), and render/tick only while visible.
+- Don't read layout every frame after writing styles; cache positions.
+- Defaults: hero and film strip use the "solid" looks (`?hero=classic`, `?strip=classic` keep the old ones).
+- After motion/3D/layout changes, ask the user to check on an iPhone (Safari) and a mid-range Android (Galaxy A56).
+
 ## Working style
 - Build in phases (see `PLAN.md`). Finish and verify one phase before starting the next.
 - After each phase, run the dev server and check `/styleguide` and the affected pages.

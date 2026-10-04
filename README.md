@@ -1,6 +1,6 @@
 # 21st Indonesian Film Festival — Website
 
-Astro + Tailwind, static output. See `CLAUDE.md` for the design brief and `PLAN.md` for the build phases.
+Astro + Tailwind, static output. See `CLAUDE.md` for the design brief, `PLAN.md` for the build phases, `HANDOVER.md` for updating the site without code, and `docs/PROJECT-LOG.md` for what was built and what we learned.
 
 ## Commands
 
@@ -75,7 +75,7 @@ Changing a setting re-processes the affected photos on the next run. Unchanged p
 
 `<HalftoneCamera />` (`src/components/three/`) renders a 3D model through a halftone shader (`src/scripts/three/`): dots in the theme's primary colour, a slightly misregistered key plate in the theme's dark colour, and grain. It turns towards the mouse; scrolling turns it and enlarges the dots near the screen edges.
 
-- Three.js is lazy-loaded only when the block is near the viewport, and only with motion on (phones/tablets get lighter versions).
+- Three.js is lazy-loaded only with motion on: when the block nears the viewport, or right away behind the loading screen, or while the browser is idle (`data-preload="idle"`, the film strip). Phones/tablets get lighter versions.
 - Reduced motion and no-JS show the static fallback `public/images/camera-fallback.png`, recoloured per theme with a CSS mask. It's also shown until the live scene is ready.
 - Each scene renders only while visible, and its WebGL context is released when you leave the page.
 - Use `live={false}` for extra copies that should only ever show the static image. Heavy 3D is limited to 3 hero spots site-wide.
@@ -86,14 +86,16 @@ Changing a setting re-processes the affected photos on the next run. Unchanged p
 
 Two pinned, scroll-driven scenes on the home page (with motion on; phones and tablets run lighter versions; reduced motion and no-JS get the static layouts):
 
-- **Hero** (`src/components/home/HomeHero.astro`, `src/scripts/three/heroScene.ts`): the film camera made of halftone dots turns, explodes and reassembles into the festival title. The title text comes from `pages.json` (`home.title` + `home.script`), drawn in the site fonts.
-- **Journey film strip** (`src/components/home/FilmStripJourney.astro`, `src/scripts/three/filmStrip.ts`): a curved 3D film strip with, per event, a title card, its b-roll (`broll-<event>` in `media.json`) and up to two film posters. The site re-inks in each event's colours as its frames pass the centre.
+- **Hero** (`src/components/home/HomeHero.astro`, `src/scripts/three/heroSceneSolid.ts`): the film camera, a lit 3D object printed in halftone, turns, dissolves into dots, explodes and reassembles into the festival title, over a halftone video backdrop (`hero-bg-video`). The title text comes from `pages.json` (`home.title` + `home.script`), drawn in the site fonts. `?hero=classic` shows the original all-dots version (`heroScene.ts`).
+- **Journey film strip** (`src/components/home/FilmStripJourney.astro`, `src/scripts/three/filmStrip.ts` + `stripSolidLook.ts`): a curved 3D film strip with, per event, a title card and the frames listed in `events.json` → `strip`. Each picture carries its own halftone, locked to the image. The pinned strip re-inks in each event's colours as its frames pass the centre. `?strip=classic` shows the original screen-space halftone.
+- **Loading screen** (`src/components/layout/Loader.astro`): first page of a visit, motion on only. The 3D scenes build behind it.
+- **Performance:** see `docs/PROJECT-LOG.md`. `?quality=full` turns off the automatic resolution drop, for measuring.
 
 **Adding b-roll:** save a short silent loop as `public/videos/broll-sfc.mp4` (and `-uts`, `-edu`, `-main`). Posters and photos come through the halftone pipeline, which also writes the greyscale `-tex.jpg` the strip uses as a texture.
 
 ### Site-wide motion (Phase 8)
 
-Built into the shared components, so new pages get it for free. All of it is off with reduced motion, the footer toggle, or without JS.
+Built into the shared components, so new pages get it for free. All of it is off with reduced motion, the Motion toggle in the top bar, or without JS.
 
 - **Reveals:** DisplayTitle misregisters into place, SectionHead kickers type out, BodyText fades up, hero images print in as growing dots, card grids fold in one by one, video frames unfold. Turn one off with `reveal={false}` (DisplayTitle, BodyText).
 - **Halftone placeholders** change dot size as they scroll; real halftone images drift in scale.
@@ -125,6 +127,6 @@ python3 -m fontTools.subset src/assets/fonts-src/RushfordPrinted.otf --unicodes=
 python3 -m fontTools.subset src/assets/fonts-src/MilitaryScribe.ttf --unicodes="U+0020-007E,U+00A0,U+2018-201D,U+2026" --layout-features='*' --flavor=woff2 --output-file=public/fonts/MilitaryScribe.woff2
 ```
 
-**Logo / favicon:** save the logo as `src/assets/brand/logo.svg` (or `.png`); icons are generated on the next build. Until then a neutral dot icon is used.
+**Logo / favicon:** the logo is `src/assets/brand/logo.png` (or `.svg`). On every build, `scripts/favicons.mjs` makes the favicon, app icons and the header logo (`public/brand/logo.png`) from it; a logo on a transparent background is printed in black.
 
 **Performance note:** Lighthouse scores 98–99 on desktop and ~80 on throttled mobile. The mobile gap is the Rushford font file (~350 KB even after subsetting); everything else scores 100.

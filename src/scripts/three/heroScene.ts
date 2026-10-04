@@ -232,6 +232,7 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
 
   const decor = host.querySelector<HTMLElement>('.hero3d__decor');
   const loop = frameLoop(render);
+  renderer.compile(scene, camera); // compile up front, not on a scroll frame
   render();
 
   return {

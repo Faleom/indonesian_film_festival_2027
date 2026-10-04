@@ -151,8 +151,10 @@ html[data-motion='off']::view-transition-new(*) {
 }
 
 /* ---------- Animated theme changes ----------
- * Registered colour properties so the film strip's re-inking (body data-theme)
- * fades between event colours instead of snapping.
+ * Registered colour properties so the film strip's re-inking (data-theme on
+ * its pinned stage) fades between event colours instead of snapping. The
+ * transition lives on the stage only: on <body> it restyled the whole page
+ * on every frame of the fade.
  */
 @property --c-primary { syntax: '<color>'; inherits: true; initial-value: #7200b8; }
 @property --c-dark { syntax: '<color>'; inherits: true; initial-value: #632e89; }
@@ -162,7 +164,7 @@ html[data-motion='off']::view-transition-new(*) {
 @property --c-text-accent { syntax: '<color>'; inherits: true; initial-value: #7200b8; }
 @property --c-on-primary { syntax: '<color>'; inherits: true; initial-value: #eae4d8; }
 
-html[data-motion='on'] body {
+html[data-motion='on'] .strip3d__stage {
   transition:
     --c-primary 0.7s ease,
     --c-dark 0.7s ease,

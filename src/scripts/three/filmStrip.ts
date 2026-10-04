@@ -2,8 +2,10 @@
  * The festival journey as a 3D film strip. Scrolling through the pinned
  * section slides a curved strip of frames past the camera: for each event a
  * title card, its b-roll and its film posters, all printed through the
- * halftone pass. As an event's frames reach the centre the whole site
- * re-inks in that event's colours (body data-theme), and the HTML overlay
+ * halftone pass. As an event's frames reach the centre the pinned stage
+ * re-inks in that event's colours (data-theme on the stage, not <body>:
+ * re-theming the whole page restyled every element each frame of the colour
+ * fade and stuttered on mid-range phones), and the HTML overlay
  * shows the event. Scrolling fast makes the dots chunkier and the plates
  * slip out of register, like a riso running too hot.
  */
@@ -120,7 +122,12 @@ export async function mountFilmStrip(
   const borderMat = look.borderMaterial(borderTex);
   const textures: Texture[] = [borderTex];
   const videos: HTMLVideoElement[] = [];
-  const frames = data.frames.map((f, i) => {
+  // Built a couple of frames at a time, yielding in between: drawing all the
+  // canvas textures in one go froze scrolling for ~180 ms on mid-range phones.
+  const yieldToBrowser = () => new Promise<void>((r) => setTimeout(r, 0));
+  const frames: { group: Group; index: number; event: number }[] = [];
+  for (const [i, f] of data.frames.entries()) {
+    if (i % 2 === 1) await yieldToBrowser();
     const g = new Group();
     const pictureMat = look.pictureMaterial(PICTURE_ASPECT);
     const picture = new Mesh(pictureGeo, pictureMat);
@@ -132,6 +139,8 @@ export async function mountFilmStrip(
     const setMap = (t: Texture) => {
       look.setPictureMap(pictureMat, t);
       textures.push(t);
+      // Upload now rather than on the frame it first scrolls into view.
+      renderer.initTexture(t);
     };
     if (f.kind === 'title') {
       setMap(titleCardTexture({ number: f.event + 1, total: data.events.length, name: ev.name, date: ev.date }));
@@ -150,8 +159,8 @@ export async function mountFilmStrip(
           .catch((err) => console.warn('[film-strip]', err));
       }
     }
-    return { group: g, index: i, event: f.event };
-  });
+    frames.push({ group: g, index: i, event: f.event });
+  }
 
   // Ink colours per event, read from the theme CSS.
   const probe = document.createElement('span');
@@ -175,11 +184,21 @@ export async function mountFilmStrip(
   const segments = [...host.querySelectorAll<HTMLElement>('[data-strip-seg]')];
   const timecode = host.querySelector<HTMLElement>('[data-strip-timecode]');
   const eventFrames = data.events.map((_, i) => data.frames.map((fr, idx) => (fr.event === i ? idx : -1)).filter((x) => x >= 0));
-  const pageTheme = document.body.dataset.theme ?? 'base';
   let currentEvent = -1;
 
+  // While pinned, the stage fills the screen, so only it (and the custom
+  // cursor on top) needs the event's colours. Outside the pin they inherit
+  // the page theme again.
+  const themed = () => [stage, document.querySelector<HTMLElement>('.cursor')].filter((el): el is HTMLElement => !!el);
+  let stageTheme: string | undefined;
+  const setStageTheme = (theme: string | undefined) => {
+    if (theme === stageTheme) return;
+    stageTheme = theme;
+    themed().forEach((el) => (theme ? (el.dataset.theme = theme) : delete el.dataset.theme));
+  };
+
   const showEvent = (e: number, pinned: boolean) => {
-    if (pinned) document.body.dataset.theme = data.events[e].theme;
+    setStageTheme(pinned ? data.events[e].theme : undefined);
     if (e === currentEvent) return;
     currentEvent = e;
     panels.forEach((p, i) => p.classList.toggle('is-current', i === e));
@@ -254,9 +273,8 @@ export async function mountFilmStrip(
     const ev = data.frames[centre].event;
     const pinned = isPinned();
     showEvent(ev, pinned);
-    if (!pinned && document.body.dataset.theme !== pageTheme) document.body.dataset.theme = pageTheme;
-    look.ink.lerp(inks[ev].ink, 0.08);
-    look.key.lerp(inks[ev].key, 0.08);
+    look.ink.lerp(inks[ev].ink, ease(0.08, dt));
+    look.key.lerp(inks[ev].key, ease(0.08, dt));
     look.update(speed, t, dpr);
 
     // HUD: per-event progress bars and a running timecode (24 fps).
@@ -284,6 +302,9 @@ export async function mountFilmStrip(
       resize();
     },
   });
+  // Compile shaders and upload the frame border now, not mid-scroll.
+  renderer.compile(scene, camera);
+  renderer.initTexture(borderTex);
   render();
 
   return {
@@ -294,7 +315,7 @@ export async function mountFilmStrip(
       if (active) loop.start();
       else {
         loop.stop();
-        if (document.body.dataset.theme !== pageTheme) document.body.dataset.theme = pageTheme;
+        setStageTheme(undefined);
       }
     },
     refreshColours() {
@@ -316,7 +337,7 @@ export async function mountFilmStrip(
       pictureGeo.dispose();
       look.dispose();
       releaseRenderer(renderer, canvas);
-      document.body.dataset.theme = pageTheme;
+      setStageTheme(undefined);
     },
   };
 }

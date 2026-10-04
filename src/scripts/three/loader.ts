@@ -118,16 +118,24 @@ function init() {
     const inst: Instance = { observers: [], disposed: false };
     instances.set(el, inst);
     if (el.hasAttribute('data-live-layout')) el.classList.add('is-3d');
-    const near = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        near.disconnect();
-        mount(el, inst);
-      },
-      { rootMargin: '400px' },
-    );
+    let started = false;
+    const start = () => {
+      if (started || inst.disposed) return;
+      started = true;
+      near.disconnect();
+      mount(el, inst);
+    };
+    const near = new IntersectionObserver(([entry]) => entry.isIntersecting && start(), { rootMargin: '400px' });
     near.observe(el);
     inst.observers.push(near);
+    // data-preload="idle": set up while the browser is idle after load, so the
+    // build never lands mid-scroll (a fast swipe used to hit it and stutter).
+    if (el.dataset.preload === 'idle') {
+      const idle = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+      const later = () => (idle ? idle(start, { timeout: 2500 }) : setTimeout(start, 1200));
+      if (document.readyState === 'complete') later();
+      else addEventListener('load', later, { once: true });
+    }
   });
 
   // Theme switches (styleguide buttons, film strip re-inking) refresh ink colours.

@@ -321,6 +321,9 @@ export async function mountHeroSolid(host: HTMLElement, opts: HeroOptions): Prom
       resize();
     },
   });
+  // The particle shaders are first drawn when the camera starts to break up,
+  // usually mid-scroll: compile them now so that moment doesn't stutter.
+  renderer.compile(particleScene, camera);
   render();
 
   return {

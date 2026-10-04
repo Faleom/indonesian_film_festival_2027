@@ -106,6 +106,14 @@
 .ink-rule.is-live .ink-rule__plate { transform: translateX(2px); }
 
 /* ---------- Navbar ---------- */
+/* Festival logo beside the IFF wordmark, aligned with the IFF letters. */
+.site-logo {
+  display: block;
+  height: 3rem;
+  width: auto;
+  align-self: flex-start;
+}
+
 /* Motion on/off, in the thin top bar. */
 .motion-toggle {
   padding: 0.125rem 0.5rem;

@@ -1,5 +1,10 @@
 ---
+import fs from 'node:fs';
+import nodePath from 'node:path';
 import site from '../../content/site.json';
+
+// Festival logo, generated from src/assets/brand/logo.* by scripts/favicons.mjs (black on transparent).
+const hasLogo = fs.existsSync(nodePath.join(process.cwd(), 'public/brand/logo.png'));
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`));
@@ -22,6 +27,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href
 
   <div class="container-page flex items-center justify-between gap-6 py-3">
     <a href="/" class="flex items-baseline gap-3 text-ink no-underline">
+      {hasLogo && <img src="/brand/logo.png" alt="" width="34" height="48" class="site-logo" />}
       <span class="font-display text-5xl leading-none uppercase" style="color: var(--c-display-top)">{site.shortName}</span>
       <span class="font-script text-3xl leading-none" style="color: var(--c-display-bottom)">{site.editionNumber}</span>
       <span class="hidden font-typewriter text-xs leading-tight uppercase tracking-widest md:block">

@@ -1,7 +1,11 @@
 // Generates the site icons from the festival logo.
-// Source: src/assets/brand/logo.svg or logo.png (square-ish, dark on light).
+// Source: src/assets/brand/logo.svg or logo.png. Either dark on light, or a
+// single-colour logo on a transparent background (e.g. the white IFF logo):
+// transparent logos are printed in black (same shape, from their alpha) so
+// they show on the white icon background and the light header.
 // Output (public/): favicon.ico (16/32/48), icon-192.png, icon-512.png,
-// apple-touch-icon.png (180), icon.svg (if the source is SVG), site.webmanifest.
+// apple-touch-icon.png (180), icon.svg (if the source is SVG), site.webmanifest,
+// brand/logo.png (black on transparent, 360px tall, for the site header).
 // Runs before dev/build. Without a logo it generates a neutral interim icon.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,17 +23,34 @@ const source = logo ?? Buffer.from(INTERIM);
 if (!logo) console.log('[favicons] No src/assets/brand/logo.(svg|png) yet, using the interim dot icon.');
 
 const stampFile = path.join(out, '.favicons-stamp');
-const stamp = logo ? `${path.basename(logo)}:${fs.statSync(logo).mtimeMs}` : 'interim:1';
-if (fs.existsSync(stampFile) && fs.readFileSync(stampFile, 'utf8') === stamp && fs.existsSync(path.join(out, 'favicon.ico'))) {
+const stamp = logo ? `${path.basename(logo)}:${fs.statSync(logo).mtimeMs}:v2` : 'interim:1';
+const headerLogo = path.join(out, 'brand/logo.png');
+if (fs.existsSync(stampFile) && fs.readFileSync(stampFile, 'utf8') === stamp && fs.existsSync(path.join(out, 'favicon.ico')) && (!logo || fs.existsSync(headerLogo))) {
   console.log('[favicons] Up to date.');
   process.exit(0);
 }
+
+/**
+ * The logo as black ink on transparent. A raster logo with transparency is
+ * recoloured from its alpha (shape unchanged); anything else is used as is.
+ */
+async function ink(src) {
+  if (typeof src !== 'string' || src.endsWith('.svg')) return src;
+  const meta = await sharp(src).metadata();
+  if (!meta.hasAlpha) return src;
+  const alpha = await sharp(src).extractChannel('alpha').toBuffer();
+  return sharp({ create: { width: meta.width, height: meta.height, channels: 3, background: { r: 0, g: 0, b: 0 } } })
+    .joinChannel(alpha)
+    .png()
+    .toBuffer();
+}
+const inked = await ink(source);
 
 const BG = { r: 255, g: 255, b: 255, alpha: 1 };
 /** Logo centred on a white square with padding (keeps it visible on dark tabs). */
 async function icon(size, padding = 0.1) {
   const inner = Math.round(size * (1 - padding * 2));
-  const logo = await sharp(source, { density: 600 })
+  const logo = await sharp(inked, { density: 600 })
     .flatten({ background: BG })
     .trim({ background: '#ffffff', threshold: 10 })
     .resize(inner, inner, { fit: 'contain', background: BG })
@@ -67,6 +88,11 @@ fs.writeFileSync(path.join(out, 'favicon.ico'), ico(small));
 fs.writeFileSync(path.join(out, 'icon-192.png'), await icon(192));
 fs.writeFileSync(path.join(out, 'icon-512.png'), await icon(512));
 fs.writeFileSync(path.join(out, 'apple-touch-icon.png'), await icon(180, 0.12));
+// Header logo: black on transparent, trimmed, 360px tall (crisp at 3x for a ~48px mark).
+if (logo) {
+  fs.mkdirSync(path.dirname(headerLogo), { recursive: true });
+  await sharp(inked, { density: 600 }).trim({ threshold: 1 }).resize({ height: 360 }).png({ compressionLevel: 9 }).toFile(headerLogo);
+}
 if (!logo) fs.writeFileSync(path.join(out, 'icon.svg'), INTERIM);
 else if (logo.endsWith('.svg')) fs.copyFileSync(logo, path.join(out, 'icon.svg'));
 else fs.rmSync(path.join(out, 'icon.svg'), { force: true });

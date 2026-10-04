@@ -114,7 +114,14 @@ export function createHalftonePass(renderer: WebGLRenderer, dpr: number, opts: H
  */
 const fixedQuality = typeof location !== 'undefined' && new URLSearchParams(location.search).get('quality') === 'full';
 
-export function frameLoop(render: () => void, { maxFps = 60, onSlow }: { maxFps?: number; onSlow?: () => void } = {}) {
+/**
+ * Frame-rate independent easing: the share of the remaining distance to cover
+ * this frame, for a rate tuned at 60 fps. Keeps smoothing identical whether
+ * frames come every 8, 16 or 20 ms (e.g. Safari's uneven frame timing).
+ */
+export const ease = (rate: number, dtMs: number) => 1 - Math.pow(1 - rate, Math.min(dtMs, 100) / (1000 / 60));
+
+export function frameLoop(render: (dtMs: number) => void, { maxFps = 60, onSlow }: { maxFps?: number; onSlow?: () => void } = {}) {
   const interval = 1000 / maxFps;
   const WINDOW = 60; // frames averaged
   let raf = 0;
@@ -129,10 +136,11 @@ export function frameLoop(render: () => void, { maxFps = 60, onSlow }: { maxFps?
     if (!running) return;
     raf = requestAnimationFrame(tick);
     const elapsed = now - last;
-    if (elapsed < interval - 1) return;
-    // Keep the cadence even on 144 Hz (mix of 2- and 3-refresh gaps averages 60).
-    // A frame that lands just under the interval (60 Hz jitter) re-anchors at now.
-    last = elapsed >= interval ? now - (elapsed % interval) : now;
+    // Skip only refreshes that are clearly too soon (120/144 Hz). A loose
+    // threshold matters: Safari's frame timestamps jitter by a few ms, and a
+    // tight one dropped real 60 Hz frames there, which read as a shake.
+    if (elapsed < interval * 0.75) return;
+    last = now;
     const frameTime = now - prevRender;
     prevRender = now;
     if (onSlow && !fixedQuality && now > warmUntil && frameTime < 250) {
@@ -147,7 +155,7 @@ export function frameLoop(render: () => void, { maxFps = 60, onSlow }: { maxFps?
         sum = count = 0;
       }
     }
-    render();
+    render(frameTime);
   };
   return {
     start() {

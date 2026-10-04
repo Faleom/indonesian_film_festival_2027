@@ -21,7 +21,7 @@ import {
   type Texture,
   type WebGLRenderer,
 } from 'three';
-import { createHalftonePass, createRenderer, frameLoop, releaseRenderer, setInk } from './post';
+import { createHalftonePass, createRenderer, ease, frameLoop, releaseRenderer, setInk } from './post';
 import { coverFit, filmFrameTexture, loadMediaTexture, placeholderTexture, titleCardTexture } from './textures';
 import type { SceneHandle } from './scene';
 
@@ -201,15 +201,19 @@ export async function mountFilmStrip(
   resize();
 
   const last = frames.length - 1;
-  /** Progress through the pinned section: 0 at the top, 1 when it unpins. */
+  /**
+   * Progress through the pinned section: 0 at the top, 1 when it unpins.
+   * Measured against the sticky stage (100svh), not innerHeight: on iPhone
+   * innerHeight changes while the toolbar slides away, which shook the strip.
+   */
   const progress = () => {
     const r = host.getBoundingClientRect();
-    const span = r.height - innerHeight;
+    const span = r.height - stage.offsetHeight;
     return span > 0 ? clamp01(-r.top / span) : 0;
   };
   const isPinned = () => {
     const r = host.getBoundingClientRect();
-    return r.top <= 1 && r.bottom >= innerHeight - 1;
+    return r.top <= 1 && r.bottom >= stage.offsetHeight - 1;
   };
 
   let offset = progress() * last;
@@ -217,12 +221,16 @@ export async function mountFilmStrip(
   let active = false;
   const start = performance.now();
 
-  const render = () => {
+  const render = (dt = 1000 / 60) => {
     const t = (performance.now() - start) / 1000;
     const target = progress() * last;
     const prev = offset;
-    offset += (target - offset) * 0.1;
-    velocity += (offset - prev - velocity) * 0.2;
+    offset += (target - offset) * ease(0.1, dt);
+    // Velocity per 60 fps frame, so the bend/tilt is the same at any frame rate.
+    // Smoothed more than the offset: Safari delivers momentum scroll in uneven
+    // steps, and raw velocity made the strip's bend and tilt shake.
+    const step = (offset - prev) * (1000 / 60 / Math.max(dt, 1));
+    velocity += (step - velocity) * ease(0.08, dt);
     const speed = Math.min(Math.abs(velocity) * 12, 1.6);
 
     // Strip bends tighter and tilts with speed.

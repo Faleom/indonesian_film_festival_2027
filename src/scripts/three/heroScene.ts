@@ -32,7 +32,7 @@ import {
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
 import { particleFragment, particleVertex } from './particleShader';
-import { createRenderer, cssVar, frameLoop, releaseRenderer, setInk } from './post';
+import { createRenderer, cssVar, ease, frameLoop, releaseRenderer, setInk } from './post';
 import { loadModel, type SceneHandle } from './scene';
 
 export interface HeroOptions {
@@ -192,7 +192,7 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
   /** Progress through the pinned (sticky) hero: 0 at top, 1 when it unpins. */
   const progress = () => {
     const r = host.getBoundingClientRect();
-    const span = r.height - innerHeight;
+    const span = r.height - stage.offsetHeight; // not innerHeight (iOS toolbar)
     return span > 0 ? clamp01(-r.top / span) : 0;
   };
 
@@ -205,13 +205,13 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
   // Body theme colours animate (registered CSS properties), so after a theme
   // change keep re-reading them until the transition has finished.
   let colourUntil = 0;
-  const render = () => {
+  const render = (dt = 1000 / 60) => {
     const t = (performance.now() - start) / 1000;
     if (performance.now() < colourUntil) refreshColours();
-    smoothP += (progress() - smoothP) * 0.12;
+    smoothP += (progress() - smoothP) * ease(0.12, dt);
     const p = smoothP;
-    pointer.sx += (pointer.x - pointer.sx) * 0.06;
-    pointer.sy += (pointer.y - pointer.sy) * 0.06;
+    pointer.sx += (pointer.x - pointer.sx) * ease(0.06, dt);
+    pointer.sy += (pointer.y - pointer.sy) * ease(0.06, dt);
 
     const turn = smooth(0, 0.3, p);
     euler.set(0.28 + pointer.sy * 0.2, -1.05 + turn * 1.9 + pointer.sx * 0.35 + Math.sin(t * 0.5) * 0.06, 0);

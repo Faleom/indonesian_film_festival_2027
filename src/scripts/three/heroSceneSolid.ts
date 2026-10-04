@@ -37,7 +37,7 @@ import {
 } from 'three';
 import { createBackdrop } from './heroBackdrop';
 import { particleFragment, particleVertex } from './particleShader';
-import { createHalftonePass, createRenderer, cssVar, disposeObject, frameLoop, releaseRenderer, setInk } from './post';
+import { createHalftonePass, createRenderer, cssVar, disposeObject, ease, frameLoop, releaseRenderer, setInk } from './post';
 import { loadModel, type SceneHandle } from './scene';
 import {
   addScriptShadow,
@@ -245,9 +245,12 @@ export async function mountHeroSolid(host: HTMLElement, opts: HeroOptions): Prom
   };
   window.addEventListener('pointermove', onPointer, { passive: true });
 
+  // Pinned span = section height minus the sticky stage (100svh). Not
+  // innerHeight: on iPhone it changes while the toolbar slides away mid-scroll,
+  // which made the progress (and the camera) jump back and forth.
   const progress = () => {
     const r = host.getBoundingClientRect();
-    const span = r.height - innerHeight;
+    const span = r.height - stage.offsetHeight;
     return span > 0 ? clamp01(-r.top / span) : 0;
   };
 
@@ -269,13 +272,13 @@ export async function mountHeroSolid(host: HTMLElement, opts: HeroOptions): Prom
     if (decor && next.my !== css.my) decor.style.setProperty('--my', (css.my = next.my));
   };
 
-  const render = () => {
+  const render = (dt = 1000 / 60) => {
     const t = (performance.now() - start) / 1000;
     if (performance.now() < colourUntil) refreshColours();
-    smoothP += (progress() - smoothP) * 0.12;
+    smoothP += (progress() - smoothP) * ease(0.12, dt);
     const p = smoothP;
-    pointer.sx += (pointer.x - pointer.sx) * 0.06;
-    pointer.sy += (pointer.y - pointer.sy) * 0.06;
+    pointer.sx += (pointer.x - pointer.sx) * ease(0.06, dt);
+    pointer.sy += (pointer.y - pointer.sy) * ease(0.06, dt);
 
     const turn = smooth(0, 0.3, p);
     euler.set(0.28 + pointer.sy * 0.2, -1.05 + turn * 1.9 + pointer.sx * 0.35 + Math.sin(t * 0.5) * SOLID.idleSway, 0);

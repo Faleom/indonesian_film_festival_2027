@@ -37,7 +37,7 @@ import {
 } from 'three';
 import { createBackdrop } from './heroBackdrop';
 import { particleFragment, particleVertex } from './particleShader';
-import { createHalftonePass, createRenderer, cssVar, disposeObject, ease, frameLoop, releaseRenderer, setInk } from './post';
+import { clamp01, createHalftonePass, createRenderer, cssVar, disposeObject, ease, frameLoop, releaseRenderer, setInk, smooth } from './post';
 import { loadModel, type SceneHandle } from './scene';
 import {
   addScriptShadow,
@@ -45,10 +45,8 @@ import {
   FOV,
   LITE_POINTS,
   TARGET_POINTS,
-  clamp01,
   sampleModel,
   sampleTitle,
-  smooth,
   type HeroOptions,
 } from './heroScene';
 
@@ -264,10 +262,13 @@ export async function mountHeroSolid(host: HTMLElement, opts: HeroOptions): Prom
   // CSS hooks for the print decoration. Written only when they change, and
   // the pointer ones only on the decoration (not the whole hero subtree).
   const decor = host.querySelector<HTMLElement>('.hero3d__decor');
-  const css = { p: '', mx: '', my: '' };
+  const css = { p: '', mx: '', my: '', scrolled: false };
   const writeCss = (p: number) => {
     const next = { p: p.toFixed(3), mx: pointer.sx.toFixed(3), my: pointer.sy.toFixed(3) };
     if (next.p !== css.p) host.style.setProperty('--hero-p', (css.p = next.p));
+    // Decoration + scroll cue are invisible past this point: stop their CSS loops.
+    const scrolled = p > 0.2;
+    if (scrolled !== css.scrolled) host.classList.toggle('is-scrolled', (css.scrolled = scrolled));
     if (decor && next.mx !== css.mx) decor.style.setProperty('--mx', (css.mx = next.mx));
     if (decor && next.my !== css.my) decor.style.setProperty('--my', (css.my = next.my));
   };
@@ -331,6 +332,8 @@ export async function mountHeroSolid(host: HTMLElement, opts: HeroOptions): Prom
       if (next === active) return;
       active = next;
       backdrop.setPlaying(active);
+      // A jump past the hero renders no frame in between: settle the decoration flag here.
+      if (progress() > 0.2 !== css.scrolled) host.classList.toggle('is-scrolled', (css.scrolled = progress() > 0.2));
       if (active) {
         refreshColours();
         colourUntil = performance.now() + 900;

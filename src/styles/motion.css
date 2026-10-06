@@ -17,6 +17,20 @@
   mask: radial-gradient(circle, #000 calc(var(--ht, 0px) - 0.5px), transparent var(--ht, 0px)) 0 0 / 16px 16px;
 }
 
+/* print: the roller wipes the sheet top to bottom (--pr 1 -> 0) with a ragged
+   ink edge, and a colour plate slides into register. */
+.reveal-print {
+  clip-path: polygon(
+    0 0, 100% 0,
+    100% calc((1 - var(--pr, 0)) * 112% - 6%),
+    75% calc((1 - var(--pr, 0)) * 112% - 2%),
+    50% calc((1 - var(--pr, 0)) * 112% - 7%),
+    25% calc((1 - var(--pr, 0)) * 112% - 3%),
+    0 calc((1 - var(--pr, 0)) * 112% - 6%)
+  );
+  filter: drop-shadow(calc(var(--pr, 0) * 9px) calc(var(--pr, 0) * 6px) 0 color-mix(in srgb, var(--c-primary) 70%, transparent));
+}
+
 /* typewriter caret on the character being typed */
 .tw-caret {
   box-shadow: 0.08em 0 0 0 var(--c-text-accent);

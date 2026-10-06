@@ -41,6 +41,19 @@ Commit hashes refer to `main` on GitHub.
 | `802f729`, `82b3359` | Real IFF logo for the site icons and the header |
 | `74e0266` | Empty commit to re-trigger a Vercel deploy that never started |
 
+### 6 Oct 2026: Pleno 1 update (Part 2 of `PLAN.md`, Phases 11–15; not yet committed)
+
+Source: `docs/IFF 21 Pleno 1.pdf`.
+
+- Real content: theme "Temaram", real 2027 dates, vision & mission, Finance & Booth fundraisers (`support.json`).
+- **Fifth event: Film Exhibition** (`/exhibition`, theme `exh` "archive green", proposed, not from the concept doc).
+- Navbar: one **Events** dropdown (full names + dates) instead of unclear abbreviations (SFC/UTS/Edu).
+- Home: Temaram band with a pointer-led lamp, "Support us" classified ads with date-driven status stamps, draggable sponsor strip.
+- **Event pages rebuilt:** each has its own scroll-driven 3D hero (`src/scripts/three/events/*`: clapper, gallery, open-air, book, theatre) on a shared engine (`eventScene.ts`). A first attempt (SVG/CSS decorations on the shared hero layout) was rejected as too uniform and not as strong as the home page. The 3D budget rule changed from "max 3 spots site-wide" to "max one scene per page".
+- New `data-reveal` types `print` and `draw`; `KeyDates` timeline; `InkWipe` section breaks.
+- Fonts re-subset without hinting (`--desubroutinize`): Rushford 352 → 221 KB, Military Scribe 142 → 122 KB, about 0.8 s off mobile LCP.
+- Lighthouse mobile (throttled): accessibility/best practices/SEO 98–100; performance 74–85, held back by the display font size.
+
 ---
 
 ## 2. How the main pieces work (short version)

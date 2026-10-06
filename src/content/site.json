@@ -1,15 +1,15 @@
 {
-  "$comment": "Festival-wide settings: name, edition, dates, links. Placeholder values are marked TBC.",
+  "$comment": "Festival-wide settings: name, edition, dates, links. Placeholder values are marked TBC. `nav`: an item with \"events\": true becomes the Events dropdown (built from events.json, in journey order).",
   "name": "Indonesian Film Festival",
   "shortName": "IFF",
   "edition": "21st",
   "editionNumber": 21,
   "year": 2027,
-  "theme": "Theme TBC",
-  "themeSubtitle": "The 21st edition theme will be announced soon.",
+  "theme": "Temaram: The Unwavering Glow of Indonesian Cinema",
+  "themeSubtitle": "In a time marked by political, economic, and social uncertainty, cinema offers a window through which we can find hope, connection, and perspective. Temaram represents the gentle glow that persists even in moments of darkness. As a reflection of human stories, Indonesian cinema captures the struggles, dreams, and resilience of its people, illuminating the unwavering spirit of Indonesians and reminding us that even in uncertain times, our stories, and our hope, continue to shine.",
   "city": "Melbourne",
   "venue": "ACMI, Federation Square",
-  "dates": "March 2027 (TBC)",
+  "dates": "November 2026 to May 2027",
   "loadingLabel": "Now printing",
   "ticketUrl": "#",
   "ticketsComingSoon": "Tickets aren't on sale yet. Check back soon!",
@@ -19,28 +19,16 @@
   "acknowledgement": "The Indonesian Film Festival acknowledges the Wurundjeri Woi-wurrung people of the Kulin Nation, the Traditional Owners of the land on which we gather, screen and work. We pay our respects to Elders past and present. Sovereignty was never ceded.",
   "nav": [
     {
-      "label": "SFC",
-      "href": "/sfc",
-      "theme": "sfc"
-    },
-    {
-      "label": "UTS",
-      "href": "/uts",
-      "theme": "uts"
-    },
-    {
-      "label": "Edu",
-      "href": "/edu-screening",
-      "theme": "base"
-    },
-    {
-      "label": "Main Screening",
-      "href": "/main-screening",
-      "theme": "main"
+      "label": "Events",
+      "events": true
     },
     {
       "label": "About",
       "href": "/about"
+    },
+    {
+      "label": "Support us",
+      "href": "/#support"
     },
     {
       "label": "FAQ",

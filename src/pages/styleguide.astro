@@ -10,10 +10,12 @@ import HalftoneCamera from '../components/three/HalftoneCamera.astro';
 import { media, mediaKeys, mediaDelivered, getHalftone } from '../lib/media';
 import halftoneConfig from '../../halftone.config.json';
 import fontData from '../content/fonts.json';
+import { eventHref, getEvents } from '../lib/content';
 import { findFontFile } from '../lib/fonts';
 
 const themes = [
   { id: 'sfc', name: 'SFC', event: 'Short Film Competition' },
+  { id: 'exh', name: 'Exh', event: 'Film Exhibition' },
   { id: 'uts', name: 'UTS', event: 'Under the Stars' },
   { id: 'main', name: 'Main', event: 'Main Screening' },
   { id: 'base', name: 'Base', event: 'Festival brand · Edu Screening' },
@@ -28,8 +30,17 @@ const hexIn = (selector: string) => {
 const shared = hexIn('[data-theme] {');
 const swatchNames = ['primary', 'dark', 'light', 'offwhite', 'black', 'beige'];
 
+const fxEvents = (await getEvents()).filter((e) => e.data.heroScene);
+const fxNotes: Record<string, string> = {
+  clapper: 'A giant clapperboard swings in and SNAPs shut (flash + shake), then the camera dives down a spiral of film frames.',
+  gallery: 'Lights stutter on bay by bay; the camera walks the gallery past framed works and turning exhibits to the big frame at the end.',
+  'open-air': 'Night sky printed in ink with paper stars; tilt down over the crowd to the glowing screen, projector beam flickers on.',
+  book: 'A giant reader drops open, its pages curl and turn; paper planes loop, a pencil rolls; the camera dives onto the page.',
+  theatre: 'From the back row: curtains sway then draw open, bulbs chase, searchlights sweep; fly over the seats to the screen.',
+};
+
 const halftoneKeys = mediaKeys.filter((key) => getHalftone(key));
-const toneDemos = ['black', 'sfc', 'uts', 'main', 'base'] as const;
+const toneDemos = ['black', 'sfc', 'exh', 'uts', 'main', 'base'] as const;
 const revealDemos = [
   { type: 'fade-up', code: 'data-reveal="fade-up"' },
   { type: 'misregister', code: 'data-reveal="misregister"' },
@@ -58,7 +69,7 @@ const fontSamples: Record<string, { size: string; text: string; transform?: stri
       <Kicker rule tone="accent">Internal · Design system</Kicker>
       <DisplayTitle as="h1" lines={['Style', 'Guide']} script="the" class="mt-6 max-w-4xl" />
       <BodyText size="lead" class="mt-8">
-        Risograph printing meets retro newspaper. Four event themes, five typefaces, one paper. Nothing here is final
+        Risograph printing meets retro newspaper. Five event themes, five typefaces, one paper. Nothing here is final
         artwork: every image is a placeholder from <code>src/content/media.json</code>.
       </BodyText>
     </header>
@@ -345,6 +356,30 @@ const fontSamples: Record<string, { size: string; text: string; transform?: stri
           ))
         }
       </div>
+    </section>
+    <!-- ============ EVENT HERO ANIMATIONS ============ -->
+    <section aria-labelledby="sg-herofx" class="mt-24">
+      <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4 border-b border-ink pb-3">
+        <h2 id="sg-herofx" class="heading-condensed">05b · Event hero scenes</h2>
+        <p class="m-0 font-typewriter text-sm">events.json → <code>heroScene</code> · scroll-driven 3D, halftone print</p>
+      </div>
+      <p class="mt-0 mb-6 max-w-[70ch]">
+        Each event page pins its hero and plays its own 3D scene as you scroll (one heavy scene per page).
+        Reduced motion, no WebGL and no-JS get the regular static hero. Open a page and scroll:
+      </p>
+      <ul class="m-0 grid list-none gap-3 p-0 md:grid-cols-2 xl:grid-cols-5">
+        {
+          fxEvents.map((e) => (
+            <li data-theme={e.data.theme}>
+              <a href={eventHref(e)} class="flex h-full flex-col gap-2 border border-ink p-4 text-ink no-underline hover:bg-primary hover:text-on-primary">
+                <span class="font-typewriter text-xs uppercase tracking-widest">{e.data.heroScene}</span>
+                <span class="font-condensed text-xl uppercase leading-tight">{e.data.name}</span>
+                <span class="text-sm">{fxNotes[e.data.heroScene!]}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </section>
     <!-- ============ 3D HALFTONE ============ -->
     <section aria-labelledby="sg-3d" class="mt-24">

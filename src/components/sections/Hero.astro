@@ -21,9 +21,11 @@ interface Props {
   layout?: 'split' | 'stack';
   /** Ratio override for the hero image. */
   ratio?: string;
+  /** Load the image eagerly with high priority (default). Off when a 3D version usually replaces this hero. */
+  priority?: boolean;
 }
 
-const { title, script, kicker, intro, media, meta = [], layout = 'split', ratio } = Astro.props;
+const { title, script, kicker, intro, media, meta = [], layout = 'split', ratio, priority = true } = Astro.props;
 ---
 
 <!-- Full-width wrapper: clips the splashes at the screen edge (see .bleed-clip). -->
@@ -53,7 +55,7 @@ const { title, script, kicker, intro, media, meta = [], layout = 'split', ratio 
         <div class="hero__media mx-auto w-full max-w-md lg:max-w-none" data-reveal="halftone-grow">
           <Splash class="hero__splash" variant={1} />
           <Splash class="hero__splash hero__splash--alt" variant={3} />
-          <Media id={media} ratio={ratio} priority sizes="(min-width: 1024px) 45vw, 100vw" />
+          <Media id={media} ratio={ratio} priority={priority} sizes="(min-width: 1024px) 45vw, 100vw" />
           <div class="hero__melt" aria-hidden="true" />
         </div>
       </div>
@@ -73,7 +75,7 @@ const { title, script, kicker, intro, media, meta = [], layout = 'split', ratio 
         </div>
         <div class="hero__media" data-reveal="halftone-grow">
           <Splash class="hero__splash" variant={2} />
-          <Media id={media} ratio={ratio} priority sizes="100vw" />
+          <Media id={media} ratio={ratio} priority={priority} sizes="100vw" />
           <div class="hero__melt" aria-hidden="true" />
         </div>
       </div>

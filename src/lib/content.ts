@@ -2,14 +2,15 @@ import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 import sponsorsFile from '../content/sponsors.json';
 import teamFile from '../content/team.json';
 import faqFile from '../content/faq.json';
+import supportFile from '../content/support.json';
 import eventsFile from '../content/events.json';
 
-export type EventId = 'sfc' | 'uts' | 'edu' | 'main';
-export type Theme = 'sfc' | 'uts' | 'main' | 'base';
+export type EventId = 'sfc' | 'exhibition' | 'uts' | 'edu' | 'main';
+export type Theme = 'sfc' | 'exh' | 'uts' | 'main' | 'base';
 export type EventEntry = CollectionEntry<'events'>;
 export type FilmEntry = CollectionEntry<'films'>;
 
-/** Events in journey order: SFC -> UTS -> Main. */
+/** Events in journey order: SFC -> Exhibition -> UTS -> Edu -> Main. */
 export async function getEvents(): Promise<EventEntry[]> {
   return (await getCollection('events')).sort((a, b) => a.data.order - b.data.order);
 }
@@ -41,6 +42,12 @@ export async function getTeam(): Promise<CollectionEntry<'team'>[]> {
 export async function getFaq(): Promise<CollectionEntry<'faq'>[]> {
   return (await getCollection('faq')).sort(byFileOrder(faqFile));
 }
+
+/** Fundraisers, in file order. */
+export async function getSupport(): Promise<CollectionEntry<'support'>[]> {
+  return (await getCollection('support')).sort(byFileOrder(supportFile));
+}
+
 
 /** Colour theme for an event id (Edu shares the festival's base theme). */
 export function themeOf(eventId: string): Theme {

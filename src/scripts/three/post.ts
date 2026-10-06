@@ -119,6 +119,14 @@ const fixedQuality = typeof location !== 'undefined' && new URLSearchParams(loca
  * this frame, for a rate tuned at 60 fps. Keeps smoothing identical whether
  * frames come every 8, 16 or 20 ms (e.g. Safari's uneven frame timing).
  */
+export const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+/** Smoothstep of v between a and b. */
+export const smooth = (a: number, b: number, v: number) => {
+  const t = clamp01((v - a) / (b - a));
+  return t * t * (3 - 2 * t);
+};
+export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
 export const ease = (rate: number, dtMs: number) => 1 - Math.pow(1 - rate, Math.min(dtMs, 100) / (1000 / 60));
 
 export function frameLoop(render: (dtMs: number) => void, { maxFps = 60, onSlow }: { maxFps?: number; onSlow?: () => void } = {}) {

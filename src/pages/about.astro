@@ -37,6 +37,30 @@ const team = await getTeam();
     </aside>
   </section>
 
+  <section class="container-page py-16 md:py-24" aria-labelledby="vision">
+    <div class="grid gap-12 border-t-[3px] border-double border-ink pt-12 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
+      <div>
+        <Kicker tone="accent" typewriter class="mb-4">{page.vision.title}</Kicker>
+        <h2 id="vision" class="sr-only">{page.vision.title}</h2>
+        <p data-reveal="typewriter" class="vision-quote">{page.vision.text}</p>
+      </div>
+      <div>
+        <Kicker tone="accent" typewriter class="mb-6">{page.mission.title}</Kicker>
+        <h2 class="sr-only">{page.mission.title}</h2>
+        <ol data-reveal="fold" data-reveal-children data-reveal-stagger="0.12" class="mission-list m-0 list-none p-0">
+          {
+            page.mission.items.map((item, i) => (
+              <li>
+                <span class="mission-list__no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
   <section class="container-page py-16 md:py-24" aria-labelledby="team">
     <SectionHead title={page.teamTitle} kicker={page.teamKicker} id="team" />
     <TeamGrid members={team} />

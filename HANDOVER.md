@@ -32,19 +32,20 @@ All content lives in `src/content/`. Each file starts with a `$comment` explaini
 
 | To change… | Edit |
 |---|---|
-| Festival name, edition, dates, venue, ticket link, email, socials, menu | `site.json` |
-| The four events (names, dates, summaries, which media they show) | `events.json` |
-| Films | `films.json` (`event` is `sfc`, `uts`, `edu` or `main`) |
+| Festival name, edition, theme, dates, venue, ticket link, email, socials, menu | `site.json` |
+| The five events (names, dates, summaries, "New" badge, which media they show, the key-dates timeline `keyDates`, which 3D hero `heroScene` and its corner label `heroSlate`). The navbar Events menu is built from this file | `events.json` |
+| Films | `films.json` (`event` is `sfc`, `exhibition`, `uts`, `edu` or `main`) |
+| Fundraisers in "Support us" (food pre-orders, raffle, hampers…) | `support.json` |
 | FAQ | `faq.json` |
 | Sponsors | `sponsors.json` |
 | Team (60+ people is fine) | `team.json` |
-| Page titles and intro text | `pages.json` |
+| Page titles and intro text (also small event-page labels: "Key dates", "Next up") | `pages.json` |
 | Which photo/video goes where | `media.json` |
 
 Rules that matter:
 - **Only real information.** Don't add events, sessions or schedules that aren't confirmed.
-  The four events are fixed: Short Film Competition → Under the Stars → Educational
-  Screening → Main Screening. (Under the Stars is an open-air screening, not a university.)
+  The five events are fixed: Short Film Competition → Film Exhibition → Under the Stars →
+  Educational Screening → Main Screening. (Under the Stars is an open-air screening, not a university.)
 - **Ticket links:** while `ticketUrl` is `"#"`, buttons show a "tickets aren't on sale yet"
   message. Put the real ACMI link in and they become normal links.
 - **JSON is strict:** keep the quotes and commas. If the build fails after an edit, a missing

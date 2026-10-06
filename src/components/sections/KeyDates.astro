@@ -1,0 +1,58 @@
+---
+/**
+ * Event timeline from events.json `keyDates`: a rule with a date stamp per
+ * stop. Horizontal from tablet up, vertical on phones. data-reveal="draw"
+ * draws the rule and pops the stops in; static, it's simply all there.
+ * The stop that's next (by today's date) gets a "Next up" flag.
+ */
+interface Props {
+  dates: { date: string; label: string }[];
+  /** Flag on the next upcoming stop, e.g. "Next up". */
+  nextLabel: string;
+}
+
+const { dates, nextLabel } = Astro.props;
+const day = new Intl.DateTimeFormat('en-AU', { day: 'numeric', timeZone: 'UTC' });
+const month = new Intl.DateTimeFormat('en-AU', { month: 'short', timeZone: 'UTC' });
+const year = new Intl.DateTimeFormat('en-AU', { year: 'numeric', timeZone: 'UTC' });
+const at = (iso: string) => new Date(`${iso}T00:00:00Z`);
+---
+
+<div class="key-dates" data-reveal="draw" data-single={dates.length === 1 ? '' : undefined} style={`--stops: ${dates.length}`}>
+  <span class="key-dates__line" data-draw-line aria-hidden="true"></span>
+  <ol class="key-dates__list">
+    {
+      dates.map((d) => (
+        <li class="key-dates__stop" data-draw-item data-date={d.date}>
+          <span class="key-dates__dot" aria-hidden="true" />
+          <time datetime={d.date} class="key-dates__stamp">
+            <span class="key-dates__day">{day.format(at(d.date))}</span>
+            <span class="key-dates__month">
+              {month.format(at(d.date))} {year.format(at(d.date))}
+            </span>
+          </time>
+          <span class="key-dates__label">{d.label}</span>
+          <span class="key-dates__next" hidden>{nextLabel}</span>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<script>
+  // Flag the next upcoming stop (Melbourne date), refreshed on every visit.
+  import { melbourneToday } from '../../lib/support';
+  document.addEventListener('astro:page-load', () => {
+    const today = melbourneToday();
+    document.querySelectorAll<HTMLElement>('.key-dates').forEach((tl) => {
+      const next = [...tl.querySelectorAll<HTMLElement>('[data-date]')].find((s) => s.dataset.date! >= today);
+      tl.querySelectorAll<HTMLElement>('[data-date]').forEach((s) => s.classList.toggle('is-past', s.dataset.date! < today));
+      next?.querySelector<HTMLElement>('.key-dates__next')?.removeAttribute('hidden');
+      next?.classList.add('is-next');
+      // The "next" pulse loops only while the timeline is on screen.
+      const seen = new IntersectionObserver(([entry]) => tl.classList.toggle('is-visible', entry.isIntersecting));
+      seen.observe(tl);
+      document.addEventListener('astro:before-swap', () => seen.disconnect(), { once: true });
+    });
+  });
+</script>

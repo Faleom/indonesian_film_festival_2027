@@ -1,0 +1,16 @@
+---
+/**
+ * Section break: a band of halftone ink dots. Static, it's a dotted band that
+ * fades out to the right. With motion on, scrolling past sweeps it across
+ * (scripts/motion/effects.ts inkWipes: --w 0..1 is scrubbed by scroll), dots
+ * growing behind the sweep and shrinking ahead of it.
+ */
+interface Props {
+  class?: string;
+  /** Sweep direction. */
+  from?: 'left' | 'right';
+}
+const { class: className, from = 'left' } = Astro.props;
+---
+
+<div class:list={['ink-wipe', className]} data-ink-wipe data-from={from} aria-hidden="true"></div>

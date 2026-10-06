@@ -3,7 +3,7 @@ import path from 'node:path';
 import mediaData from '../content/media.json';
 
 export type MediaType = 'image' | 'video';
-export type Theme = 'sfc' | 'uts' | 'main' | 'base';
+export type Theme = 'sfc' | 'exh' | 'uts' | 'main' | 'base';
 /** 'theme' = dots in the primary colour of whatever data-theme is in scope. */
 export type HalftoneTone = 'theme' | 'black' | Theme;
 

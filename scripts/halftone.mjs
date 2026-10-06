@@ -3,7 +3,7 @@
 // For each photo it writes, all with transparent paper so the page's beige
 // shows through and the bottom edge fading out:
 //   <key>-black.png             pure black dots
-//   <key>-<theme>.png           dots in each theme's primary colour (sfc/uts/main/base)
+//   <key>-<theme>.png           dots in each theme's primary colour (sfc/exh/uts/main/base)
 //   <key>-<variant>-<w>.png     smaller copies for srcset (config.smallWidths)
 //   <key>-tex.jpg               greyscale texture for the 3D film strip (printed as dots by the shader)
 // plus manifest.json (sizes + hashes, read by <Media> and used for caching).
@@ -30,7 +30,7 @@ const EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.tif', '.tiff', '
 function readThemePrimaries() {
   const css = fs.readFileSync(path.join(root, 'src/styles/themes.css'), 'utf8');
   const themes = {};
-  for (const id of ['sfc', 'uts', 'main', 'base']) {
+  for (const id of ['sfc', 'exh', 'uts', 'main', 'base']) {
     const block = css.split(`[data-theme='${id}']`)[1]?.split('}')[0] ?? '';
     const hex = block.match(/--c-primary:\s*#([0-9a-f]{6})/i)?.[1];
     if (!hex) throw new Error(`Could not read --c-primary for theme "${id}" from themes.css`);

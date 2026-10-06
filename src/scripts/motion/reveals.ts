@@ -1,7 +1,7 @@
 /**
  * Reveal system. Any element opts in with a data attribute, no new code:
  *
- *   data-reveal="fade-up | misregister | typewriter | fold | halftone-grow"
+ *   data-reveal="fade-up | misregister | typewriter | fold | halftone-grow | print | draw"
  *   data-reveal-delay="0.2"     seconds before it starts
  *   data-reveal-children        animate each child in turn instead of the element
  *   data-reveal-stagger="0.1"   gap between children (default 0.08)
@@ -15,14 +15,14 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 
-export type RevealType = 'fade-up' | 'misregister' | 'typewriter' | 'fold' | 'halftone-grow';
+export type RevealType = 'fade-up' | 'misregister' | 'typewriter' | 'fold' | 'halftone-grow' | 'print' | 'draw';
 
 export interface RevealHandle {
   kill(): void;
 }
 
 // Inline props the reveals touch; cleared afterwards without wiping other inline styles.
-const CLEAR = 'opacity,visibility,transform,translate,rotate,scale,--mis,--ht';
+const CLEAR = 'opacity,visibility,transform,translate,rotate,scale,--mis,--ht,--pr,--draw';
 
 interface BuildContext {
   targets: HTMLElement[];
@@ -77,7 +77,7 @@ const builders: Record<RevealType, Builder> = {
               each: Math.min(0.045, 1.6 / Math.max(chars.length, 1)),
               onStart() {
                 prev?.classList.remove('tw-caret');
-                prev = this.targets()[0] as HTMLElement;
+                prev = (this as unknown as gsap.core.Tween).targets()[0] as HTMLElement;
                 prev.classList.add('tw-caret');
               },
             },
@@ -114,6 +114,37 @@ const builders: Record<RevealType, Builder> = {
     );
     return () => targets.forEach((t) => t.classList.remove('reveal-ht'));
   },
+
+  // Through the press: the sheet is wiped top to bottom by the roller while a
+  // colour plate, printed out of register, slides into place (CSS in motion.css).
+  print: ({ targets, tl, stagger, soft }) => {
+    targets.forEach((t) => t.classList.add('reveal-print'));
+    tl.fromTo(
+      targets,
+      { autoAlpha: 1, '--pr': soft ? 0.5 : 1 },
+      { '--pr': 0, duration: soft ? 0.8 : 1.15, ease: 'power3.inOut', stagger },
+    );
+    return () => targets.forEach((t) => t.classList.remove('reveal-print'));
+  },
+
+  // Timelines: the rule draws itself ([data-draw-line] reads --draw), then each
+  // [data-draw-item] pops in as the line reaches it.
+  draw: ({ targets, tl, soft }) => {
+    targets.forEach((t) => {
+      const items = Array.from(t.querySelectorAll<HTMLElement>('[data-draw-item]'));
+      const duration = soft ? 0.9 : 1.4;
+      tl.fromTo(t, { '--draw': soft ? 0.4 : 0 }, { '--draw': 1, duration, ease: 'power2.inOut' }, 0);
+      if (items.length) {
+        tl.fromTo(
+          items,
+          { autoAlpha: soft ? 1 : 0, y: 14, scale: 0.85 },
+          { autoAlpha: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(2.2)', stagger: duration / (items.length + 1) },
+          0.1,
+        );
+      }
+      tl.add(() => gsap.set(items, { clearProps: CLEAR }));
+    });
+  },
 };
 
 export function buildReveal(el: HTMLElement, { immediate = false } = {}): RevealHandle | undefined {
@@ -123,6 +154,10 @@ export function buildReveal(el: HTMLElement, { immediate = false } = {}): Reveal
     console.warn(`[reveal] Unknown data-reveal="${type}"`, el);
     return undefined;
   }
+
+  // Not rendered (e.g. the static fallback layout while a 3D version replaces it):
+  // nothing to animate. It's never hidden, so it still shows if it appears later.
+  if (!el.getClientRects().length) return undefined;
 
   const useChildren = el.hasAttribute('data-reveal-children');
   const targets = useChildren ? (Array.from(el.children) as HTMLElement[]) : [el];

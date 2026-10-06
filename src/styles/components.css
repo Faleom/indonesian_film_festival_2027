@@ -191,6 +191,111 @@
   border-bottom: 3px double var(--c-black);
   box-shadow: 0 12px 24px rgb(0 0 0 / 0.12);
 }
+/* Desktop bar: links and the Events <summary> share one box model, or the
+   summary (inside a block <details>) sits higher than its neighbours. */
+.nav-main .nav-link {
+  display: inline-flex;
+  align-items: baseline;
+  line-height: 1.2;
+}
+.nav-events { display: block; }
+
+/* Desktop Events menu: <details>, so it opens without JS. */
+.nav-events > summary {
+  list-style: none;
+  cursor: pointer;
+  gap: 0.35em;
+}
+.nav-events > summary::-webkit-details-marker { display: none; }
+.nav-events > summary[aria-current]::after,
+.nav-events[open] > summary::after { transform: scaleX(1); }
+.nav-events__caret {
+  display: inline-block;
+  font-size: 0.8em;
+  transition: transform 0.2s ease;
+}
+.nav-events[open] .nav-events__caret { transform: rotate(180deg); }
+.nav-events__panel {
+  position: absolute;
+  top: calc(100% + 0.9rem);
+  left: -1rem;
+  width: max-content;
+  min-width: 24rem;
+  padding: 0.5rem;
+  background-color: var(--c-offwhite);
+  border: 1px solid var(--c-black);
+  box-shadow: 6px 6px 0 var(--c-black);
+}
+/* Rolls off the press: the sheet drops down, rows print in one by one. */
+html[data-motion='on'] .nav-events[open] .nav-events__panel {
+  transform-origin: top center;
+  animation: nav-print 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+html[data-motion='on'] .nav-events[open] .nav-events__panel > li {
+  animation: nav-row 0.3s ease both;
+  animation-delay: calc(var(--i, 0) * 40ms + 80ms);
+}
+.nav-events__panel > li:nth-child(1) { --i: 0; }
+.nav-events__panel > li:nth-child(2) { --i: 1; }
+.nav-events__panel > li:nth-child(3) { --i: 2; }
+.nav-events__panel > li:nth-child(4) { --i: 3; }
+.nav-events__panel > li:nth-child(5) { --i: 4; }
+.nav-events__panel > li:nth-child(6) { --i: 5; }
+@keyframes nav-print {
+  from { opacity: 0; transform: translateY(-10px) scaleY(0.6); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes nav-row {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: none; }
+}
+.nav-events__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  color: var(--c-black);
+  text-decoration: none;
+  border-bottom: 1px dashed rgb(0 0 0 / 0.25);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.nav-events__panel > li:last-child .nav-events__item { border-bottom: 0; }
+.nav-events__item:hover,
+.nav-events__item:focus-visible,
+.nav-events__item[aria-current='page'] {
+  background-color: var(--c-primary);
+  color: var(--c-on-primary);
+}
+.nav-events__item:hover .nav-dot,
+.nav-events__item:focus-visible .nav-dot,
+.nav-events__item[aria-current='page'] .nav-dot { background: var(--c-on-primary); }
+.nav-events__name {
+  font-family: var(--ff-condensed);
+  font-size: 1.25rem;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.nav-events__date {
+  font-family: var(--ff-typewriter);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.nav-badge {
+  display: inline-block;
+  margin-left: 0.5em;
+  padding: 0.1em 0.4em;
+  font-family: var(--ff-typewriter);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  vertical-align: 0.3em;
+  text-transform: uppercase;
+  color: var(--c-black);
+  background: var(--c-beige);
+  transform: rotate(-4deg);
+}
+
 .nav-menu[open] .nav-menu__icon-open { display: none; }
 .nav-menu:not([open]) .nav-menu__icon-close { display: none; }
 
@@ -496,6 +601,8 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
   opacity: clamp(0, calc(1 - var(--hero-p, 0) * 8), 1);
 }
 .hero3d__cue span { display: inline-block; animation: cue-bob 1.6s ease-in-out infinite; }
+.hero3d.is-scrolled .hero3d__cue { visibility: hidden; }
+.hero3d.is-scrolled .hero3d__cue span { animation: none; }
 /* Narrow windows: the intro and buttons need the bottom row. */
 @media (max-width: 1023px) { .hero3d__cue { display: none; } }
 @keyframes cue-bob { 50% { transform: translateY(5px); } }
@@ -618,7 +725,7 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
   stroke: var(--c-primary);
   transform: translate(calc(1.5px + var(--mx, 0) * 2px), calc(1px + var(--my, 0) * 2px));
 }
-:root[data-motion='on'] .hero3d .reg { animation: reg-spin 40s linear infinite; }
+:root[data-motion='on'] .hero3d:not(.is-scrolled) .reg { animation: reg-spin 40s linear infinite; }
 @keyframes reg-spin { to { rotate: 360deg; } }
 .hero3d__slug {
   font-family: var(--ff-typewriter);
@@ -783,19 +890,32 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
 .strip3d__timecode::before { content: '● REC  '; color: var(--c-primary); }
 
 /* ---------- Sponsor marquee (SponsorStrip variant="marquee") ----------
- * Plain grid without motion; effects.ts adds .is-running and scrolls it.
+ * Without motion (no JS, reduced motion) it's a native sideways-scrolling row
+ * with snap points; effects.ts adds .is-running and drives it instead.
  */
+.marquee {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  padding-bottom: 0.75rem;
+}
 .marquee__track {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  display: flex;
   gap: 0.75rem;
+  width: max-content;
   margin: 0;
   padding: 0;
   list-style: none;
 }
+.marquee__track > li { flex: none; width: 15rem; scroll-snap-align: start; }
 .marquee__dup { display: none; }
 .marquee.is-running {
   overflow: hidden;
+  padding-bottom: 0;
+  cursor: grab;
+  touch-action: pan-y; /* vertical swipes still scroll the page; sideways ones move the row */
+  user-select: none;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
@@ -805,7 +925,8 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
   /* padding = gap, so half the track width is exactly one full copy */
   padding-right: 0.75rem;
 }
-.marquee.is-running .marquee__track > li { flex: none; width: 15rem; }
+.marquee.is-dragging { cursor: grabbing; }
+.marquee.is-dragging a { pointer-events: none; }
 .marquee.is-running .marquee__dup { display: block; }
 
 /* ---------- Team initials badge (member without a photo) ---------- */
@@ -839,3 +960,413 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
   -webkit-mask: radial-gradient(circle, #000 calc(var(--rp, 0px) - 0.5px), transparent var(--rp, 0px)) 0 0 / 18px 18px;
   mask: radial-gradient(circle, #000 calc(var(--rp, 0px) - 0.5px), transparent var(--rp, 0px)) 0 0 / 18px 18px;
 }
+
+/* ---------- Support us (SupportSection) ----------
+ * Classified ads pinned to the page: tape, a slight tilt, a status stamp.
+ */
+.support-grid {
+  display: grid;
+  gap: 2.5rem 1.75rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) { .support-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .support-grid { grid-template-columns: repeat(3, 1fr); } }
+.support-ad {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--c-offwhite);
+  border: 1px solid var(--c-black);
+  box-shadow: 5px 5px 0 rgb(0 0 0 / 0.85);
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
+}
+.support-ad:hover,
+.support-ad:focus-within {
+  transform: rotate(0deg) translateY(-6px);
+  box-shadow: 9px 11px 0 rgb(0 0 0 / 0.85);
+}
+.support-ad__tape {
+  position: absolute;
+  top: -0.9rem;
+  left: 50%;
+  z-index: 3;
+  width: 6.5rem;
+  height: 1.7rem;
+  background: rgb(225 200 146 / 0.75);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.15);
+  transform: translateX(-50%) rotate(calc(var(--tilt, 0deg) * -2.5));
+  clip-path: polygon(0 8%, 4% 0, 96% 6%, 100% 0, 98% 100%, 92% 94%, 3% 100%, 0 92%);
+}
+.support-ad__media {
+  position: relative;
+  border-bottom: 1px solid var(--c-black);
+}
+.support-ad__stamp {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 2;
+  padding: 0.3em 0.6em;
+  font-family: var(--ff-typewriter);
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-text-accent);
+  background: var(--c-offwhite);
+  border: 2px solid currentColor;
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--c-offwhite);
+  transform: rotate(-8deg);
+}
+.support-ad[data-status='open'] .support-ad__stamp {
+  color: var(--c-on-primary);
+  background: var(--c-primary);
+  box-shadow: 0 0 0 4px var(--c-primary);
+}
+.support-ad[data-status='closed'] .support-ad__stamp { color: #3d3d3d; }
+.support-ad[data-status='closed'] .support-ad__media { filter: grayscale(1) contrast(0.9); }
+/* Thud: the stamp lands big and slightly skewed, then settles with an ink kick. */
+html[data-motion='on'] .support-ad:not(.is-stamped) .support-ad__stamp { opacity: 0; }
+html[data-motion='on'] .support-ad.is-stamped .support-ad__stamp {
+  animation: stamp-thud 0.55s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  animation-delay: 0.25s;
+}
+@keyframes stamp-thud {
+  0% { opacity: 0; transform: scale(2.6) rotate(-22deg); filter: blur(2px); }
+  55% { opacity: 1; transform: scale(0.92) rotate(-6deg); filter: none; }
+  75% { transform: scale(1.04) rotate(-9deg); }
+  100% { opacity: 1; transform: rotate(-8deg); }
+}
+html[data-motion='on'] .support-ad.is-stamped .support-ad__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle at 82% 85%, var(--c-primary) 0, transparent 40%);
+  mix-blend-mode: multiply;
+  opacity: 0;
+  animation: stamp-ink 0.9s ease-out 0.45s both;
+}
+@keyframes stamp-ink {
+  0% { opacity: 0.55; transform: scale(0.6); }
+  100% { opacity: 0; transform: scale(1.3); }
+}
+.support-ad__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+.support-ad__no {
+  margin: 0;
+  font-family: var(--ff-typewriter);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-text-accent);
+}
+.support-ad__name {
+  margin: 0;
+  font-family: var(--ff-display);
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  font-weight: normal;
+  line-height: 0.9;
+  text-transform: uppercase;
+  color: var(--c-display-top);
+}
+.support-ad__dates {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.25rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 3px double var(--c-black);
+  font-family: var(--ff-typewriter);
+  font-size: 0.875rem;
+}
+.support-ad__dates div { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.5rem; }
+.support-ad__dates dt { text-transform: uppercase; letter-spacing: 0.08em; }
+.support-ad__dates dd { margin: 0; }
+.support-ad__cta { align-self: flex-start; margin-top: auto; }
+.support-ad__cta[aria-disabled='true'] {
+  pointer-events: none;
+  background: transparent;
+  color: #3d3d3d;
+  box-shadow: none;
+  border-style: dashed;
+}
+
+/* ---------- Temaram (home theme band) ----------
+ * Black riso ink on the paper; edges break into halftone rows. A warm lamp
+ * (--lx/--ly, 0..1 of the band) lights the word; it follows the mouse
+ * (.is-tracking) or drifts on its own, and flickers.
+ */
+@property --lx { syntax: '<number>'; inherits: true; initial-value: 0.5; }
+@property --ly { syntax: '<number>'; inherits: true; initial-value: 0.45; }
+.temaram {
+  --ink: #141210;
+  --dot: 12px;
+  position: relative;
+  margin-block: 3rem;
+  color: #eae4d8;
+}
+.temaram__edge {
+  height: calc(var(--dot) * 4);
+  background:
+    radial-gradient(circle, var(--ink) 1.6px, transparent 2.1px) 0 0 / var(--dot) var(--dot) repeat-x,
+    radial-gradient(circle, var(--ink) 3px, transparent 3.5px) 0 var(--dot) / var(--dot) var(--dot) repeat-x,
+    radial-gradient(circle, var(--ink) 4.6px, transparent 5.1px) 0 calc(var(--dot) * 2) / var(--dot) var(--dot) repeat-x,
+    radial-gradient(circle, var(--ink) 6.6px, transparent 7.1px) 0 calc(var(--dot) * 3) / var(--dot) var(--dot) repeat-x;
+}
+.temaram__edge--bottom { transform: scaleY(-1); }
+.temaram__ink {
+  position: relative;
+  isolation: isolate;
+  background: var(--ink);
+  padding-block: clamp(4rem, 10vw, 8rem);
+  overflow: hidden; /* clips the lamp; no sticky descendants */
+}
+.temaram__lamp {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at calc(var(--lx) * 100%) calc(var(--ly) * 100%),
+      rgb(255 205 125 / 0.32) 0,
+      rgb(255 170 80 / 0.12) 18rem,
+      transparent 34rem
+    ),
+    radial-gradient(circle, rgb(255 205 125 / 0.07) 1px, transparent 1.5px) 0 0 / 6px 6px;
+}
+.temaram__inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+}
+.temaram__kicker { color: #e1c892; }
+.temaram__title {
+  position: relative;
+  margin: 0;
+  font-weight: normal;
+}
+.temaram__word {
+  position: relative;
+  display: inline-block;
+  font-family: var(--ff-display);
+  font-size: clamp(4.5rem, 25vw, 19rem);
+  line-height: 0.82;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+.temaram__word-ink { color: #7a6748; /* 3.44:1 on the ink: AA for display sizes even unlit */ }
+/* The lit copy: gold dots, revealed in a soft circle around the lamp.
+   --wx/--wy = the pointer in the word's own box (set while tracking);
+   otherwise it follows the drifting band lamp. */
+.temaram__word-glow {
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  background:
+    radial-gradient(circle, #fff3cf 38%, transparent 42%) 0 0 / 5px 5px,
+    linear-gradient(180deg, #ffe0a0, #e1c892 60%, #c79a4a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 0 0.12em rgb(255 190 100 / 0.55));
+  -webkit-mask-image: radial-gradient(circle at calc(var(--wx, var(--lx)) * 100%) calc(var(--wy, var(--ly)) * 100%), #000 0, rgb(0 0 0 / 0.6) 20%, transparent 42%);
+  mask-image: radial-gradient(circle at calc(var(--wx, var(--lx)) * 100%) calc(var(--wy, var(--ly)) * 100%), #000 0, rgb(0 0 0 / 0.6) 20%, transparent 42%);
+  pointer-events: none;
+}
+.temaram__script {
+  display: block;
+  margin-top: -0.35em;
+  font-family: var(--ff-script);
+  font-size: clamp(1.6rem, 4.2vw, 3.6rem);
+  line-height: 1.1;
+  color: #e1c892;
+  transform: rotate(-5deg);
+  text-shadow: 0.03em 0.04em 0 rgb(110 75 25 / 0.8);
+}
+.temaram__blurb {
+  max-width: 62ch;
+  margin: 1rem 0 0;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: #eae4d8;
+}
+/* Motion: the lamp drifts across the word when nobody steers it, and flickers. */
+html[data-motion='on'] .temaram.is-visible:not(.is-tracking) {
+  animation: temaram-drift 11s ease-in-out infinite alternate;
+}
+html[data-motion='on'] .temaram.is-visible .temaram__lamp,
+html[data-motion='on'] .temaram.is-visible .temaram__word-glow {
+  animation: temaram-flicker 3.2s steps(1, end) infinite;
+}
+@keyframes temaram-drift {
+  0% { --lx: 0.18; --ly: 0.42; }
+  35% { --lx: 0.62; --ly: 0.55; }
+  70% { --lx: 0.4; --ly: 0.38; }
+  100% { --lx: 0.84; --ly: 0.5; }
+}
+@keyframes temaram-flicker {
+  0%, 100% { opacity: 1; }
+  12% { opacity: 0.88; }
+  14% { opacity: 1; }
+  47% { opacity: 0.93; }
+  49% { opacity: 0.8; }
+  51% { opacity: 1; }
+  78% { opacity: 0.9; }
+  80% { opacity: 1; }
+}
+
+/* ---------- About: vision & mission ---------- */
+.vision-quote {
+  margin: 0;
+  font-family: var(--ff-condensed);
+  font-size: clamp(1.75rem, 3.2vw, 2.75rem);
+  line-height: 1.12;
+  text-transform: uppercase;
+  color: var(--c-display-top);
+}
+.vision-quote::before { content: '“'; color: var(--c-primary); }
+.vision-quote::after { content: '”'; color: var(--c-primary); }
+.mission-list { display: grid; gap: 0; }
+.mission-list li {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  align-items: baseline;
+  gap: 1rem;
+  padding-block: 1.1rem;
+  border-bottom: 1px solid var(--c-black);
+  font-size: 1.125rem;
+  line-height: 1.45;
+}
+.mission-list li:first-child { border-top: 1px solid var(--c-black); }
+.mission-list__no {
+  font-family: var(--ff-display);
+  font-size: 3rem;
+  line-height: 0.8;
+  color: var(--c-primary);
+}
+
+/* ---------- Event timeline (KeyDates) ----------
+ * --draw: 0..1, how much of the rule is drawn (1 when static).
+ */
+.key-dates {
+  --draw: 1;
+  position: relative;
+  padding-left: 2.25rem;
+}
+.key-dates__line {
+  position: absolute;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  left: 0.6rem;
+  width: 3px;
+  background: repeating-linear-gradient(to bottom, var(--c-black) 0 8px, transparent 8px 13px);
+  transform: scaleY(var(--draw));
+  transform-origin: top;
+}
+.key-dates__list {
+  display: grid;
+  gap: 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.key-dates__stop { position: relative; display: grid; gap: 0.2rem; justify-items: start; }
+.key-dates__dot {
+  position: absolute;
+  top: 0.35rem;
+  left: -2.15rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: var(--c-primary);
+  border: 2px solid var(--c-black);
+  box-shadow: 3px 2px 0 var(--c-dark);
+}
+.key-dates__stop.is-past .key-dates__dot { background: var(--c-offwhite); box-shadow: none; }
+.key-dates__stop.is-past .key-dates__stamp { opacity: 0.55; }
+.key-dates__stamp {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.25rem 0.6rem 0.3rem;
+  border: 2px solid var(--c-text-accent);
+  color: var(--c-text-accent);
+  transform: rotate(-2deg);
+}
+.key-dates__stop:nth-child(even) .key-dates__stamp { transform: rotate(1.5deg); }
+.key-dates__day { font-family: var(--ff-display); font-size: 2.6rem; line-height: 0.85; }
+.key-dates__month { font-family: var(--ff-typewriter); font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.key-dates__label { font-family: var(--ff-condensed); font-size: 1.25rem; text-transform: uppercase; }
+.key-dates__next {
+  padding: 0.1rem 0.45rem;
+  font-family: var(--ff-typewriter);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-on-primary);
+  background: var(--c-primary);
+}
+/* Next stop: a ring pulses out (transform + opacity only, so it stays on the compositor). */
+.key-dates__stop.is-next .key-dates__dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--c-primary);
+  opacity: 0;
+}
+html[data-motion='on'] .key-dates.is-visible .key-dates__stop.is-next .key-dates__dot::after { animation: next-pulse 1.6s ease-out infinite; }
+@keyframes next-pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@media (min-width: 768px) {
+  .key-dates { padding: 2.25rem 0 0; }
+  .key-dates__line {
+    top: 0.95rem;
+    bottom: auto;
+    left: calc(50% / var(--stops));
+    right: calc(50% / var(--stops));
+    width: auto;
+    height: 3px;
+    background: repeating-linear-gradient(to right, var(--c-black) 0 8px, transparent 8px 13px);
+    transform: scaleX(var(--draw));
+    transform-origin: left;
+  }
+  .key-dates__list { grid-template-columns: repeat(var(--stops), 1fr); gap: 1rem; }
+  .key-dates__stop { justify-items: center; text-align: center; }
+  .key-dates__dot { top: -1.85rem; left: 50%; translate: -50% 0; }
+}
+/* One stop: no rule, just the stamp. */
+.key-dates[data-single] .key-dates__line { display: none; }
+
+/* ---------- Ink wipe section break (InkWipe) ---------- */
+@property --w { syntax: '<number>'; inherits: false; initial-value: 1; }
+.ink-wipe {
+  --w: 1;
+  height: clamp(3rem, 7vw, 5.5rem);
+  margin-block: 1rem;
+  background:
+    radial-gradient(circle, var(--c-primary) 40%, transparent 44%) 0 0 / 14px 14px,
+    radial-gradient(circle, var(--c-dark) 30%, transparent 34%) 4px 3px / 14px 14px;
+  /* Dot size follows the sweep: a soft edge moves across with --w. */
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--w) * 120% - 40%), transparent calc(var(--w) * 120% - 5%)),
+    linear-gradient(180deg, transparent, #000 35%, #000 65%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, #000 calc(var(--w) * 120% - 40%), transparent calc(var(--w) * 120% - 5%)),
+    linear-gradient(180deg, transparent, #000 35%, #000 65%, transparent);
+  mask-composite: intersect;
+  opacity: 0.85;
+}
+.ink-wipe[data-from='right'] { transform: scaleX(-1); }

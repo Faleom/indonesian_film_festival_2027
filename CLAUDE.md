@@ -2,14 +2,15 @@
 
 ## Project context
 - Website for the **21st Indonesian Film Festival (IFF)**, Melbourne. A non-profit, student-run festival, usually held at ACMI.
-- Previous edition (20th, 2026): "Arunika: The Ascending Light of Cinema". 21st edition theme TBD; use a placeholder.
-- Events: there are exactly four, no others (reference: https://www.indonesianfilmfestivalau.com):
-  - `sfc`: Short Film Competition (theme `sfc`)
-  - `uts`: **Under the Stars**, an open-air community screening (theme `uts`). UTS is NOT a university.
-  - `edu`: Educational Screening, for students and young audiences (theme `base` until it gets its own palette)
-  - `main`: Main Screening, three curated films plus panels and Q&A (theme `main`)
+- Previous edition (20th, 2026): "Arunika: The Ascending Light of Cinema". 21st edition theme: **"Temaram: The Unwavering Glow of Indonesian Cinema"** (source: `docs/IFF 21 Pleno 1.pdf`).
+- Events: there are exactly five, no others (source: Pleno 1 PDF; older reference: https://www.indonesianfilmfestivalau.com):
+  - `sfc`: Short Film Competition, submissions 2 Nov 2026 to 8 Feb 2027, winners 27 Feb (theme `sfc`)
+  - `exhibition`: **Film Exhibition** (NEW in the 21st), 27–28 Feb 2027, shows the SFC Grand Winner and archival film material (theme `exh`)
+  - `uts`: **Under the Stars**, open-air screening + cultural festival, 20 Mar 2027 (theme `uts`). UTS is NOT a university.
+  - `edu`: Educational Screening, school program at ACMI, 19–20 Apr 2027 (theme `base` until it gets its own palette)
+  - `main`: Main Screening, grand premiere, 14–16 May 2027 (theme `main`)
   - `base` theme: general festival brand (home, about, etc.)
-- Festival journey order: **SFC → Under the Stars → Educational Screening → Main Screening**. Colour gradient: SFC → UTS → Main.
+- Festival journey order: **SFC → Film Exhibition → Under the Stars → Educational Screening → Main Screening**.
 
 ## Current scope: FRONTEND ONLY
 - No backend, no database, no auth, no CMS, no payments.
@@ -51,6 +52,9 @@ Source: `/docs/konsep_iff_21.pdf` (read it and the reference images in `/docs`).
 | uts  | #FA26B2 | #DB41A6 | #FFBEE5 | #EAE4D8 | #000000 | #E1C892 |
 | sfc  | #004BB6 | #273E60 | #9DBED8 | #EAE4D8 | #000000 | #E1C892 |
 | base | #7200B8 | #632E89 | #C59DD8 | #EAE4D8 | #000000 | #E1C892 |
+| exh  | #0E7C66 | #0B5345 | #9FD3C4 | #EAE4D8 | #000000 | #E1C892 |
+
+`exh` ("archive green") isn't in the concept PDF; proposed for the Film Exhibition in Oct 2026, replace if the Creative team makes one.
 
 ### Typography
 | role | font | fallback |
@@ -68,10 +72,10 @@ Font files go in `/public/fonts` (Latin-subset .woff2; originals in `src/assets/
 - Select 3D, always in the **risograph/newspaper language**: halftone dots, ink misregistration, paper folds, grain, film strips, typewriter. **No glossy or realistic 3D.**
 - 3D renders through a **custom halftone post-processing shader** (monochrome dots in the theme color, slight misregistration offset, paper grain).
 - Reusable reveal system via data attributes, so content can opt in without new code:
-  `data-reveal="misregister | typewriter | fold | halftone-grow | fade-up"`
+  `data-reveal="misregister | typewriter | fold | halftone-grow | fade-up | print | draw"`
 
 ### Motion rules (non-negotiable)
-- Heavy 3D only in **max 3 hero spots**. Everything else uses GSAP + SVG/CSS.
+- Heavy 3D: **max one scene per page** (home has two: hero + film strip). Each event page has its own scroll-driven 3D hero (`src/scripts/three/events/*`, picked by `heroScene` in events.json; changed Oct 2026 at the user's request). Everything else uses GSAP + SVG/CSS.
 - **Mobile** runs lighter versions of the 3D (fewer particles, lower resolution, adaptive quality). Reduced motion and no-JS get the static fallbacks.
 - Respect **`prefers-reduced-motion`**: there is a global kill switch that disables all motion.
 - Content must render and be readable **without JS**.
@@ -80,14 +84,14 @@ Font files go in `/public/fonts` (Latin-subset .woff2; originals in `src/assets/
 
 ## Site structure
 - `/`: home (base theme)
-- `/sfc`, `/uts`, `/edu-screening`, `/main-screening`: event pages (own theme each)
+- `/sfc`, `/exhibition`, `/uts`, `/edu-screening`, `/main-screening`: event pages (own theme each, each with its own animated hero)
 - `/films/[slug]`: film detail
 - `/faq`, `/about`, `/sponsors`
 - No `/program` (schedule) or `/volunteer` pages. Don't invent sessions, schedules or event details that aren't in the content or on the official site.
 - `/styleguide`: internal page showing all themes, fonts, components, and motion demos
 
 ## Content rules
-- **Never hardcode content in components.** Films, events, sponsors, FAQ, team, and media all live in `src/content`.
+- **Never hardcode content in components.** Films, events, sponsors, FAQ, team, fundraisers (`support.json`) and media all live in `src/content`.
 - Film fields: title, year, director, synopsis, runtime, rating, poster (media key), trailer (media key), event, date, venue, ticketUrl.
 - Next year's committee must be able to update the site by editing content files only (see `HANDOVER.md`).
 

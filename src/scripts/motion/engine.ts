@@ -9,7 +9,7 @@ import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 import { buildReveal, type RevealHandle } from './reveals';
 import { startCursor, type CursorHandle } from './cursor';
-import { clippingTilt, foldingAccordions, marquees, reprint, scrollDots } from './effects';
+import { clippingTilt, foldingAccordions, inkWipes, marquees, reprint, scrollDots } from './effects';
 import { inkRules } from './inkRule';
 import { waveEdges } from './waveEdge';
 
@@ -61,7 +61,7 @@ export function start({ navigated = false } = {}) {
   document.addEventListener('toggle', onToggle, true);
   document.addEventListener('click', onAnchorClick, true);
   cursor = startCursor();
-  cleanups = [scrollDots(), clippingTilt(), foldingAccordions(), marquees(lenis), reprint(navigated), inkRules(lenis), waveEdges(lenis)];
+  cleanups = [scrollDots(), clippingTilt(), foldingAccordions(), marquees(lenis), reprint(navigated), inkRules(lenis), waveEdges(lenis), inkWipes()];
   ScrollTrigger.refresh();
 }
 

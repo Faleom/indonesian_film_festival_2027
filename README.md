@@ -122,11 +122,11 @@ The build runs the halftone pipeline and favicon generator first (`prebuild`), s
 
 ```sh
 # Rushford: capitals, digits, punctuation only (all display text is uppercase)
-python3 -m fontTools.subset src/assets/fonts-src/RushfordPrinted.otf --unicodes="U+0020-0040,U+0041-005A,U+005B-0060,U+007B-007E,U+00A0,U+00B7,U+2013-2014,U+2018-201D,U+2022,U+2026,U+2190-2193" --layout-features='*' --flavor=woff2 --output-file=public/fonts/RushfordPrinted.woff2
+python3 -m fontTools.subset src/assets/fonts-src/RushfordPrinted.otf --unicodes="U+0020-0040,U+0041-005A,U+005B-0060,U+007B-007E,U+00A0,U+00B7,U+2013-2014,U+2018-201D,U+2022,U+2026,U+2190-2193" --layout-features='*' --flavor=woff2 --no-hinting --desubroutinize --output-file=public/fonts/RushfordPrinted.woff2
 # Military Scribe: basic Latin
-python3 -m fontTools.subset src/assets/fonts-src/MilitaryScribe.ttf --unicodes="U+0020-007E,U+00A0,U+2018-201D,U+2026" --layout-features='*' --flavor=woff2 --output-file=public/fonts/MilitaryScribe.woff2
+python3 -m fontTools.subset src/assets/fonts-src/MilitaryScribe.ttf --unicodes="U+0020-007E,U+00A0,U+2018-201D,U+2026" --layout-features='*' --flavor=woff2 --no-hinting --drop-tables+=hdmx,VDMX,gasp --output-file=public/fonts/MilitaryScribe.woff2
 ```
 
 **Logo / favicon:** the logo is `src/assets/brand/logo.png` (or `.svg`). On every build, `scripts/favicons.mjs` makes the favicon, app icons and the header logo (`public/brand/logo.png`) from it; a logo on a transparent background is printed in black.
 
-**Performance note:** Lighthouse scores 98–99 on desktop and ~80 on throttled mobile. The mobile gap is the Rushford font file (~350 KB even after subsetting); everything else scores 100.
+**Performance note:** Lighthouse scores 98–99 on desktop and ~80 on throttled mobile. The mobile gap is the Rushford font file (~220 KB even after subsetting; its printed texture is stored as outlines); everything else scores 100.

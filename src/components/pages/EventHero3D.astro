@@ -1,0 +1,94 @@
+---
+/**
+ * Event page hero. Static by default (the regular Hero: title, facts, image).
+ * With motion on and WebGL available, scripts/three/loader.ts pins it for a
+ * long scroll and plays the event's own 3D scene (events.json `heroScene`,
+ * scripts/three/events/*) printed as halftone, while the overlay below tells
+ * the story in beats driven by --p (scroll progress, set by the scene):
+ *   intro title -> tagline -> summary -> final title (on the screen / frame / page)
+ * Tickets stay clickable the whole way (bottom bar).
+ */
+import Hero from '../sections/Hero.astro';
+import Button from '../ui/Button.astro';
+import Kicker from '../typography/Kicker.astro';
+import DisplayTitle from '../typography/DisplayTitle.astro';
+import pages from '../../content/pages.json';
+import type { EventEntry } from '../../lib/content';
+
+interface Props {
+  event: EventEntry;
+  hasLineup: boolean;
+}
+
+const { event, hasLineup } = Astro.props;
+const e = event.data;
+---
+
+<section
+  class="ev3d"
+  data-halftone-3d={e.heroScene ? 'event' : undefined}
+  data-scene={e.heroScene}
+  data-live-layout
+  aria-labelledby="ev3d-title"
+>
+  <div class="ev3d__stage" data-ev3d-stage>
+    <!-- Static layout: no JS, reduced motion, no WebGL -->
+    <div class="ev3d__static">
+      <Hero
+        title={e.title}
+        script={e.script}
+        kicker={e.kicker}
+        intro={e.tagline}
+        media={e.hero}
+        priority={!e.heroScene}
+        meta={[
+          { label: 'Date', value: e.dateLabel },
+          { label: 'Time', value: e.time },
+          { label: 'Venue', value: e.venue },
+        ]}
+      >
+        <Fragment slot="actions">
+          <Button href={e.ticketUrl} external>Get tickets</Button>
+          {hasLineup && <Button href="#lineup" variant="ghost">{e.lineupTitle}</Button>}
+        </Fragment>
+      </Hero>
+    </div>
+
+    <!-- Live overlay over the 3D scene -->
+    <div class="ev3d__overlay container-page">
+      <h1 id="ev3d-title" class="sr-only">{e.name}</h1>
+      <div class="ev3d__top">
+        <span class="ev3d__chip"><Kicker tone="accent" as="span">{e.kicker}</Kicker></span>
+        {e.heroSlate && <span class="ev3d__slate" aria-hidden="true">{e.heroSlate}</span>}
+      </div>
+
+      <div class="ev3d__title ev3d__title--intro" aria-hidden="true">
+        <DisplayTitle as="p" lines={e.title} script={e.script} reveal={false} />
+      </div>
+
+      <p class="ev3d__beat ev3d__beat--1">{e.tagline}</p>
+      <p class="ev3d__beat ev3d__beat--2">{e.summary}</p>
+
+      <div class="ev3d__title ev3d__title--final" aria-hidden="true">
+        <DisplayTitle as="p" lines={e.title} script={e.script} reveal={false} align="center" scriptAlign="center" />
+        <p class="ev3d__final-date">{e.dateLabel}</p>
+      </div>
+
+      <div class="ev3d__bar">
+        <dl class="ev3d__meta">
+          <div><dt>Date</dt><dd>{e.dateLabel}</dd></div>
+          <div><dt>Venue</dt><dd>{e.venue}</dd></div>
+        </dl>
+        <div class="flex flex-wrap gap-3">
+          <Button href={e.ticketUrl} external>Get tickets</Button>
+          {hasLineup && <Button href="#lineup" variant="ghost">{e.lineupTitle}</Button>}
+        </div>
+        <p class="ev3d__cue" aria-hidden="true">{pages.event.scrollCue} <span>↓</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../../scripts/three/loader';
+</script>

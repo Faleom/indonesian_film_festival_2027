@@ -58,6 +58,19 @@
   --c-on-primary: var(--c-offwhite); /* 6.18:1 */
 }
 
+/* Film Exhibition, "archive green". Not in the concept doc (the event is new
+   in the 21st); proposed Oct 2026, swap if the Creative team makes one. */
+[data-theme='exh'] {
+  --c-primary: #0e7c66;
+  --c-dark: #0b5345;
+  --c-light: #9fd3c4;
+
+  --c-display-top: var(--c-dark); /* 7.10:1 */
+  --c-display-bottom: var(--c-primary); /* 4.05:1, display sizes only */
+  --c-text-accent: var(--c-dark); /* primary is 4.05:1, large text only */
+  --c-on-primary: #ffffff; /* 5.13:1 */
+}
+
 /* Every theme shares offwhite, black and beige; re-declared so a nested
    [data-theme] always resolves the full set. */
 [data-theme] {

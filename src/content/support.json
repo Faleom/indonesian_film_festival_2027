@@ -1,0 +1,66 @@
+{
+  "$comment": "Fundraisers run by the Finance & Booth team, shown in the 'Support us' section (home + /sponsors) in this order. Dates are YYYY-MM-DD. The status stamp (Coming soon / Pre-order open / Closed) is worked out from `open` and `close` when the site is built. `pickup` is free text. Set `orderUrl` to the order form link when it exists (\"#\" shows a 'coming soon' message). `media` is a key in media.json. Optional `cta` replaces the button text (e.g. a link to an event page instead of an order form).",
+  "items": [
+    {
+      "id": "food-po-1",
+      "name": "Food Pre-Order 1",
+      "blurb": "Nasi kuning and java tea.",
+      "open": "2026-10-10",
+      "close": "2026-10-15",
+      "pickup": "Pickup 16 & 17 October 2026",
+      "orderUrl": "#",
+      "media": "support-food-po-1"
+    },
+    {
+      "id": "exam-pack",
+      "name": "Exam Pack",
+      "blurb": "Brookies plus exam essentials, delivered to you for exam season.",
+      "open": "2026-10-18",
+      "close": "2026-10-23",
+      "pickup": "Sent out 24 October 2026",
+      "orderUrl": "#",
+      "media": "support-exam-pack"
+    },
+    {
+      "id": "raffle",
+      "name": "Raffle",
+      "blurb": "Buy a ticket for a chance to win. Prizes to be announced.",
+      "open": "2026-12-05",
+      "close": "2026-12-14",
+      "pickup": "Winners announced 16 December 2026",
+      "orderUrl": "#",
+      "media": "support-raffle"
+    },
+    {
+      "id": "valentines-hampers",
+      "name": "Valentine's Hampers",
+      "blurb": "Hampers for Valentine's Day.",
+      "open": "2027-02-04",
+      "close": "2027-02-10",
+      "pickup": "Pickup 13 February 2027",
+      "orderUrl": "#",
+      "media": "support-valentines-hampers"
+    },
+    {
+      "id": "uts-booth",
+      "name": "Booth at Under the Stars",
+      "blurb": "Find the IFF booth at Under the Stars.",
+      "open": "2027-03-20",
+      "close": "2027-03-20",
+      "pickup": "On the night, 20 March 2027",
+      "orderUrl": "/uts",
+      "media": "support-uts-booth",
+      "cta": "See Under the Stars"
+    },
+    {
+      "id": "food-po-2",
+      "name": "Food Pre-Order 2",
+      "blurb": "A second round of homemade Indonesian treats. Menu to be announced.",
+      "open": "2027-04-16",
+      "close": "2027-04-23",
+      "pickup": "Pickup 24 & 25 April 2027",
+      "orderUrl": "#",
+      "media": "support-food-po-2"
+    }
+  ]
+}

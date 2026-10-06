@@ -9,7 +9,7 @@ Until the real file exists, `<Media id="key" />` renders a halftone placeholder 
 
 Then run `npm run placeholders` to refresh this list. To use a different filename, change `src` for that key in `media.json`.
 
-_43 of 43 still pending. Generated from media.json; don't edit by hand._
+_54 of 54 still pending. Generated from media.json; don't edit by hand._
 
 | Key | Type | Location | Ratio | Recommended size | File path (as-is) | Status |
 |---|---|---|---|---|---|---|
@@ -21,6 +21,7 @@ _43 of 43 still pending. Generated from media.json; don't edit by hand._
 | `hero-sfc` | image | /sfc hero | 4:5 | 1600x2000 | `public/images/hero-sfc.jpg` | ⬜ placeholder |
 | `hero-uts` | image | /uts hero | 4:5 | 1600x2000 | `public/images/hero-uts.jpg` | ⬜ placeholder |
 | `hero-edu-screening` | image | /edu-screening hero | 4:5 | 1600x2000 | `public/images/hero-edu-screening.jpg` | ⬜ placeholder |
+| `hero-exhibition` | image | /exhibition hero | 4:5 | 1600x2000 | `public/images/hero-exhibition.jpg` | ⬜ placeholder |
 | `hero-main-screening` | image | /main-screening hero | 4:5 | 1600x2000 | `public/images/hero-main-screening.jpg` | ⬜ placeholder |
 | `trailer-main` | video | / (home) and /main-screening trailer | 16:9 | 1920x1080 H.264, under 25 MB | `public/videos/trailer-main.mp4` | ⬜ placeholder |
 | `trailer-sfc` | video | /sfc trailer | 16:9 | 1920x1080 H.264, under 25 MB | `public/videos/trailer-sfc.mp4` | ⬜ placeholder |
@@ -43,6 +44,7 @@ _43 of 43 still pending. Generated from media.json; don't edit by hand._
 | `broll-sfc` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-sfc.mp4` | ⬜ placeholder |
 | `broll-uts` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-uts.mp4` | ⬜ placeholder |
 | `broll-edu` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-edu.mp4` | ⬜ placeholder |
+| `broll-exhibition` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-exhibition.mp4` | ⬜ placeholder |
 | `broll-main` | video | Home: 3D film strip (journey) | 16:9 | 1280x720 H.264, 8-15 s silent loop, under 6 MB | `public/videos/broll-main.mp4` | ⬜ placeholder |
 | `still-sfc-1` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/sfc-1.jpg` | ⬜ placeholder |
 | `still-sfc-2` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/sfc-2.jpg` | ⬜ placeholder |
@@ -53,9 +55,18 @@ _43 of 43 still pending. Generated from media.json; don't edit by hand._
 | `still-edu-1` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/edu-1.jpg` | ⬜ placeholder |
 | `still-edu-2` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/edu-2.jpg` | ⬜ placeholder |
 | `still-edu-3` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/edu-3.jpg` | ⬜ placeholder |
+| `still-exhibition-1` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/exhibition-1.jpg` | ⬜ placeholder |
+| `still-exhibition-2` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/exhibition-2.jpg` | ⬜ placeholder |
+| `still-exhibition-3` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/exhibition-3.jpg` | ⬜ placeholder |
 | `still-main-1` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/main-1.jpg` | ⬜ placeholder |
 | `still-main-2` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/main-2.jpg` | ⬜ placeholder |
 | `still-main-3` | image | Home: 3D film strip (journey) | 4:3 | 1600x1200 (landscape photo) | `public/images/stills/main-3.jpg` | ⬜ placeholder |
+| `support-food-po-1` | image | "Support us" card (home + /sponsors) | 4:3 | 1200x900 | `public/images/support/food-po-1.jpg` | ⬜ placeholder |
+| `support-exam-pack` | image | "Support us" card (home + /sponsors) | 4:3 | 1200x900 | `public/images/support/exam-pack.jpg` | ⬜ placeholder |
+| `support-raffle` | image | "Support us" card (home + /sponsors) | 4:3 | 1200x900 | `public/images/support/raffle.jpg` | ⬜ placeholder |
+| `support-valentines-hampers` | image | "Support us" card (home + /sponsors) | 4:3 | 1200x900 | `public/images/support/valentines-hampers.jpg` | ⬜ placeholder |
+| `support-uts-booth` | image | "Support us" card (home + /sponsors) | 4:3 | 1200x900 | `public/images/support/uts-booth.jpg` | ⬜ placeholder |
+| `support-food-po-2` | image | "Support us" card (home + /sponsors) | 4:3 | 1200x900 | `public/images/support/food-po-2.jpg` | ⬜ placeholder |
 
 ## Other placeholders
 

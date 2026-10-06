@@ -1,0 +1,193 @@
+/* ---------- Event page hero (EventHero3D.astro) ----------
+ * Static by default (the regular Hero). .is-3d (motion on + WebGL, set by
+ * scripts/three/loader.ts) pins a full-screen stage over a long scroll; the
+ * 3D scene writes --p (0..1) and the overlay beats fade in and out on it.
+ *
+ * Beat window: fades in over [--a, --a + 0.04], out over [--b - 0.04, --b].
+ */
+.ev3d { --p: 0; }
+.ev3d__stage { position: relative; }
+.ev3d__overlay { display: none; }
+
+.ev3d.is-3d { height: 420vh; }
+.ev3d.is-3d .ev3d__stage {
+  position: sticky;
+  top: 0;
+  will-change: transform; /* own layer: iOS keeps it in step with scrolling */
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+.ev3d.is-3d .ev3d__static { display: none; }
+.ev3d .ht3d__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: opacity 0.6s ease;
+}
+.ev3d.is-live .ht3d__canvas { opacity: 1; }
+/* Before the first frame: a soft halftone wash so the stage isn't blank. */
+.ev3d.is-3d:not(.is-live) .ev3d__stage {
+  background: radial-gradient(circle, color-mix(in srgb, var(--c-primary) 30%, transparent) 30%, transparent 34%) 0 0 / 10px 10px;
+}
+
+.ev3d.is-3d .ev3d__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  pointer-events: none;
+}
+.ev3d__overlay a,
+.ev3d__overlay button { pointer-events: auto; }
+
+.ev3d__top {
+  position: absolute;
+  top: 1.25rem;
+  left: 1rem;
+  right: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+@media (min-width: 768px) { .ev3d__top { left: 2rem; right: 2rem; } }
+.ev3d__chip,
+.ev3d__slate {
+  padding: 0.4rem 0.7rem;
+  background: var(--c-offwhite);
+  border: 1px solid var(--c-black);
+  box-shadow: 3px 3px 0 var(--c-black);
+}
+.ev3d__slate {
+  font-family: var(--ff-typewriter);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-offwhite);
+  background: var(--c-black);
+  box-shadow: 3px 3px 0 var(--c-primary);
+}
+.ev3d__slate::before { content: '● '; color: var(--c-primary); }
+@media (max-width: 639px) { .ev3d__slate { display: none; } }
+
+/* Shared beat fade. */
+.ev3d__title,
+.ev3d__beat {
+  position: absolute;
+  opacity: min(clamp(0, calc((var(--p) - var(--a)) * 25), 1), clamp(0, calc((var(--b) - var(--p)) * 25), 1));
+}
+
+/* Intro title: big, bottom left; leaves early with a little drift. */
+.ev3d__title--intro {
+  --a: -1;
+  --b: 0.14;
+  left: 1rem;
+  right: 1rem;
+  bottom: 9.5rem;
+  transform: translateY(calc(var(--p) * -160px));
+}
+.ev3d__title--intro .display-title-wrap,
+.ev3d__title--final .display-title-wrap { filter: drop-shadow(0 0 0.15em var(--c-offwhite)) drop-shadow(0 0 0.35em var(--c-offwhite)); }
+@media (min-width: 768px) { .ev3d__title--intro { left: 2rem; bottom: 8.5rem; max-width: 60%; } }
+
+/* Story beats: paper cards in the middle of the shot. */
+.ev3d__beat {
+  left: 50%;
+  top: 50%;
+  width: min(92vw, 40rem);
+  margin: 0;
+  padding: 1.1rem 1.4rem;
+  font-family: var(--ff-condensed);
+  font-size: clamp(1.4rem, 3.2vw, 2.4rem);
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: var(--c-display-top);
+  background: var(--c-offwhite);
+  border: 1px solid var(--c-black);
+  box-shadow: 6px 6px 0 var(--c-black);
+}
+.ev3d__beat--1 { --a: 0.2; --b: 0.44; transform: translate(-50%, -50%) rotate(-1.5deg) translateY(calc((var(--p) - 0.32) * -120px)); }
+.ev3d__beat--2 {
+  --a: 0.5;
+  --b: 0.76;
+  font-family: var(--ff-body);
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  line-height: 1.5;
+  text-transform: none;
+  color: var(--c-black);
+  transform: translate(-50%, -50%) rotate(1deg) translateY(calc((var(--p) - 0.63) * -120px));
+}
+
+/* Final title: centred on the scene's "screen" (frame, page, cinema screen). */
+.ev3d__title--final {
+  --a: 0.88;
+  --b: 9;
+  left: 50%;
+  top: 46%;
+  width: min(94vw, 64rem);
+  text-align: center;
+  transform: translate(-50%, -50%) scale(calc(0.9 + clamp(0, (var(--p) - 0.88) * 8, 1) * 0.1));
+}
+.ev3d__title--final .display-title[data-size='xl'] { font-size: clamp(3.5rem, 11vw, 10rem); }
+.ev3d__final-date {
+  display: inline-block;
+  margin: 0.75rem 0 0;
+  padding: 0.3rem 0.7rem;
+  font-family: var(--ff-typewriter);
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-on-primary);
+  background: var(--c-primary);
+}
+/* Per scene: where the "screen" sits in the final shot. */
+.ev3d[data-scene='book'] .ev3d__title--final { top: 50%; }
+.ev3d[data-scene='theatre'] .ev3d__title--final { top: 44%; }
+.ev3d[data-scene='gallery'] .ev3d__title--final { top: 42%; }
+
+/* Bottom bar: facts + tickets, always clickable. */
+.ev3d__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  padding: 0.9rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--c-offwhite) 92%, transparent);
+  border-top: 3px double var(--c-black);
+}
+@media (min-width: 768px) { .ev3d__bar { padding-inline: 2rem; } }
+.ev3d__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin: 0;
+  font-family: var(--ff-typewriter);
+  font-size: 0.8rem;
+}
+.ev3d__meta div { display: flex; gap: 0.5rem; }
+.ev3d__meta dt { text-transform: uppercase; letter-spacing: 0.1em; color: var(--c-text-accent); }
+.ev3d__meta dd { margin: 0; }
+.ev3d__cue {
+  margin: 0;
+  font-family: var(--ff-typewriter);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: clamp(0, calc(1 - var(--p) * 6), 1);
+}
+.ev3d__cue span { display: inline-block; animation: cue-bob 1.6s ease-in-out infinite; }
+.ev3d.is-scrolled .ev3d__cue { visibility: hidden; }
+.ev3d.is-scrolled .ev3d__cue span { animation: none; }
+@media (max-width: 767px) {
+  .ev3d__meta { display: none; }
+  .ev3d__cue { display: none; }
+  .ev3d__title--intro { bottom: 6rem; }
+}

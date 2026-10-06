@@ -1,0 +1,103 @@
+---
+/**
+ * The 21st edition theme, "Temaram" (a dim, gentle glow). A band of black
+ * riso ink whose top and bottom edges break up into halftone dots over the
+ * paper. The word sits in the dark, and a warm lamp lights it up: it follows
+ * the pointer on desktop, drifts on its own on touch screens, and flickers
+ * like a candle. The lit layer is a decorative copy (aria-hidden); the real
+ * heading and the blurb are always readable (offwhite on black).
+ * Reduced motion / no JS: the lamp rests in the middle, no flicker.
+ */
+import site from '../../content/site.json';
+import pages from '../../content/pages.json';
+
+const page = pages.home;
+const [word, ...rest] = site.theme.split(':');
+const subtitle = page.themeScript ?? rest.join(':').trim();
+---
+
+<section class="temaram" data-temaram aria-labelledby="temaram-title">
+  <div class="temaram__edge temaram__edge--top" aria-hidden="true"></div>
+  <div class="temaram__ink">
+    <div class="temaram__lamp" aria-hidden="true"></div>
+    <div class="container-page temaram__inner">
+      <p class="kicker temaram__kicker" data-reveal="typewriter">{page.themeKicker}</p>
+      <h2 id="temaram-title" class="temaram__title" data-reveal="misregister">
+        <span class="temaram__word">
+          <span class="temaram__word-ink">{word.trim()}</span>
+          <span class="temaram__word-glow" aria-hidden="true">{word.trim()}</span>
+        </span>
+        <span class="sr-only">: </span>
+        <span class="temaram__script">{subtitle}</span>
+      </h2>
+      <p class="temaram__blurb" data-reveal="fade-up">{site.themeSubtitle}</p>
+    </div>
+  </div>
+  <div class="temaram__edge temaram__edge--bottom" aria-hidden="true"></div>
+</section>
+
+<script>
+  // Lamp position as CSS variables (0..1 of the band). The band's position is
+  // cached on enter/resize; nothing reads layout per frame.
+  const init = () => {
+    const root = document.querySelector<HTMLElement>('[data-temaram]');
+    if (!root) return;
+    const motionOn = () => document.documentElement.dataset.motion === 'on';
+    // Page coordinates, so scrolling never needs a re-measure.
+    const word = root.querySelector<HTMLElement>('.temaram__word')!;
+    const pageBox = (el: Element) => {
+      const r = el.getBoundingClientRect();
+      return { left: r.left + scrollX, top: r.top + scrollY, width: r.width || 1, height: r.height || 1 };
+    };
+    let box = pageBox(root);
+    let wbox = pageBox(word);
+    let raf = 0;
+    let tx = 0.5,
+      ty = 0.5;
+    const measure = () => {
+      box = pageBox(root);
+      wbox = pageBox(word);
+    };
+    let wx = 0.5,
+      wy = 0.5;
+    const apply = () => {
+      raf = 0;
+      root.style.setProperty('--lx', tx.toFixed(4));
+      root.style.setProperty('--ly', ty.toFixed(4));
+      // Same point in the word's own box, for the lit copy's mask.
+      root.style.setProperty('--wx', wx.toFixed(4));
+      root.style.setProperty('--wy', wy.toFixed(4));
+    };
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse' || !motionOn()) return;
+      tx = Math.min(1, Math.max(0, (e.pageX - box.left) / box.width));
+      ty = Math.min(1, Math.max(0, (e.pageY - box.top) / box.height));
+      wx = (e.pageX - wbox.left) / wbox.width;
+      wy = (e.pageY - wbox.top) / wbox.height;
+      root.classList.add('is-tracking');
+      raf ||= requestAnimationFrame(apply);
+    };
+    // Hand the lamp back to the drift animation.
+    const onLeave = () => {
+      root.classList.remove('is-tracking');
+      ['--lx', '--ly', '--wx', '--wy'].forEach((p) => root.style.removeProperty(p));
+    };
+    // Drift + flicker loops (CSS) run only while the band is on screen.
+    const seen = new IntersectionObserver(([entry]) => root.classList.toggle('is-visible', entry.isIntersecting));
+    seen.observe(root);
+    root.addEventListener('pointerenter', measure);
+    root.addEventListener('pointermove', onMove);
+    root.addEventListener('pointerleave', onLeave);
+    addEventListener('resize', measure);
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        removeEventListener('resize', measure);
+        seen.disconnect();
+        cancelAnimationFrame(raf);
+      },
+      { once: true },
+    );
+  };
+  document.addEventListener('astro:page-load', init);
+</script>

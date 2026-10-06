@@ -66,6 +66,14 @@
       "location": "/edu-screening hero",
       "recommended": "1600x2000"
     },
+    "hero-exhibition": {
+      "type": "image",
+      "src": "/images/hero-exhibition.jpg",
+      "ratio": "4:5",
+      "alt": "Props and film memorabilia on display at the Film Exhibition",
+      "location": "/exhibition hero",
+      "recommended": "1600x2000"
+    },
     "hero-main-screening": {
       "type": "image",
       "src": "/images/hero-main-screening.jpg",
@@ -246,6 +254,14 @@
       "location": "Home: 3D film strip (journey)",
       "recommended": "1280x720 H.264, 8-15 s silent loop, under 6 MB"
     },
+    "broll-exhibition": {
+      "type": "video",
+      "src": "/videos/broll-exhibition.mp4",
+      "ratio": "16:9",
+      "alt": "B-roll from the Film Exhibition",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1280x720 H.264, 8-15 s silent loop, under 6 MB"
+    },
     "broll-main": {
       "type": "video",
       "src": "/videos/broll-main.mp4",
@@ -326,6 +342,30 @@
       "location": "Home: 3D film strip (journey)",
       "recommended": "1600x1200 (landscape photo)"
     },
+    "still-exhibition-1": {
+      "type": "image",
+      "src": "/images/stills/exhibition-1.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Film Exhibition",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-exhibition-2": {
+      "type": "image",
+      "src": "/images/stills/exhibition-2.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Film Exhibition",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
+    "still-exhibition-3": {
+      "type": "image",
+      "src": "/images/stills/exhibition-3.jpg",
+      "ratio": "4:3",
+      "alt": "Still from the Film Exhibition",
+      "location": "Home: 3D film strip (journey)",
+      "recommended": "1600x1200 (landscape photo)"
+    },
     "still-main-1": {
       "type": "image",
       "src": "/images/stills/main-1.jpg",
@@ -349,6 +389,54 @@
       "alt": "Still from the Main Screening",
       "location": "Home: 3D film strip (journey)",
       "recommended": "1600x1200 (landscape photo)"
+    },
+    "support-food-po-1": {
+      "type": "image",
+      "src": "/images/support/food-po-1.jpg",
+      "ratio": "4:3",
+      "alt": "Nasi kuning and java tea from Food Pre-Order 1",
+      "location": "\"Support us\" card (home + /sponsors)",
+      "recommended": "1200x900"
+    },
+    "support-exam-pack": {
+      "type": "image",
+      "src": "/images/support/exam-pack.jpg",
+      "ratio": "4:3",
+      "alt": "Brookies in cups from the Exam Pack",
+      "location": "\"Support us\" card (home + /sponsors)",
+      "recommended": "1200x900"
+    },
+    "support-raffle": {
+      "type": "image",
+      "src": "/images/support/raffle.jpg",
+      "ratio": "4:3",
+      "alt": "IFF raffle prizes",
+      "location": "\"Support us\" card (home + /sponsors)",
+      "recommended": "1200x900"
+    },
+    "support-valentines-hampers": {
+      "type": "image",
+      "src": "/images/support/valentines-hampers.jpg",
+      "ratio": "4:3",
+      "alt": "Valentine's hampers boxed and ready for pickup",
+      "location": "\"Support us\" card (home + /sponsors)",
+      "recommended": "1200x900"
+    },
+    "support-uts-booth": {
+      "type": "image",
+      "src": "/images/support/uts-booth.jpg",
+      "ratio": "4:3",
+      "alt": "The IFF booth at Under the Stars",
+      "location": "\"Support us\" card (home + /sponsors)",
+      "recommended": "1200x900"
+    },
+    "support-food-po-2": {
+      "type": "image",
+      "src": "/images/support/food-po-2.jpg",
+      "ratio": "4:3",
+      "alt": "Homemade treats from Food Pre-Order 2",
+      "location": "\"Support us\" card (home + /sponsors)",
+      "recommended": "1200x900"
     }
   }
 }

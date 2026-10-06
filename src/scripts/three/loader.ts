@@ -4,6 +4,8 @@
  *   camera     <HalftoneCamera />      rotating halftone camera
  *   hero       <HomeHero />            camera dots -> festival title (pinned)
  *   filmstrip  <FilmStripJourney />    3D b-roll film strip (pinned)
+ *   event      <EventHero3D />         scroll-driven event page hero (pinned);
+ *                                      data-scene picks the builder in ./events
  *
  * - Three.js is only downloaded when a block is near the viewport
  * - only with motion on and WebGL available; phones and tablets get lighter
@@ -13,7 +15,7 @@
  *   and .is-live once the first frame has rendered
  * - renders only while on screen; disposed (WebGL released) on page leave
  *
- * Budget: heavy 3D is allowed in max 3 spots site-wide (see CLAUDE.md).
+ * Budget: max one heavy 3D scene per page, two on home (see CLAUDE.md).
  */
 import type { SceneHandle } from './scene';
 
@@ -61,6 +63,12 @@ const mounters: Record<string, (el: HTMLElement) => Promise<SceneHandle>> = {
     return variant === 'solid'
       ? (await import('./heroSceneSolid')).mountHeroSolid(el, opts)
       : (await import('./heroScene')).mountHero(el, opts);
+  },
+  event: async (el) => {
+    const [{ mountEventScene }, { eventScenes }] = await Promise.all([import('./eventScene'), import('./events')]);
+    const load = eventScenes[el.dataset.scene ?? ''];
+    if (!load) throw new Error(`Unknown event scene "${el.dataset.scene}"`);
+    return mountEventScene(el, await load(), { lite: lite(), maxDpr: maxDpr() });
   },
   filmstrip: async (el) =>
     (await import('./filmStrip')).mountFilmStrip(el, JSON.parse(el.dataset.strip || '{}'), {

@@ -2,12 +2,17 @@
 import fs from 'node:fs';
 import nodePath from 'node:path';
 import site from '../../content/site.json';
+import { eventHref, getEvents } from '../../lib/content';
 
 // Festival logo, generated from src/assets/brand/logo.* by scripts/favicons.mjs (black on transparent).
 const hasLogo = fs.existsSync(nodePath.join(process.cwd(), 'public/brand/logo.png'));
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`));
+
+// The item with `events: true` in site.json nav becomes the Events menu, built from events.json.
+const events = (await getEvents()).map((e) => ({ ...e.data, href: eventHref(e) }));
+const onEventPage = events.some((e) => isCurrent(e.href));
 ---
 
 <header class="site-header">
@@ -36,17 +41,41 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href
       <span class="sr-only">, home</span>
     </a>
 
-    <nav aria-label="Main" class="hidden xl:block">
+    <nav aria-label="Main" class="nav-main hidden xl:block">
       <ul class="m-0 flex list-none items-center gap-5 p-0 2xl:gap-7">
         {
-          site.nav.map((item) => (
-            <li data-theme={item.theme}>
-              <a href={item.href} class="nav-link" aria-current={isCurrent(item.href) ? 'page' : undefined}>
-                {item.theme && <span class="nav-dot" aria-hidden="true" />}
-                {item.label}
-              </a>
-            </li>
-          ))
+          site.nav.map((item) =>
+            'events' in item ? (
+              <li class="relative">
+                <details class="nav-events" data-nav-events>
+                  <summary class="nav-link" aria-current={onEventPage ? 'true' : undefined}>
+                    {item.label}
+                    <span class="nav-events__caret" aria-hidden="true">▾</span>
+                  </summary>
+                  <ul class="nav-events__panel m-0 list-none p-0">
+                    {events.map((e) => (
+                      <li data-theme={e.theme}>
+                        <a href={e.href} class="nav-events__item" aria-current={isCurrent(e.href) ? 'page' : undefined}>
+                          <span class="nav-dot" aria-hidden="true" />
+                          <span class="nav-events__name">
+                            {e.name}
+                            {e.badge && <span class="nav-badge">{e.badge}</span>}
+                          </span>
+                          <span class="nav-events__date">{e.shortDate}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </li>
+            ) : (
+              <li>
+                <a href={item.href} class="nav-link" aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            )
+          )
         }
       </ul>
     </nav>
@@ -61,18 +90,33 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href
         <nav aria-label="Main" class="nav-menu__panel">
           <ul class="m-0 flex list-none flex-col p-0">
             {
-              site.nav.map((item) => (
-                <li data-theme={item.theme} class="border-b border-ink/30">
-                  <a
-                    href={item.href}
-                    class="nav-link block py-3 text-lg"
-                    aria-current={isCurrent(item.href) ? 'page' : undefined}
-                  >
-                    {item.theme && <span class="nav-dot" aria-hidden="true" />}
-                    {item.label}
-                  </a>
-                </li>
-              ))
+              site.nav.map((item) =>
+                'events' in item ? (
+                  <li class="border-b border-ink/30 pb-2">
+                    <p class="kicker mt-1 mb-1">{item.label}</p>
+                    <ul class="m-0 list-none p-0">
+                      {events.map((e) => (
+                        <li data-theme={e.theme}>
+                          <a href={e.href} class="nav-link flex items-baseline gap-2 py-2 text-lg" aria-current={isCurrent(e.href) ? 'page' : undefined}>
+                            <span class="nav-dot" aria-hidden="true" />
+                            <span>
+                              {e.name}
+                              {e.badge && <span class="nav-badge">{e.badge}</span>}
+                            </span>
+                            <span class="nav-events__date ml-auto">{e.shortDate}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ) : (
+                  <li class="border-b border-ink/30">
+                    <a href={item.href} class="nav-link block py-3 text-lg" aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                      {item.label}
+                    </a>
+                  </li>
+                )
+              )
             }
           </ul>
           <a href={site.ticketUrl} data-coming-soon={site.ticketUrl === '#' ? site.ticketsComingSoon : undefined} class="btn btn--primary mt-5 w-full sm:hidden">Tickets</a>
@@ -81,3 +125,18 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href
     </div>
   </div>
 </header>
+
+<script>
+  // Events menu: close on outside click, Escape or after picking a page. Opens without JS (<details>).
+  const close = (except?: Element) =>
+    document.querySelectorAll<HTMLDetailsElement>('[data-nav-events][open]').forEach((d) => d !== except && (d.open = false));
+  document.addEventListener('click', (ev) => close((ev.target as Element).closest('[data-nav-events]') ?? undefined));
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Escape') return;
+    const open = document.querySelector<HTMLDetailsElement>('[data-nav-events][open]');
+    if (!open) return;
+    open.open = false;
+    open.querySelector('summary')?.focus();
+  });
+  document.addEventListener('astro:after-swap', () => close());
+</script>

@@ -1,0 +1,139 @@
+---
+/**
+ * "Support us": the Finance & Booth fundraisers (support.json) as newspaper
+ * classified ads, each pinned to the page with a strip of tape and a status
+ * stamp. The stamp (Coming soon / Pre-order open / Closed) is worked out from
+ * the dates at build time and refreshed in the browser, so a site built weeks
+ * ago still shows the right one. With motion on, the stamps thud down as the
+ * ads scroll in.
+ */
+import Media from '../media/Media.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import pages from '../../content/pages.json';
+import { getSupport } from '../../lib/content';
+import { supportStatus } from '../../lib/support';
+
+interface Props {
+  /** Heading level id, so two instances on one site don't clash. */
+  id?: string;
+}
+
+const { id = 'support' } = Astro.props;
+const copy = pages.support;
+const items = await getSupport();
+const day = new Intl.DateTimeFormat('en-AU', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+const short = (iso: string) => day.format(new Date(`${iso}T00:00:00Z`));
+const range = (a: string, b: string) => (a === b ? short(a) : `${short(a)} – ${short(b)}`);
+// Slight, fixed tilts so the ads look pinned up by hand (no randomness: same on every build).
+const tilts = [-1.6, 1.1, -0.6, 1.8, -1.2, 0.7];
+---
+
+<section id={id} class="container-page scroll-mt-24 py-12 md:py-20" aria-labelledby={`${id}-title`}>
+  <SectionHead title={copy.title} kicker={copy.kicker} id={`${id}-title`} />
+  <p data-reveal="fade-up" class="mt-0 mb-10 max-w-[60ch] text-lg">{copy.intro}</p>
+
+  <ol
+    class="support-grid m-0 list-none p-0"
+    data-support-list
+    data-label-soon={copy.status.soon}
+    data-label-open={copy.status.open}
+    data-label-closed={copy.status.closed} data-reveal="fold" data-reveal-children data-reveal-stagger="0.08">
+    {
+      items.map((item, i) => {
+        const s = item.data;
+        const status = supportStatus(s.open, s.close);
+        const external = /^https?:/.test(s.orderUrl);
+        return (
+          <li
+            class="support-ad"
+            data-support-ad
+            data-status={status}
+            data-open={s.open}
+            data-close={s.close}
+            style={`--tilt: ${tilts[i % tilts.length]}deg`}
+          >
+            <span class="support-ad__tape" aria-hidden="true" />
+            <div class="support-ad__media">
+              <Media id={s.media} ratio="4:3" sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 90vw" />
+              <span class="support-ad__stamp" data-support-stamp>
+                {copy.status[status]}
+              </span>
+            </div>
+            <div class="support-ad__body">
+              <p class="support-ad__no">No. {String(i + 1).padStart(2, '0')}</p>
+              <h3 class="support-ad__name">{s.name}</h3>
+              <p class="m-0">{s.blurb}</p>
+              <dl class="support-ad__dates">
+                <div>
+                  <dt>{s.open === s.close ? 'Date' : 'Pre-order'}</dt>
+                  <dd>{range(s.open, s.close)}</dd>
+                </div>
+                <div>
+                  <dt>Then</dt>
+                  <dd>{s.pickup}</dd>
+                </div>
+              </dl>
+              <a
+                href={s.orderUrl}
+                class="btn btn--primary support-ad__cta"
+                data-cta={s.cta}
+                data-label-open={copy.orderLabel}
+                data-label-soon={`${copy.soonLabel} ${short(s.open)}`}
+                data-label-closed={copy.closedLabel}
+                data-coming-soon={s.orderUrl === '#' ? copy.orderComingSoon : undefined}
+                target={external ? '_blank' : undefined}
+                rel={external ? 'noopener' : undefined}
+                aria-disabled={status === 'closed' && !s.cta ? 'true' : undefined}
+              >
+                {s.cta ?? (status === 'open' ? copy.orderLabel : status === 'soon' ? `${copy.soonLabel} ${short(s.open)}` : copy.closedLabel)}
+              </a>
+            </div>
+          </li>
+        );
+      })
+    }
+  </ol>
+</section>
+
+<script>
+  import { melbourneToday, supportStatus, type SupportStatus } from '../../lib/support';
+
+  // Refresh the statuses with today's date, then thud the stamps down as the ads scroll in.
+  const init = () => {
+    const today = melbourneToday();
+    const list = document.querySelector<HTMLElement>('[data-support-list]');
+    if (!list) return;
+    const labels: Record<SupportStatus, string | undefined> = {
+      soon: list.dataset.labelSoon,
+      open: list.dataset.labelOpen,
+      closed: list.dataset.labelClosed,
+    };
+    const ads = [...list.querySelectorAll<HTMLElement>('[data-support-ad]')];
+    for (const ad of ads) {
+      const status = supportStatus(ad.dataset.open!, ad.dataset.close!, today);
+      ad.dataset.status = status;
+      const stamp = ad.querySelector<HTMLElement>('[data-support-stamp]');
+      if (stamp && labels[status]) stamp.textContent = labels[status]!;
+      const cta = ad.querySelector<HTMLAnchorElement>('.support-ad__cta');
+      if (cta && !cta.dataset.cta) {
+        cta.textContent = cta.dataset[`label${status[0].toUpperCase()}${status.slice(1)}` as 'labelOpen'] ?? cta.textContent;
+        if (status === 'closed') cta.setAttribute('aria-disabled', 'true');
+        else cta.removeAttribute('aria-disabled');
+      }
+    }
+    if (!('IntersectionObserver' in window)) return ads.forEach((ad) => ad.classList.add('is-stamped'));
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add('is-stamped');
+          io.unobserve(entry.target);
+        }
+      },
+      { rootMargin: '0px 0px -25% 0px' },
+    );
+    ads.forEach((ad) => io.observe(ad));
+    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
+  };
+  document.addEventListener('astro:page-load', init);
+</script>

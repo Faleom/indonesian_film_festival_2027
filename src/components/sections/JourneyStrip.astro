@@ -1,5 +1,5 @@
 ---
-/** SFC -> Under the Stars -> Edu -> Main, each card in its own theme. */
+/** SFC -> Exhibition -> Under the Stars -> Edu -> Main, each card in its own theme. */
 import { eventHref, type EventEntry } from '../../lib/content';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 const { events } = Astro.props;
 ---
 
-<ol data-reveal="fade-up" data-reveal-children data-reveal-stagger="0.12" class="m-0 grid list-none gap-5 p-0 md:grid-cols-2 xl:grid-cols-4 xl:gap-0">
+<ol data-reveal="fade-up" data-reveal-children data-reveal-stagger="0.12" class="m-0 grid list-none gap-5 p-0 md:grid-cols-2 xl:grid-cols-5 xl:gap-0">
   {
     events.map((e, i) => (
       <li data-theme={e.data.theme} class="relative flex">
@@ -23,7 +23,7 @@ const { events } = Astro.props;
           </span>
           <span
             class="font-display leading-[0.85] uppercase group-hover:!text-on-primary"
-            style="font-size: clamp(2.25rem, 3.3vw, 3.5rem); color: var(--c-display-top)"
+            style="font-size: clamp(2rem, 2.6vw, 3rem); color: var(--c-display-top)"
           >
             {e.data.name}
           </span>

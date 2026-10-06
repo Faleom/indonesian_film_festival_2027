@@ -2,23 +2,28 @@
   "$comment": "Copy for each page: hero title lines, script word, kicker, intro text, SEO title/description. Event pages take most of their copy from events.json. A `script` word must be part of the real title (it is read between the lines: Frequently *Asked* Questions).",
   "home": {
     "metaTitle": "21st Indonesian Film Festival · Melbourne",
-    "kicker": "Melbourne · March 2027 (TBC)",
+    "kicker": "Melbourne · Nov 2026 to May 2027",
     "title": [
       "Indonesian",
       "Film Festival"
     ],
     "script": "the 21st",
     "hero": "hero-home",
-    "intro": "A non-profit, student-run celebration of Indonesian cinema in Melbourne. Four events, one journey: from new voices in short film, to open-air nights and screenings for students, to the best of Indonesian features on the big screen.",
+    "intro": "A non-profit, student-run celebration of Indonesian cinema in Melbourne. Five events, one journey: from new voices in short film and an exhibition of Indonesian cinema history, to open-air nights and screenings for schools, to the grand premiere on the big screen.",
     "journeyKicker": "The festival journey",
-    "journeyTitle": "Four events, one journey",
+    "journeyTitle": "Five events, one journey",
     "trailerKicker": "Watch",
     "trailerTitle": "Festival trailer",
     "filmsKicker": "Now showing",
     "filmsTitle": "Main Screening lineup",
     "sponsorsKicker": "With thanks to",
     "newsletterTitle": "Stay in the loop",
-    "newsletterText": "Lineup announcements and ticket releases, straight to your inbox."
+    "newsletterText": "Lineup announcements and ticket releases, straight to your inbox.",
+    "themeKicker": "The 21st edition theme",
+    "themeTitle": [
+      "Temaram"
+    ],
+    "themeScript": "The Unwavering Glow of Indonesian Cinema"
   },
   "faq": {
     "metaTitle": "FAQ · IFF 21",
@@ -67,11 +72,23 @@
       {
         "label": "21st",
         "year": "2027",
-        "title": "Theme TBC"
+        "title": "Temaram: The Unwavering Glow of Indonesian Cinema"
       }
     ],
     "teamKicker": "The committee",
-    "teamTitle": "Who makes it happen"
+    "teamTitle": "Who makes it happen",
+    "vision": {
+      "title": "Vision",
+      "text": "To establish IFF as a reputable and lasting platform for Indonesian cinema, fostering a space where films, filmmakers, and conversations can thrive and reach wide audiences."
+    },
+    "mission": {
+      "title": "Mission",
+      "items": [
+        "Enhancing audience experiences through innovative event features.",
+        "Maintaining and strengthening relationships with external stakeholders through transparency and active communication.",
+        "Building a united team prioritizing clear communication and collaboration."
+      ]
+    }
   },
   "sponsors": {
     "metaTitle": "Sponsors · IFF 21",
@@ -102,5 +119,24 @@
     ],
     "script": "the",
     "text": "This page has been cut from the final edit."
+  },
+  "support": {
+    "kicker": "Eat, win, support",
+    "title": "Support us",
+    "intro": "The festival is non-profit and student-run. Every pre-order and raffle ticket from our Finance & Booth team helps bring Indonesian cinema to Melbourne.",
+    "status": {
+      "soon": "Coming soon",
+      "open": "Pre-order open",
+      "closed": "Closed"
+    },
+    "orderLabel": "Order now",
+    "soonLabel": "Opens",
+    "closedLabel": "This one's done",
+    "orderComingSoon": "Order links open soon. Follow our Instagram for updates!"
+  },
+  "event": {
+    "keyDatesTitle": "Key dates",
+    "nextUpLabel": "Next up",
+    "scrollCue": "Scroll"
   }
 }

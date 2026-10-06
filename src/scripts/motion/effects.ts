@@ -5,7 +5,8 @@
  *   .ph / .media--halftone       halftone dot size + parallax tied to scroll
  *   .clipping                    3D tilt + lift following the pointer (desktop)
  *   details.faq-item             answers unfold like folded paper
- *   [data-marquee]               sponsor marquee, speed follows scroll velocity
+ *   [data-ink-wipe]              section break swept across by scroll
+ *   [data-marquee]               sponsor marquee, speed follows scroll velocity; drag/swipe sideways
  *   body[data-reprint]           theme colour re-prints over the page on load
  */
 import gsap from 'gsap';
@@ -113,6 +114,8 @@ export function foldingAccordions(): Cleanup {
 
 /**
  * Infinite marquee; scrolling the page pushes it faster, in the scroll direction.
+ * It can also be moved by hand: drag / swipe sideways or scroll a trackpad
+ * horizontally, and it glides on with a little inertia before the drift resumes.
  * Runs only while on screen, and the loop width is cached (reading scrollWidth
  * every frame forced a layout on frames shared with the 3D and the rules).
  */
@@ -124,17 +127,79 @@ export function marquees(lenis: Lenis | undefined): Cleanup {
     root.classList.add('is-running');
     let x = 0;
     let boost = 0;
+    let fling = 0; // px per second left over from a drag or a horizontal scroll
     const base = Number(root.dataset.marqueeSpeed ?? 40); // px per second
     let half = track.scrollWidth / 2; // track holds the items twice
     const ro = new ResizeObserver(() => (half = track.scrollWidth / 2));
     ro.observe(track);
+
+    let drag: { id: number; lastX: number; lastT: number; travel: number; moved: boolean } | null = null;
+    let suppressClick = false;
     const tick = (_t: number, dtMs: number) => {
-      const v = lenis?.velocity ?? 0;
-      boost += (v * 25 - boost) * 0.1;
-      x -= ((base + Math.abs(boost)) * Math.sign(boost || 1) * dtMs) / 1000;
+      if (!drag?.moved) {
+        const v = lenis?.velocity ?? 0;
+        boost += (v * 25 - boost) * 0.1;
+        x -= ((base + Math.abs(boost)) * Math.sign(boost || 1) * dtMs) / 1000;
+        x += (fling * dtMs) / 1000;
+        fling *= Math.exp(-dtMs / 350);
+      }
       if (half > 0) x = ((x % half) - half) % half;
       gsap.set(track, { x });
     };
+
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      drag = { id: e.pointerId, lastX: e.clientX, lastT: e.timeStamp, travel: 0, moved: false };
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const dx = e.clientX - drag.lastX;
+      const dt = Math.max(1, e.timeStamp - drag.lastT);
+      drag.travel += Math.abs(dx);
+      if (!drag.moved && drag.travel > 6) {
+        // Only now capture, so a plain tap still reaches the sponsor link.
+        drag.moved = true;
+        root.setPointerCapture(e.pointerId);
+        root.classList.add('is-dragging');
+      }
+      if (drag.moved) {
+        x += dx;
+        fling = (dx / dt) * 1000;
+      }
+      drag.lastX = e.clientX;
+      drag.lastT = e.timeStamp;
+    };
+    const onUp = (e: PointerEvent) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      suppressClick = drag.moved;
+      if (e.timeStamp - drag.lastT > 80) fling = 0; // held still before letting go
+      drag = null;
+      root.classList.remove('is-dragging');
+    };
+    const onClick = (e: MouseEvent) => {
+      if (!suppressClick) return;
+      suppressClick = false;
+      e.preventDefault();
+      e.stopPropagation();
+    };
+    // Trackpads and shift+wheel scroll it sideways; vertical wheel still scrolls the page.
+    const onWheel = (e: WheelEvent) => {
+      const dx = e.deltaX || (e.shiftKey ? e.deltaY : 0);
+      if (Math.abs(dx) <= Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
+      e.preventDefault();
+      x -= dx;
+      fling = 0;
+    };
+    root.addEventListener('pointerdown', onDown);
+    root.addEventListener('pointermove', onMove);
+    root.addEventListener('pointerup', onUp);
+    root.addEventListener('pointercancel', onUp);
+    root.addEventListener('click', onClick, true);
+    root.addEventListener('wheel', onWheel, { passive: false });
+    // Links and logos shouldn't start a native image/link drag.
+    const noNativeDrag = (e: DragEvent) => e.preventDefault();
+    root.addEventListener('dragstart', noNativeDrag);
+
     let running = false;
     const io = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting === running) return;
@@ -147,7 +212,14 @@ export function marquees(lenis: Lenis | undefined): Cleanup {
       io.disconnect();
       ro.disconnect();
       gsap.ticker.remove(tick);
-      root.classList.remove('is-running');
+      root.removeEventListener('pointerdown', onDown);
+      root.removeEventListener('pointermove', onMove);
+      root.removeEventListener('pointerup', onUp);
+      root.removeEventListener('pointercancel', onUp);
+      root.removeEventListener('click', onClick, true);
+      root.removeEventListener('wheel', onWheel);
+      root.removeEventListener('dragstart', noNativeDrag);
+      root.classList.remove('is-running', 'is-dragging');
       gsap.set(track, { clearProps: 'transform' });
     });
   });
@@ -171,4 +243,24 @@ export function reprint(skip: boolean): Cleanup {
     { '--rp': '0px', duration: 0.9, ease: 'power2.inOut', onComplete: () => plate.remove() },
   );
   return () => (tween.kill(), plate.remove());
+}
+
+/**
+ * Section breaks (InkWipe): scroll sweeps the ink band across. Scrubbed, so it
+ * runs both ways; one custom property per frame, no layout reads.
+ */
+export function inkWipes(): Cleanup {
+  const tweens = Array.from(document.querySelectorAll<HTMLElement>('[data-ink-wipe]')).map((el) =>
+    gsap.fromTo(
+      el,
+      { '--w': 0 },
+      { '--w': 1, ease: 'none', scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 35%', scrub: 0.6 } },
+    ),
+  );
+  return () =>
+    tweens.forEach((t) => {
+      t.scrollTrigger?.kill();
+      t.kill();
+      gsap.set(t.targets(), { clearProps: '--w' });
+    });
 }

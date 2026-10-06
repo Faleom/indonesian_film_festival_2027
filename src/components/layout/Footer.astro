@@ -1,5 +1,9 @@
 ---
 import site from '../../content/site.json';
+import { eventHref, getEvents } from '../../lib/content';
+
+const events = await getEvents();
+const links = site.nav.flatMap((item) => ('events' in item ? events.map((e) => ({ label: e.data.name, href: eventHref(e) })) : [item]));
 import NewsletterForm from '../forms/NewsletterForm.astro';
 import InkRule from '../ui/InkRule.astro';
 ---
@@ -20,7 +24,7 @@ import InkRule from '../ui/InkRule.astro';
         <p class="kicker mb-4">Festival</p>
         <ul class="m-0 grid list-none grid-cols-2 gap-x-6 gap-y-2 p-0">
           {
-            site.nav.map((item) => (
+            links.map((item) => (
               <li>
                 <a href={item.href} class="text-ink underline-offset-4 hover:underline">{item.label}</a>
               </li>

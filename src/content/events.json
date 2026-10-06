@@ -1,5 +1,5 @@
 {
-  "$comment": "The four festival events, in journey order (SFC -> Under the Stars -> Educational Screening -> Main Screening). `id` is used in films/schedule; `theme` is the colour theme (sfc | uts | main | base). `title` lines build the big display title; `script` (optional) is a word that is genuinely part of the name, drawn in script between the lines (e.g. Under *the* Stars). Media keys refer to media.json. `strip` is the list of media keys shown on that event's frames in the home film strip (video or image, any number); add keys to media.json first.",
+  "$comment": "The five festival events, in journey order by date (SFC -> Film Exhibition -> Under the Stars -> Educational Screening -> Main Screening). `id` is used in films/schedule; `theme` is the colour theme (sfc | exh | uts | main | base). `title` lines build the big display title; `script` (optional) is a word that is genuinely part of the name, drawn in script between the lines (e.g. Under *the* Stars). Media keys refer to media.json. `strip` is the list of media keys shown on that event's frames in the home film strip (video or image, any number); add keys to media.json first. `badge` (optional) is a small label next to the name, e.g. \"New\". `shortDate` is the short date in the navbar Events menu. `heroScene` picks the scroll-driven 3D hero: clapper | gallery | open-air | book | theatre (leave it out for a plain hero). `keyDates` (optional): the dates shown on the event page timeline, YYYY-MM-DD + a short label; only confirmed dates. `heroSlate` (optional): the small label in the corner of the 3D hero.",
   "items": [
     {
       "id": "sfc",
@@ -14,16 +14,19 @@
       ],
       "kicker": "Event 01 · Short Film Competition",
       "tagline": "New voices, original stories.",
-      "summary": "Showcases emerging Indonesian filmmakers, highlighting original stories and fresh creative voices.",
+      "summary": "An annual student filmmaking contest, open globally: short films made on a set topic, with the winners revealed at the Film Exhibition.",
       "description": [
-        "The Short Film Competition showcases emerging Indonesian filmmakers, highlighting original stories and fresh creative voices.",
-        "Submission and screening details for the 21st edition will be announced soon."
+        "The Short Film Competition is an annual student filmmaking contest, open to filmmakers around the world. Entrants submit short films made on a specific topic, and it showcases emerging voices and original stories.",
+        "Submissions open on 2 November 2026 and close on 8 February 2027. The winners are announced on 27 February 2027, and the Grand Winner is showcased at the Film Exhibition.",
+        "The topic and submission rules will be announced soon."
       ],
-      "date": "2027-02-20",
-      "dateLabel": "Saturday 20 February 2027 (TBC)",
-      "time": "6:30 PM",
-      "venue": "ACMI, Federation Square",
+      "date": "2027-02-27",
+      "dateLabel": "Submissions 2 Nov 2026 to 8 Feb 2027 · Winners 27 Feb 2027",
+      "time": "TBC",
+      "venue": "Venue TBC",
       "hero": "hero-sfc",
+      "heroScene": "clapper",
+      "heroSlate": "Scene 01 · Take 21",
       "trailer": "trailer-sfc",
       "ticketUrl": "#",
       "lineupTitle": "The finalists",
@@ -32,11 +35,74 @@
         "still-sfc-1",
         "still-sfc-2",
         "still-sfc-3"
+      ],
+      "shortDate": "Nov – Feb",
+      "keyDates": [
+        {
+          "date": "2026-11-02",
+          "label": "Submissions open"
+        },
+        {
+          "date": "2027-02-08",
+          "label": "Submissions close"
+        },
+        {
+          "date": "2027-02-27",
+          "label": "Winners announced"
+        }
+      ]
+    },
+    {
+      "id": "exhibition",
+      "order": 2,
+      "theme": "exh",
+      "slug": "exhibition",
+      "name": "Film Exhibition",
+      "shortName": "Exhibition",
+      "badge": "New",
+      "title": [
+        "Film",
+        "Exhibition"
+      ],
+      "kicker": "Event 02 · Film Exhibition",
+      "tagline": "Indonesian cinema, off the screen and into the room.",
+      "summary": "New this year: a curated exhibition bringing Indonesian cinema to life through iconic films, props, costumes, memorabilia and behind-the-scenes stories, plus the SFC Grand Winner.",
+      "description": [
+        "New for the 21st edition, the Film Exhibition is a curated exhibition that brings Indonesian cinema to life by showcasing iconic films, props, costumes, memorabilia and behind-the-scenes stories.",
+        "It also showcases the Short Film Competition Grand Winner alongside archival film materials.",
+        "Venue, opening hours and tickets will be announced soon."
+      ],
+      "date": "2027-02-27",
+      "dateLabel": "27 & 28 February 2027",
+      "time": "TBC",
+      "venue": "Venue TBC",
+      "hero": "hero-exhibition",
+      "heroScene": "gallery",
+      "heroSlate": "Room 02 · Now open",
+      "trailer": null,
+      "ticketUrl": "#",
+      "lineupTitle": "The exhibition",
+      "strip": [
+        "broll-exhibition",
+        "still-exhibition-1",
+        "still-exhibition-2",
+        "still-exhibition-3"
+      ],
+      "shortDate": "27–28 Feb",
+      "keyDates": [
+        {
+          "date": "2027-02-27",
+          "label": "Exhibition opens"
+        },
+        {
+          "date": "2027-02-28",
+          "label": "Final day"
+        }
       ]
     },
     {
       "id": "uts",
-      "order": 2,
+      "order": 3,
       "theme": "uts",
       "slug": "uts",
       "name": "Under the Stars",
@@ -45,19 +111,20 @@
         "Under",
         "Stars"
       ],
-      "script": "the",
-      "kicker": "Event 02 · Under the Stars",
+      "kicker": "Event 03 · Under the Stars",
       "tagline": "Indonesian cinema, open-air, under the Melbourne sky.",
-      "summary": "An open-air screening of featured Indonesian films in a community-driven outdoor setting.",
+      "summary": "An outdoor cinema night and cultural festival: an open-air screening alongside live performances, food stalls and cultural activities.",
       "description": [
-        "Under the Stars is an open-air screening of featured Indonesian films in a community-driven outdoor setting.",
-        "Venue and details for the 21st edition will be announced soon."
+        "Under the Stars is an outdoor cinema night and cultural festival: an open-air screening of an Indonesian film alongside live performances, food stalls and cultural activities.",
+        "Venue and film for the 21st edition will be announced soon."
       ],
-      "date": "2027-03-05",
-      "dateLabel": "Friday 5 March 2027 (TBC)",
-      "time": "7:00 PM",
+      "date": "2027-03-20",
+      "dateLabel": "Saturday 20 March 2027",
+      "time": "TBC",
       "venue": "Open-air venue TBC",
       "hero": "hero-uts",
+      "heroScene": "open-air",
+      "heroSlate": "Reel 03 · Outdoors",
       "trailer": null,
       "ticketUrl": "#",
       "lineupTitle": "The film",
@@ -66,11 +133,19 @@
         "still-uts-1",
         "still-uts-2",
         "still-uts-3"
-      ]
+      ],
+      "shortDate": "20 Mar",
+      "keyDates": [
+        {
+          "date": "2027-03-20",
+          "label": "Under the Stars"
+        }
+      ],
+      "script": "the"
     },
     {
       "id": "edu",
-      "order": 3,
+      "order": 4,
       "theme": "base",
       "slug": "edu-screening",
       "name": "Educational Screening",
@@ -79,31 +154,44 @@
         "Educational",
         "Screening"
       ],
-      "kicker": "Event 03 · Educational Screening",
-      "tagline": "Films and learning for students and young audiences.",
-      "lineupTitle": "The film",
-      "summary": "A special screening designed for students and young audiences, offering curated films and learning opportunities that explore Indonesian culture and storytelling.",
+      "kicker": "Event 04 · Educational Screening",
+      "tagline": "Indonesian culture through film, for schools.",
+      "summary": "A school program at ACMI teaching Indonesian culture through film, cultural performances and interactive workshops.",
       "description": [
-        "The Educational Screening is a special screening designed for students and young audiences, offering curated films and learning opportunities that explore Indonesian culture and storytelling.",
-        "Details for the 21st edition will be announced soon."
+        "The Educational Screening is a school-focused program at ACMI that teaches Indonesian culture through film. Students watch an Indonesian film and take part in cultural performances and interactive workshops.",
+        "Schools interested in attending can email us. Film and session details will be announced soon."
       ],
-      "date": "2027-03-12",
-      "dateLabel": "Friday 12 March 2027 (TBC)",
-      "time": "10:30 AM",
-      "venue": "Venue TBC",
+      "date": "2027-04-19",
+      "dateLabel": "19 & 20 April 2027",
+      "time": "TBC",
+      "venue": "ACMI, Federation Square",
       "hero": "hero-edu-screening",
+      "heroScene": "book",
+      "heroSlate": "Chapter 04 · Class is in",
       "trailer": null,
       "ticketUrl": "#",
+      "lineupTitle": "The film",
       "strip": [
         "broll-edu",
         "still-edu-1",
         "still-edu-2",
         "still-edu-3"
+      ],
+      "shortDate": "19–20 Apr",
+      "keyDates": [
+        {
+          "date": "2027-04-19",
+          "label": "Day 1"
+        },
+        {
+          "date": "2027-04-20",
+          "label": "Day 2"
+        }
       ]
     },
     {
       "id": "main",
-      "order": 4,
+      "order": 5,
       "theme": "main",
       "slug": "main-screening",
       "name": "Main Screening",
@@ -112,18 +200,20 @@
         "Main",
         "Screening"
       ],
-      "kicker": "Event 04 · Main Screening",
-      "tagline": "Three films. The heart of the festival.",
-      "summary": "Three curated Indonesian films that represent the essence of the festival.",
+      "kicker": "Event 05 · Main Screening",
+      "tagline": "Three days. The grand premiere of the festival.",
+      "summary": "The grand premiere: three days of watching Indonesian films together, with a special talk show and artist showcase.",
       "description": [
-        "The Main Screening features three curated Indonesian films that represent the essence of the festival.",
-        "Details for the 21st edition will be announced soon."
+        "The Main Screening is the grand premiere of the festival: three days of \"nobar\" (watching together) curated Indonesian films, featuring a special talk show and artist showcase.",
+        "The lineup and guests for the 21st edition will be announced soon."
       ],
-      "date": "2027-03-19",
-      "dateLabel": "19 to 21 March 2027 (TBC)",
+      "date": "2027-05-14",
+      "dateLabel": "14, 15 & 16 May 2027",
       "time": "Various sessions",
       "venue": "ACMI, Federation Square",
       "hero": "hero-main-screening",
+      "heroScene": "theatre",
+      "heroSlate": "Act 05 · Premiere",
       "trailer": "trailer-main",
       "ticketUrl": "#",
       "lineupTitle": "The lineup",
@@ -132,6 +222,21 @@
         "still-main-1",
         "still-main-2",
         "still-main-3"
+      ],
+      "shortDate": "14–16 May",
+      "keyDates": [
+        {
+          "date": "2027-05-14",
+          "label": "Day 1"
+        },
+        {
+          "date": "2027-05-15",
+          "label": "Day 2"
+        },
+        {
+          "date": "2027-05-16",
+          "label": "Day 3"
+        }
       ]
     }
   ]

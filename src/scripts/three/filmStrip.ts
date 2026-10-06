@@ -23,7 +23,7 @@ import {
   type Texture,
   type WebGLRenderer,
 } from 'three';
-import { createHalftonePass, createRenderer, ease, frameLoop, releaseRenderer, setInk } from './post';
+import { createHalftonePass, createRenderer, ease, frameLoop, releaseRenderer, setInk, clamp01 } from './post';
 import { coverFit, filmFrameTexture, loadMediaTexture, placeholderTexture, titleCardTexture } from './textures';
 import type { SceneHandle } from './scene';
 
@@ -50,7 +50,6 @@ export interface StripData {
 const SPACING = 2.0; // frame pitch along the strip (frames touch: continuous film)
 const PICTURE_ASPECT = 1.6 / 1.2;
 
-const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 /**
  * How the strip is printed. classic: render, then halftone the whole screen.

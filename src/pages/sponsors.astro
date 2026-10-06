@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/sections/Hero.astro';
 import SponsorStrip from '../components/sections/SponsorStrip.astro';
 import Button from '../components/ui/Button.astro';
+import SupportSection from '../components/sections/SupportSection.astro';
 import site from '../content/site.json';
 import pages from '../content/pages.json';
 import { getSponsors } from '../lib/content';
@@ -19,7 +20,7 @@ const sponsors = await getSponsors();
   </section>
 
   <section class="container-page py-16 md:py-24" aria-labelledby="become">
-    <div data-reveal="fold" class="grid gap-8 border border-ink bg-primary p-8 text-on-primary md:grid-cols-[1.4fr_1fr] md:items-end md:p-12">
+    <div data-reveal="print" class="grid gap-8 border border-ink bg-primary p-8 text-on-primary md:grid-cols-[1.4fr_1fr] md:items-end md:p-12">
       <div class="flex flex-col gap-4">
         <h2 id="become" class="m-0 font-display text-6xl leading-[0.85] uppercase md:text-8xl">{page.ctaTitle}</h2>
         <p class="m-0 max-w-[55ch] text-lg">{page.ctaText}</p>
@@ -30,4 +31,5 @@ const sponsors = await getSponsors();
       </div>
     </div>
   </section>
+  <SupportSection id="support-us" />
 </BaseLayout>

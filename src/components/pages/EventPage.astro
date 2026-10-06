@@ -1,14 +1,16 @@
 ---
-/** Shared template for /sfc, /uts, /edu-screening and /main-screening. All copy comes from events.json. */
+/** Shared template for every event page (/sfc, /exhibition, /uts, /edu-screening, /main-screening). All copy comes from events.json. */
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Hero from '../sections/Hero.astro';
+import EventHero3D from './EventHero3D.astro';
 import FilmCard from '../sections/FilmCard.astro';
 import VideoPlayer from '../sections/VideoPlayer.astro';
 import SectionHead from '../ui/SectionHead.astro';
-import Button from '../ui/Button.astro';
+import KeyDates from '../sections/KeyDates.astro';
+import InkWipe from '../ui/InkWipe.astro';
 import BodyText from '../typography/BodyText.astro';
 import Kicker from '../typography/Kicker.astro';
 import site from '../../content/site.json';
+import pages from '../../content/pages.json';
 import { eventHref, getEvent, getEvents, getFilms, type EventId } from '../../lib/content';
 
 interface Props {
@@ -24,23 +26,7 @@ const prev = events[index - 1];
 ---
 
 <BaseLayout title={`${e.name} · ${site.shortName} ${site.editionNumber}`} description={e.summary} theme={e.theme} reprint ogImage={e.hero}>
-  <Hero
-    title={e.title}
-    script={e.script}
-    kicker={e.kicker}
-    intro={e.tagline}
-    media={e.hero}
-    meta={[
-      { label: 'Date', value: e.dateLabel },
-      { label: 'Time', value: e.time },
-      { label: 'Venue', value: e.venue },
-    ]}
-  >
-    <Fragment slot="actions">
-      <Button href={e.ticketUrl} external>Get tickets</Button>
-      {films.length > 0 && <Button href="#lineup" variant="ghost">{e.lineupTitle}</Button>}
-    </Fragment>
-  </Hero>
+  <EventHero3D event={event} hasLineup={films.length > 0} />
 
   <section class="container-page py-12 md:py-20" aria-labelledby="about-event">
     <SectionHead title={`About ${e.shortName}`} id="about-event" />
@@ -48,17 +34,29 @@ const prev = events[index - 1];
       <BodyText size="lead" dropcap>
         {e.description.map((p) => <p>{p}</p>)}
       </BodyText>
-      <aside data-reveal="fold" class="self-start border border-ink p-6" aria-label="Event details">
+      <aside data-reveal="print" class="self-start border border-ink p-6" aria-label="Event details">
         <Kicker tone="accent" class="mb-4">At a glance</Kicker>
         <dl class="m-0 grid gap-3 font-typewriter text-sm">
           <div><dt class="uppercase tracking-widest">Date</dt><dd class="m-0 text-base">{e.dateLabel}</dd></div>
           <div><dt class="uppercase tracking-widest">Time</dt><dd class="m-0 text-base">{e.time}</dd></div>
           <div><dt class="uppercase tracking-widest">Venue</dt><dd class="m-0 text-base">{e.venue}</dd></div>
-          <div><dt class="uppercase tracking-widest">Films</dt><dd class="m-0 text-base">{films.length}</dd></div>
+          {films.length > 0 && <div><dt class="uppercase tracking-widest">Films</dt><dd class="m-0 text-base">{films.length}</dd></div>}
         </dl>
       </aside>
     </div>
   </section>
+
+  {
+    e.keyDates && e.keyDates.length > 0 && (
+      <Fragment>
+      <InkWipe />
+      <section class="container-page py-12 md:py-16" aria-labelledby="key-dates">
+        <SectionHead title={pages.event.keyDatesTitle} kicker={e.shortName} id="key-dates" />
+        <KeyDates dates={e.keyDates} nextLabel={pages.event.nextUpLabel} />
+      </section>
+      </Fragment>
+    )
+  }
 
   {
     e.trailer && (
@@ -84,7 +82,7 @@ const prev = events[index - 1];
     )
   }
 
-  <nav data-reveal="fade-up" data-reveal-children class="container-page grid gap-4 py-12 md:grid-cols-2" aria-label="Festival journey">
+  <nav data-reveal="print" data-reveal-children data-reveal-stagger="0.15" class="container-page grid gap-4 py-12 md:grid-cols-2" aria-label="Festival journey">
     {
       prev ? (
         <a href={eventHref(prev)} data-theme={prev.data.theme} class="group flex flex-col gap-2 border border-ink p-6 text-ink no-underline hover:bg-primary hover:text-on-primary">

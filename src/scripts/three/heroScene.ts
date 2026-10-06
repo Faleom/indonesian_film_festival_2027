@@ -32,7 +32,7 @@ import {
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
 import { particleFragment, particleVertex } from './particleShader';
-import { createRenderer, cssVar, ease, frameLoop, releaseRenderer, setInk } from './post';
+import { clamp01, createRenderer, cssVar, ease, frameLoop, releaseRenderer, setInk, smooth } from './post';
 import { loadModel, type SceneHandle } from './scene';
 
 export interface HeroOptions {
@@ -54,11 +54,6 @@ export const FOV = 35;
 export const TARGET_POINTS = 7500;
 export const LITE_POINTS = 4000;
 
-export const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
-export const smooth = (a: number, b: number, v: number) => {
-  const t = clamp01((v - a) / (b - a));
-  return t * t * (3 - 2 * t);
-};
 
 export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<SceneHandle> {
   const stage = (host.querySelector('[data-hero-stage]') as HTMLElement) ?? host;
@@ -223,6 +218,7 @@ export async function mountHero(host: HTMLElement, opts: HeroOptions): Promise<S
     uniforms.uTime.value = t;
     group.rotation.set(pointer.sy * 0.05, pointer.sx * 0.1, 0);
     host.style.setProperty('--hero-p', p.toFixed(3));
+    host.classList.toggle('is-scrolled', p > 0.2);
     decor?.style.setProperty('--mx', pointer.sx.toFixed(3));
     decor?.style.setProperty('--my', pointer.sy.toFixed(3));
 

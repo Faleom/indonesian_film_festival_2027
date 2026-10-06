@@ -5,6 +5,7 @@
 @import './placeholder.css';
 @import './components.css';
 @import './motion.css';
+@import './eventhero.css';
 
 /*
  * Tailwind tokens. `inline` makes utilities reference the runtime CSS

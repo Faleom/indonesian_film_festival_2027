@@ -2,6 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HomeHero from '../components/home/HomeHero.astro';
 import FilmStripJourney from '../components/home/FilmStripJourney.astro';
+import TemaramSection from '../components/home/TemaramSection.astro';
+import SupportSection from '../components/sections/SupportSection.astro';
+import InkWipe from '../components/ui/InkWipe.astro';
 import VideoPlayer from '../components/sections/VideoPlayer.astro';
 import FilmCard from '../components/sections/FilmCard.astro';
 import SponsorStrip from '../components/sections/SponsorStrip.astro';
@@ -22,6 +25,8 @@ const [mainEvent, mainFilms, sponsors] = await Promise.all([
   <HomeHero />
 
   <FilmStripJourney />
+
+  <TemaramSection />
 
   {
     mainEvent.data.trailer && (
@@ -46,6 +51,11 @@ const [mainEvent, mainFilms, sponsors] = await Promise.all([
       }
     </ul>
   </section>
+
+  <InkWipe />
+  <SupportSection />
+
+  <InkWipe from="right" />
 
   <section class="container-page py-12 md:py-20" aria-labelledby="sponsors">
     <SectionHead title="Sponsors" kicker={page.sponsorsKicker} id="sponsors">

@@ -96,8 +96,12 @@ export function inkRules(lenis: Lenis | undefined): Cleanup {
   document.documentElement.addEventListener('pointerleave', onLeave);
 
   const target = new Float32Array(N);
+  let sinceDraw = 0;
   const tick = (time: number, dtMs: number) => {
     const dt = Math.min(dtMs / 16.67, 2); // in 60fps frames
+    sinceDraw += dtMs;
+    const draw = sinceDraw >= 15;
+    if (draw) sinceDraw = 0;
     const scrollV = lenis?.velocity ?? 0;
     for (const r of rules) {
       if (!r.visible) continue;
@@ -129,6 +133,9 @@ export function inkRules(lenis: Lenis | undefined): Cleanup {
         y[i] += v[i] * dt;
         lag[i] += (y[i] - lag[i]) * Math.min(1, 0.18 * dt);
       }
+      // The springs run every frame; the SVG is redrawn at most ~60 times a
+      // second (144 Hz screens otherwise repaint every rule 144 times a second).
+      if (!draw) continue;
       r.paths.thick.setAttribute('d', pathFor(y, BASE_Y));
       r.paths.thin.setAttribute('d', pathFor(y, BASE_Y + THIN_GAP));
       r.paths.plate.setAttribute('d', pathFor(lag, BASE_Y + 1.5));

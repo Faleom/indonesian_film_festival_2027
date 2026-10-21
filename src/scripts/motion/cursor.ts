@@ -1,7 +1,9 @@
 /**
- * Halftone-dot cursor with an ink trail. Desktop only (fine pointer, hover,
- * wide screen). The trail is drawn on a canvas as dots snapped to a halftone
- * grid that shrink as the ink "dries". Native cursor comes back over form fields.
+ * Halftone cursor ring with an ink trail. Desktop only (fine pointer, hover,
+ * wide screen). The pointer itself stays the system cursor, drawn as an ink
+ * dot by CSS (motion.css), so it never lags; this ring follows it closely and
+ * the trail is drawn on a canvas as dots snapped to a halftone grid that
+ * shrink as the ink "dries". The ring hides over form fields.
  */
 import gsap from 'gsap';
 
@@ -28,7 +30,8 @@ export function startCursor(): CursorHandle | undefined {
   root.classList.add('has-cursor');
 
   const ctx = canvas.getContext('2d')!;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  // 1x is plenty for soft trail dots and keeps clearing the full-screen canvas cheap.
+  const dpr = 1;
   const resize = () => {
     canvas.width = innerWidth * dpr;
     canvas.height = innerHeight * dpr;
@@ -37,8 +40,9 @@ export function startCursor(): CursorHandle | undefined {
   resize();
 
   const ink = getComputedStyle(document.body).getPropertyValue('--c-primary').trim() || '#000';
-  const moveX = gsap.quickTo(dot, 'x', { duration: 0.18, ease: 'power3.out' });
-  const moveY = gsap.quickTo(dot, 'y', { duration: 0.18, ease: 'power3.out' });
+  // Short follow: the ring trails the (instant) system cursor by a hair.
+  const moveX = gsap.quickTo(dot, 'x', { duration: 0.07, ease: 'power2.out' });
+  const moveY = gsap.quickTo(dot, 'y', { duration: 0.07, ease: 'power2.out' });
 
   // Trail: one dot per grid cell, keyed by cell, refreshed when the pointer passes again.
   const cells = new Map<string, { x: number; y: number; age: number }>();

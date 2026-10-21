@@ -7,10 +7,13 @@ import type { APIRoute } from 'astro';
 import { sql } from 'drizzle-orm';
 import { describeDatabase, getDb, withTimeout } from '../../server/db/client';
 import { env, features } from '../../server/env';
+import { eventSettings } from '../../server/db/schema';
+import { getStatus } from '../../server/settings';
+import { takenBySku } from '../../server/stock';
 
 export const prerender = false;
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ request }) => {
   const db = describeDatabase();
   const result: Record<string, unknown> = {
     region: process.env.VERCEL_REGION ?? null,
@@ -35,6 +38,28 @@ export const GET: APIRoute = async () => {
       (result.database as { error: string }).error = [e.code, e.message].filter(Boolean).join(': ');
     }
     (result.database as { ms: number }).ms = Date.now() - t0;
+    // ?deep=1: time each kind of query the pages use, one after another.
+    if (new URL(request.url).searchParams.has('deep')) {
+      const probes: Record<string, () => Promise<unknown>> = {
+        rawSelect: () => conn.execute(sql`select 1`),
+        drizzleSelect: () => conn.select().from(eventSettings),
+        withDateParam: () => conn.execute(sql`select ${new Date()}::timestamptz as t`),
+        status: () => getStatus(),
+        stock: () => takenBySku(conn),
+      };
+      const deep: Record<string, string> = {};
+      for (const [name, run] of Object.entries(probes)) {
+        const t = Date.now();
+        try {
+          await withTimeout(run(), 5000);
+          deep[name] = `ok ${Date.now() - t}ms`;
+        } catch (err) {
+          const e = err as { code?: string; message?: string };
+          deep[name] = `FAIL ${Date.now() - t}ms ${[e.code, e.message].filter(Boolean).join(': ')}`;
+        }
+      }
+      result.deep = deep;
+    }
   }
   return new Response(JSON.stringify(result, null, 2), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 };

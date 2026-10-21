@@ -32,6 +32,12 @@ function cleanUrl(input) {
   }
 }
 
+// Never let a stuck database hold up the deploy: give up after 60 s.
+setTimeout(() => {
+  console.warn('[migrate] Database did not answer within 60 s; skipping. The site still builds.');
+  process.exit(0);
+}, 60_000).unref();
+
 // Postgres "already exists" errors: table/index (42P07), type/constraint (42710), column (42701), schema (42P06).
 const ALREADY = new Set(['42P07', '42710', '42701', '42P06']);
 const dir = path.join(process.cwd(), 'drizzle');

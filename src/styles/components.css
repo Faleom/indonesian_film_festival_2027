@@ -833,25 +833,109 @@ textarea.field__input { min-height: 8rem; resize: vertical; }
 .is-live .hero3d__stage > .ht3d__canvas,
 .is-live .strip3d__stage > .ht3d__canvas { opacity: 1; }
 
-/* ---------- Journey film strip (FilmStripJourney.astro) ---------- */
+/* ---------- Journey film strip (FilmStripJourney.astro) ----------
+ * A sideways carousel (not pinned): the page scrolls past it normally. */
 .strip3d__stage { display: none; }
-.strip3d.is-3d { height: calc(100vh + var(--frames, 12) * 34vh); }
 .strip3d.is-3d .strip3d__static { display: none; }
 .strip3d.is-3d .strip3d__stage {
-  position: sticky;
-  top: 0;
-  /* Own compositor layer: iOS keeps it in step with its threaded scrolling. */
-  will-change: transform;
+  position: relative;
   display: block;
-  height: 100vh;
-  height: 100svh;
+  height: clamp(34rem, 92svh, 58rem);
   overflow: hidden;
+  /* Vertical swipes scroll the page; sideways ones move the strip. */
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.strip3d.is-dragging .strip3d__stage { cursor: grabbing; }
+.strip3d__stage:focus-visible { outline: 3px solid var(--c-primary); outline-offset: -3px; }
+.strip3d__seg-btn {
+  display: block;
+  width: 100%;
+  padding: 0.25rem 0 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  text-transform: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.strip3d__seg-btn:hover,
+.strip3d__seg-btn:focus-visible { color: var(--c-text-accent); }
+.strip3d__arrow {
+  position: absolute;
+  top: 40%;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border: 2px solid var(--c-black);
+  border-radius: 50%;
+  background: var(--c-offwhite);
+  color: var(--c-black);
+  font-family: var(--ff-typewriter);
+  font-size: 1.4rem;
+  box-shadow: 3px 3px 0 var(--c-primary);
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+}
+.strip3d__arrow:hover { background: var(--c-primary); color: var(--c-on-primary); }
+.strip3d__arrow:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--c-primary); }
+.strip3d__arrow:focus-visible { outline: 3px solid var(--c-primary); outline-offset: 3px; }
+.strip3d__arrow:disabled { opacity: 0.3; cursor: default; }
+.strip3d__arrow--prev { left: max(1rem, 2vw); }
+.strip3d__arrow--next { right: max(1rem, 2vw); }
+@media (max-width: 767px) {
+  .strip3d__arrow { top: 34%; width: 2.6rem; height: 2.6rem; font-size: 1.1rem; }
+  .strip3d__arrow--prev { left: 0.5rem; }
+  .strip3d__arrow--next { right: 0.5rem; }
+}
+/* "Swipe sideways" tag, centred under the strip; leaves once someone uses it. */
+.strip3d__hint {
+  position: absolute;
+  right: max(1rem, 2vw);
+  bottom: 5rem;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--c-black);
+  background: var(--c-black);
+  color: var(--c-offwhite);
+  font-family: var(--ff-typewriter);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 3px 3px 0 var(--c-primary);
+  transition: opacity 0.4s ease;
+}
+.strip3d__hint-hand { display: inline-block; font-size: 1rem; }
+html[data-motion='on'] .strip3d.is-live:not(.has-interacted) .strip3d__hint-hand { animation: hint-swipe 1.4s ease-in-out infinite; }
+@keyframes hint-swipe {
+  0%, 100% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+}
+.strip3d.has-interacted .strip3d__hint { opacity: 0; }
+@media (max-width: 767px) {
+  .strip3d__hint { top: 7.25rem; bottom: auto; right: 1rem; font-size: 0.65rem; }
+  .strip3d__segments { flex: 1; gap: 0.35rem; }
+  .strip3d__segments li { flex: 1; width: auto; min-width: 0; font-size: 0.6rem; letter-spacing: 0.04em; }
+  .strip3d__seg-btn { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 
 .strip3d__hud {
   position: absolute;
   inset: 1.75rem 0 auto;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   flex-wrap: wrap;
   align-items: center;

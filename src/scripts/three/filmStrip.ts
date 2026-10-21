@@ -1,13 +1,16 @@
 /**
- * The festival journey as a 3D film strip. Scrolling through the pinned
- * section slides a curved strip of frames past the camera: for each event a
- * title card, its b-roll and its film posters, all printed through the
- * halftone pass. As an event's frames reach the centre the pinned stage
- * re-inks in that event's colours (data-theme on the stage, not <body>:
- * re-theming the whole page restyled every element each frame of the colour
- * fade and stuttered on mid-range phones), and the HTML overlay
- * shows the event. Scrolling fast makes the dots chunkier and the plates
- * slip out of register, like a riso running too hot.
+ * The festival journey as a 3D film strip: a curved strip of frames (for
+ * each event a title card, its b-roll and stills), printed through the
+ * halftone pass. It is a sideways carousel, not pinned to the page scroll
+ * (Oct 2026: people wanted to skip through it): drag or swipe sideways,
+ * trackpad sideways, the arrow buttons, the event tabs or the keyboard move
+ * it, and it settles on an event's title card. Vertical scrolling just passes.
+ * As an event reaches the centre the stage re-inks in that event's colours
+ * (data-theme on the stage, not <body>: re-theming the whole page restyled
+ * every element each frame of the colour fade and stuttered on mid-range
+ * phones), and the HTML overlay shows the event. Moving fast makes the dots
+ * chunkier and the plates slip out of register, and tilts the strip a little
+ * (clamped, so a hard fling never throws it sideways).
  */
 import {
   Color,
@@ -206,6 +209,8 @@ export async function mountFilmStrip(
     panels.forEach((p, i) => p.classList.toggle('is-current', i === e));
   };
 
+  // Pixels of drag per frame: one frame per ~third of the stage width (set on resize).
+  let pxPerFrame = 400;
   const resize = () => {
     const { width, height } = stage.getBoundingClientRect();
     if (!width || !height) return;
@@ -213,6 +218,7 @@ export async function mountFilmStrip(
     renderer.setSize(width, height, false);
     look.setSize(width, height, dpr);
     camera.aspect = width / height;
+    pxPerFrame = Math.max(160, width * 0.32);
     // Keep roughly the same strip width on narrow (tablet) screens.
     camera.position.z = camera.aspect < 1.2 ? 7.2 : 5.4;
     camera.updateProjectionMatrix();
@@ -222,41 +228,133 @@ export async function mountFilmStrip(
   resize();
 
   const last = frames.length - 1;
-  /**
-   * Progress through the pinned section: 0 at the top, 1 when it unpins.
-   * Measured against the sticky stage (100svh), not innerHeight: on iPhone
-   * innerHeight changes while the toolbar slides away, which shook the strip.
-   */
-  const progress = () => {
-    const r = host.getBoundingClientRect();
-    const span = r.height - stage.offsetHeight;
-    return span > 0 ? clamp01(-r.top / span) : 0;
-  };
-  const isPinned = () => {
-    const r = host.getBoundingClientRect();
-    return r.top <= 1 && r.bottom >= stage.offsetHeight - 1;
-  };
+  // Where each event starts (its title card): the strip rests on these.
+  const starts = eventFrames.map((own) => own[0] ?? 0);
+  const eventAt = (frame: number) => data.frames[Math.min(last, Math.max(0, Math.round(frame)))].event;
 
-  let offset = progress() * last;
+  // ---- Sideways navigation ----
+  let target = 0; // frame index the strip eases to
+  let offset = 0;
   let velocity = 0;
   let active = false;
+  let interacted = false;
   const start = performance.now();
+  const markInteracted = () => {
+    if (interacted) return;
+    interacted = true;
+    host.classList.add('has-interacted');
+  };
+  const goTo = (e: number) => {
+    target = starts[Math.max(0, Math.min(starts.length - 1, e))];
+    wake();
+  };
+  const prevBtn = host.querySelector<HTMLButtonElement>('[data-strip-prev]');
+  const nextBtn = host.querySelector<HTMLButtonElement>('[data-strip-next]');
+  const onPrev = () => (markInteracted(), goTo(eventAt(target) - 1));
+  const onNext = () => (markInteracted(), goTo(eventAt(target) + 1));
+  prevBtn?.addEventListener('click', onPrev);
+  nextBtn?.addEventListener('click', onNext);
+  const segButtons = segments.map((seg, i) => {
+    const btn = seg.querySelector('button');
+    const go = () => (markInteracted(), goTo(i));
+    btn?.addEventListener('click', go);
+    return { btn, go };
+  });
+
+  // Drag / swipe. touch-action: pan-y (CSS) keeps vertical swipes scrolling the page.
+  let drag: { id: number; x: number; from: number; startEvent: number; moved: boolean; lastX: number; lastT: number; vx: number } | undefined;
+  const onDown = (e: PointerEvent) => {
+    if (e.button !== 0 || (e.target as Element).closest('a, button')) return;
+    drag = { id: e.pointerId, x: e.clientX, from: target, startEvent: eventAt(target), moved: false, lastX: e.clientX, lastT: e.timeStamp, vx: 0 };
+  };
+  const onMove = (e: PointerEvent) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x;
+    if (!drag.moved && Math.abs(dx) > 6) {
+      drag.moved = true;
+      stage.setPointerCapture(e.pointerId);
+      host.classList.add('is-dragging');
+      markInteracted();
+    }
+    if (!drag.moved) return;
+    const dt = Math.max(1, e.timeStamp - drag.lastT);
+    drag.vx = (e.clientX - drag.lastX) / dt; // px per ms
+    drag.lastX = e.clientX;
+    drag.lastT = e.timeStamp;
+    // A little give past either end.
+    target = Math.max(-0.6, Math.min(last + 0.6, drag.from - dx / pxPerFrame));
+    wake();
+  };
+  const settleDrag = () => {
+    if (!drag) return;
+    const { startEvent, moved, vx } = drag;
+    drag = undefined;
+    host.classList.remove('is-dragging');
+    if (!moved) return;
+    // Fling: throw the target forward by the release speed, then rest on an event.
+    const projected = target - (vx * 220) / pxPerFrame;
+    let e = eventAt(projected);
+    if (e === startEvent && projected > starts[startEvent] + 0.5) e = startEvent + 1;
+    goTo(e);
+  };
+  // A drag that moved must not click the link under it.
+  const onClick = (e: MouseEvent) => {
+    if (host.classList.contains('is-dragging')) e.preventDefault();
+  };
+  // Trackpads: sideways two-finger swipes move it too (vertical ones scroll the page).
+  let wheelTimer = 0;
+  const onWheel = (e: WheelEvent) => {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 2) return;
+    e.preventDefault();
+    markInteracted();
+    const from = eventAt(target);
+    target = Math.max(-0.6, Math.min(last + 0.6, target + e.deltaX / pxPerFrame));
+    wake();
+    clearTimeout(wheelTimer);
+    wheelTimer = window.setTimeout(() => {
+      let ev = eventAt(target);
+      if (ev === from && target > starts[from] + 0.5) ev = from + 1;
+      goTo(ev);
+    }, 160);
+  };
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'ArrowRight') onNext();
+    else if (e.key === 'ArrowLeft') onPrev();
+    else return;
+    e.preventDefault();
+  };
+  stage.addEventListener('pointerdown', onDown);
+  stage.addEventListener('pointermove', onMove);
+  stage.addEventListener('pointerup', settleDrag);
+  stage.addEventListener('pointercancel', settleDrag);
+  stage.addEventListener('click', onClick, true);
+  stage.addEventListener('wheel', onWheel, { passive: false });
+  stage.addEventListener('keydown', onKey);
+
+  // Until someone touches it: one gentle nudge to show it moves sideways.
+  let nudged = false;
+  const nudgeAt = 1.6;
+  const MAX_TILT = 0.06; // radians: a fling tilts it a touch, never "miring"
 
   const render = (dt = 1000 / 60) => {
     const t = (performance.now() - start) / 1000;
-    const target = progress() * last;
+    let aim = target;
+    if (!interacted && !nudged) {
+      const n = t - nudgeAt;
+      if (n > 0 && n < 1.4) aim = target + Math.sin((n / 1.4) * Math.PI) * 0.45;
+      else if (n >= 1.4) nudged = true;
+    }
     const prev = offset;
-    offset += (target - offset) * ease(0.1, dt);
+    offset += (aim - offset) * ease(drag?.moved ? 0.35 : 0.12, dt);
     // Velocity per 60 fps frame, so the bend/tilt is the same at any frame rate.
-    // Smoothed more than the offset: Safari delivers momentum scroll in uneven
-    // steps, and raw velocity made the strip's bend and tilt shake.
     const step = (offset - prev) * (1000 / 60 / Math.max(dt, 1));
     velocity += (step - velocity) * ease(0.08, dt);
-    const speed = Math.min(Math.abs(velocity) * 12, 1.6);
+    const speed = Math.min(Math.abs(velocity) * 10, 0.8);
 
-    // Strip bends tighter and tilts with speed.
-    const radius = 6.2 - speed * 1.4;
-    strip.rotation.set(0.16, 0, -0.05 - velocity * 1.5);
+    // Strip bends a little tighter and tilts with speed (both capped).
+    const radius = 6.2 - speed * 1.2;
+    const tilt = Math.max(-MAX_TILT, Math.min(MAX_TILT, velocity * 0.9));
+    strip.rotation.set(0.16, 0, -0.05 - tilt);
     for (const f of frames) {
       const theta = ((f.index - offset) * SPACING) / radius;
       const visible = Math.abs(theta) < 1.45;
@@ -271,10 +369,10 @@ export async function mountFilmStrip(
     }
 
     // Which event is at the centre, and re-ink towards it.
-    const centre = Math.min(last, Math.max(0, Math.round(offset)));
-    const ev = data.frames[centre].event;
-    const pinned = isPinned();
-    showEvent(ev, pinned);
+    const ev = eventAt(offset);
+    showEvent(ev, true);
+    if (prevBtn) prevBtn.disabled = ev === 0;
+    if (nextBtn) nextBtn.disabled = ev === data.events.length - 1;
     look.ink.lerp(inks[ev].ink, ease(0.08, dt));
     look.key.lerp(inks[ev].key, ease(0.08, dt));
     look.update(speed, t, dpr);
@@ -296,6 +394,10 @@ export async function mountFilmStrip(
 
     look.render(renderer, scene, camera);
   };
+  // Re-render on demand if the loop is paused (not visible yet) when a control is used.
+  function wake() {
+    if (!active) render();
+  }
 
   // 60 fps cap; adaptive resolution: if frames keep running slow, step the pixel ratio down.
   const loop = frameLoop(render, {
@@ -328,6 +430,17 @@ export async function mountFilmStrip(
       active = false;
       loop.stop();
       ro.disconnect();
+      clearTimeout(wheelTimer);
+      prevBtn?.removeEventListener('click', onPrev);
+      nextBtn?.removeEventListener('click', onNext);
+      segButtons.forEach(({ btn, go }) => btn?.removeEventListener('click', go));
+      stage.removeEventListener('pointerdown', onDown);
+      stage.removeEventListener('pointermove', onMove);
+      stage.removeEventListener('pointerup', settleDrag);
+      stage.removeEventListener('pointercancel', settleDrag);
+      stage.removeEventListener('click', onClick, true);
+      stage.removeEventListener('wheel', onWheel);
+      stage.removeEventListener('keydown', onKey);
       videos.forEach((v) => {
         v.pause();
         v.removeAttribute('src');

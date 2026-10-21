@@ -109,7 +109,7 @@ Font files go in `/public/fonts` (Latin-subset .woff2; originals in `src/assets/
 
 ## Hard-won rules (from real-device testing, Oct 2026)
 Full story in `docs/PROJECT-LOG.md`. Break these and iPhones/mid-range Androids suffer:
-- No `overflow: clip/hidden` on any ancestor of a `position: sticky` element (home hero, film strip): iOS Safari shakes it while scrolling. Clip bleeding elements in a full-width `.bleed-clip` wrapper instead.
+- No `overflow: clip/hidden` on any ancestor of a `position: sticky` element (home hero, event heroes): iOS Safari shakes it while scrolling. The film strip is a sideways carousel since Oct 2026 (not pinned). Clip bleeding elements in a full-width `.bleed-clip` wrapper instead.
 - Fixed full-screen layers use `height: 100lvh`, not `inset: 0` / `100vh` alone (Android leaves the bottom bare when the address bar hides). No `background-attachment: fixed`.
 - Never re-theme `<body>` during scroll animations; the film strip re-inks only its own stage.
 - 3D: render the scene behind the halftone at dot resolution, cap at 60 fps (`frameLoop` in `src/scripts/three/post.ts`), use time-based easing (`ease`), build heavy scenes behind the loader or when idle (never as they scroll in), and render/tick only while visible.

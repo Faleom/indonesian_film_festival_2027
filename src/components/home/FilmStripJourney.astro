@@ -1,9 +1,9 @@
 ---
 /**
- * The festival journey. Static cards by default; on desktop with motion on,
- * a pinned 3D film strip (scripts/three/filmStrip.ts) slides each event's
- * title card and its frames (events.json `strip`) past the camera and re-inks the site in
- * that event's colours as it passes the centre.
+ * The festival journey. Static cards by default; with motion on and WebGL, a
+ * 3D film strip (scripts/three/filmStrip.ts) of each event's title card and
+ * frames (events.json `strip`), moved sideways: swipe/drag, the arrows, the
+ * event tabs or the keyboard. It re-inks in the colours of the event at the centre.
  */
 import SectionHead from '../ui/SectionHead.astro';
 import JourneyStrip from '../sections/JourneyStrip.astro';
@@ -52,19 +52,37 @@ const strip = {
   </div>
 
   <!-- Live 3D stage -->
-  <div class="strip3d__stage" data-strip-stage>
+  <div
+    class="strip3d__stage"
+    data-strip-stage
+    tabindex="0"
+    role="region"
+    aria-roledescription="carousel"
+    aria-label={`${page.journeyTitle}. ${page.journeyHint}, or use the left and right arrow keys.`}
+  >
     <div class="strip3d__hud container-page">
       <p class="kicker" data-tone="accent">{page.journeyKicker} · {page.journeyTitle}</p>
-      <ol class="strip3d__segments" aria-hidden="true">
+      <ol class="strip3d__segments">
         {
           events.map((e) => (
             <li data-strip-seg data-theme={e.data.theme}>
-              <span>{e.data.shortName}</span>
+              <button type="button" class="strip3d__seg-btn">{e.data.shortName}<span class="sr-only">: {e.data.name}</span></button>
             </li>
           ))
         }
       </ol>
     </div>
+
+    <button type="button" class="strip3d__arrow strip3d__arrow--prev" data-strip-prev aria-label={page.journeyPrev}>
+      <span aria-hidden="true">←</span>
+    </button>
+    <button type="button" class="strip3d__arrow strip3d__arrow--next" data-strip-next aria-label={page.journeyNext}>
+      <span aria-hidden="true">→</span>
+    </button>
+    <p class="strip3d__hint" aria-hidden="true">
+      <span class="strip3d__hint-hand">⟷</span>
+      {page.journeyHint}
+    </p>
 
     {
       events.map((e, i) => (

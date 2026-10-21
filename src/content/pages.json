@@ -24,7 +24,10 @@
       "Temaram"
     ],
     "themeScript": "The Unwavering Glow of Indonesian Cinema",
-    "themeLink": "What Temaram means"
+    "themeLink": "What Temaram means",
+    "journeyHint": "Swipe or drag sideways",
+    "journeyPrev": "Previous event",
+    "journeyNext": "Next event"
   },
   "faq": {
     "metaTitle": "FAQ · IFF 21",

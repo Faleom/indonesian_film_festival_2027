@@ -15,7 +15,7 @@ Astro + Tailwind, static output. See `CLAUDE.md` for the design brief, `PLAN.md`
 | `npm run render:3d-fallback` | Re-render the static 3D fallback image (site must be running, needs Chrome) |
 | `npm test` | Backend tests (orders, stock, Stripe webhook, tickets, check-in, forms) against an in-memory Postgres |
 | `npm run db:generate` | After changing `src/server/db/schema.ts`: write a new SQL migration into `drizzle/` |
-| `npm run db:migrate` | Apply migrations to `DATABASE_URL` |
+| `npm run db:migrate` | Apply `drizzle/*.sql` to the database (also runs automatically before every build; skips when no database is configured) |
 
 ## Backend (payments, emails, admin)
 

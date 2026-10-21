@@ -21,14 +21,15 @@ All settings go into **Vercel → the project → Settings → Environment Varia
 
 **Easiest: Vercel → Integrations → Supabase.** Creating the database from Vercel's
 marketplace connects it to the project and adds `POSTGRES_URL` (and friends) to the
-environment variables by itself. The site reads `POSTGRES_URL` when `DATABASE_URL`
-isn't set, so there's nothing to copy: just create the tables (step 2 below, via
-**Open in Supabase**) and redeploy.
+environment variables by itself. The site reads those when `DATABASE_URL` isn't set,
+and **every deploy creates/updates the tables by itself** (`scripts/migrate.mjs`, see
+"[migrate]" in the Vercel build log). Nothing to copy or paste: just redeploy.
 
 Or by hand:
 
 1. Create a free account and a new project. Region: **Sydney**. Save the database password somewhere safe.
-2. Create the tables: **SQL Editor → New query**, paste the whole of
+2. Tables are created on the next deploy automatically. (By hand, if ever needed:
+   **SQL Editor → New query**, paste the whole of
    [`drizzle/0000_init.sql`](../drizzle/0000_init.sql) (remove the `--> statement-breakpoint` lines
    or leave them, they're comments), **Run**. If Supabase warns about Row Level Security,
    choose **Run and enable RLS** (the site doesn't need the public keys; RLS keeps them out).

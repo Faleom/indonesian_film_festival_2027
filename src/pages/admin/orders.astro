@@ -1,0 +1,80 @@
+---
+/** Orders: who bought what, payment status, tickets, and every email sent for it. */
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import Off from '../../components/admin/Off.astro';
+import { adminState } from '../../server/admin/guard';
+import { listOrders } from '../../server/admin/queries';
+import { formatMoney } from '../../server/catalog';
+
+export const prerender = false;
+
+const state = adminState(Astro.cookies);
+if (state === 'login') return Astro.redirect('/admin/login');
+const q = Astro.url.searchParams.get('q') ?? '';
+const status = Astro.url.searchParams.get('status') ?? 'paid';
+const list = state === 'ok' ? await listOrders({ q, status: status === 'all' ? undefined : status }) : undefined;
+const when = (d?: Date | null) => d?.toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', dateStyle: 'medium', timeStyle: 'short' }) ?? '';
+const pill = { paid: 'ok', pending: 'warn', expired: 'muted', cancelled: 'muted', refunded: 'bad' } as const;
+---
+
+<AdminLayout title="Orders">
+  {
+    !list ? (
+      <Off />
+    ) : (
+      <Fragment>
+        <h1>Orders</h1>
+        <form method="get" class="admin-row mb-4">
+          <input class="field__input" style="max-width: 22rem" type="search" name="q" value={q} placeholder="Name, email or IFF-reference" />
+          <select class="field__input" style="max-width: 10rem" name="status">
+            {['paid', 'pending', 'refunded', 'expired', 'cancelled', 'all'].map((s) => <option value={s} selected={s === status}>{s}</option>)}
+          </select>
+          <button class="btn btn--primary cursor-pointer">Search</button>
+          <a class="btn btn--ghost" href="/api/admin/export/orders.csv">Download orders CSV</a>
+          <a class="btn btn--ghost" href="/api/admin/export/tickets.csv">Tickets CSV (door list)</a>
+        </form>
+        <p class="muted">{list.length} order{list.length === 1 ? '' : 's'}{list.length === 200 ? ' (latest 200)' : ''}</p>
+        <div class="atable-wrap">
+          <table class="atable">
+            <thead>
+              <tr><th>Ref</th><th>Status</th><th>Buyer</th><th>Items</th><th class="num">Total</th><th>Tickets</th><th>Emails</th><th>When</th><th></th></tr>
+            </thead>
+            <tbody>
+              {list.map((o) => (
+                <tr>
+                  <td><code>{o.reference}</code><br /><span class="muted">{o.kind === 'sfc' ? 'SFC entry' : 'Shop'}</span></td>
+                  <td><span class={`pill pill--${pill[o.status]}`}>{o.status}</span></td>
+                  <td>{o.name}<br /><a href={`mailto:${o.email}`}>{o.email}</a>{o.phone && <Fragment><br /><span class="muted">{o.phone}</span></Fragment>}</td>
+                  <td>{o.items.map((i) => <div>{i.quantity} × {i.name}{i.variant ? ` (${i.variant})` : ''}</div>)}</td>
+                  <td class="num">{formatMoney(o.totalCents, o.currency)}</td>
+                  <td>
+                    {o.tickets.length === 0 ? <span class="muted">none</span> : (
+                      <span>{o.tickets.length}{' '}<span class="muted">({o.tickets.filter((t) => t.checkedInAt).length} in{o.tickets.some((t) => t.status === 'void') ? ', void' : ''})</span></span>
+                    )}
+                  </td>
+                  <td>
+                    {o.emails.length === 0 ? <span class="muted">none</span> : o.emails.slice(0, 3).map((m) => (
+                      <div><span class={`pill pill--${m.status === 'sent' ? 'ok' : m.status === 'failed' ? 'bad' : 'muted'}`}>{m.status}</span> <span class="muted">{m.template}</span></div>
+                    ))}
+                  </td>
+                  <td class="muted">{when(o.paidAt ?? o.createdAt)}</td>
+                  <td>
+                    {o.status === 'paid' && (
+                      <form method="post" action="/api/admin/action" class="inline">
+                        <input type="hidden" name="do" value="resend" />
+                        <input type="hidden" name="order" value={o.id} />
+                        <button class="btn btn--ghost cursor-pointer" title="Email the buyer their confirmation again">Resend</button>
+                      </form>
+                    )}
+                    <a class="btn btn--ghost" href={`/order/${o.publicToken}`} target="_blank" rel="noopener">View</a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="muted mt-3">Refunds are made in the Stripe dashboard; the order and its tickets update here by themselves.</p>
+      </Fragment>
+    )
+  }
+</AdminLayout>

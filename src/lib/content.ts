@@ -4,6 +4,9 @@ import teamFile from '../content/team.json';
 import faqFile from '../content/faq.json';
 import supportFile from '../content/support.json';
 import eventsFile from '../content/events.json';
+import shopFile from '../content/shop.json';
+import siteFile from '../content/site.json';
+import pagesFile from '../content/pages.json';
 
 export type EventId = 'sfc' | 'exhibition' | 'uts' | 'edu' | 'main';
 export type Theme = 'sfc' | 'exh' | 'uts' | 'main' | 'base';
@@ -55,6 +58,21 @@ export function themeOf(eventId: string): Theme {
 }
 
 export const eventHref = (event: EventEntry) => `/${event.data.slug}`;
+
+/**
+ * The main call to action for an event: tickets (shop.json has ticket types
+ * for it), "Submit your film" for the SFC, a booking email for schools.
+ * An absolute events.json `ticketUrl` (an external box office) wins.
+ */
+export function eventCta(event: EventEntry): { href: string; label: string; external: boolean } {
+  const cta = pagesFile.event.cta;
+  const url = event.data.ticketUrl;
+  if (/^https?:\/\//.test(url)) return { href: url, label: cta.tickets, external: true };
+  if (shopFile.tickets.some((t) => t.event === event.id)) return { href: `/tickets#${event.id}`, label: cta.tickets, external: false };
+  if (event.id === 'sfc') return { href: '/sfc#submit', label: cta.sfc, external: false };
+  if (event.id === 'edu') return { href: `mailto:${siteFile.email}?subject=${encodeURIComponent(cta.eduSubject)}`, label: cta.edu, external: false };
+  return { href: '/tickets', label: cta.tickets, external: false };
+}
 export const filmHref = (film: FilmEntry) => `/films/${film.id}`;
 
 /** Films sorted by date then time, optionally for one event. */

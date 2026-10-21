@@ -1,0 +1,69 @@
+---
+/** Box office: every event with tickets (shop.json), live on/off + stock. Server-rendered. */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import AddToCart from '../components/shop/AddToCart.astro';
+import Kicker from '../components/typography/Kicker.astro';
+import pages from '../content/pages.json';
+import { formatMoney } from '../server/catalog';
+import { shopState, ticketEvents } from '../lib/shop';
+
+export const prerender = false;
+
+const page = pages.tickets;
+const { status, remaining, payments } = await shopState();
+Astro.response.headers.set('cache-control', 'no-store');
+---
+
+<BaseLayout title={page.metaTitle} description={page.metaDescription}>
+  <Hero title={page.title} script={page.script} kicker={page.kicker} intro={page.intro} media={page.hero} />
+
+  <section class="container-page pb-16" aria-label="Tickets">
+    {!payments && <p class="shop-banner" role="note">{page.paymentsOff}</p>}
+    <div class="grid gap-10">
+      {
+        ticketEvents.map((ev) => {
+          const onSale = payments && status.tickets[ev.eventId];
+          return (
+            <article id={ev.eventId} class="ticket-stub" data-theme={ev.theme} data-reveal="print" aria-labelledby={`t-${ev.eventId}`}>
+              <header class="ticket-stub__head">
+                <Kicker tone="accent">{ev.dateLabel}</Kicker>
+                <h2 id={`t-${ev.eventId}`} class="ticket-stub__name">
+                  <a href={`/${ev.slug}`}>{ev.eventName}</a>
+                </h2>
+                <p class="ticket-stub__venue">{ev.venue}</p>
+                {!onSale && <span class="ticket-stub__stamp">{page.notOnSale}</span>}
+              </header>
+              <ul class="ticket-stub__types">
+                {ev.types.map((t) => {
+                  const left = remaining[t.sku] ?? t.limit;
+                  const soldOut = left !== null && left <= 0;
+                  return (
+                    <li class="ticket-type">
+                      <div class="ticket-type__info">
+                        <h3 class="ticket-type__name">{t.name}</h3>
+                        {t.description && <p class="ticket-type__desc">{t.description}</p>}
+                      </div>
+                      <p class="ticket-type__price">{formatMoney(t.price)}</p>
+                      <div class="ticket-type__buy">
+                        {onSale && left !== null && left > 0 && left <= 20 && <span class="ticket-type__left">{page.left.replace('{n}', String(left))}</span>}
+                        <AddToCart
+                          idPrefix={t.sku}
+                          options={[{ sku: t.sku, label: t.name, left }]}
+                          label={page.addLabel}
+                          back={`/tickets#${ev.eventId}`}
+                          disabled={!onSale}
+                          disabledLabel={soldOut ? page.soldOut : page.notOnSale}
+                        />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </article>
+          );
+        })
+      }
+    </div>
+  </section>
+</BaseLayout>

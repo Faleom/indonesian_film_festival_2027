@@ -11,7 +11,7 @@
   "venue": "ACMI, Federation Square",
   "dates": "November 2026 to May 2027",
   "loadingLabel": "Now printing",
-  "ticketUrl": "#",
+  "ticketUrl": "/tickets",
   "ticketsComingSoon": "Tickets aren't on sale yet. Check back soon!",
   "email": "hello@example.com",
   "description": "The 21st Indonesian Film Festival: a non-profit, student-run celebration of Indonesian cinema in Melbourne.",
@@ -25,6 +25,10 @@
     {
       "label": "About",
       "href": "/about"
+    },
+    {
+      "label": "Merch",
+      "href": "/merch"
     },
     {
       "label": "FAQ",
@@ -53,5 +57,5 @@
       "href": "#"
     }
   ],
-  "formsComingSoon": "Thanks! Online forms open soon. For now, email us at hello@example.com."
+  "cartLabel": "Cart"
 }

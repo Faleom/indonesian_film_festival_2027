@@ -1,0 +1,88 @@
+---
+/** The buyer's order page (link in the email; Stripe sends them here after paying). */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHead from '../../components/ui/SectionHead.astro';
+import Kicker from '../../components/typography/Kicker.astro';
+import pages from '../../content/pages.json';
+import eventsFile from '../../content/events.json';
+import { getOrderByToken } from '../../server/orders';
+import { findSku, formatMoney, merchPickup } from '../../server/catalog';
+import { qrSvg } from '../../server/email/qr';
+import { features } from '../../server/env';
+
+export const prerender = false;
+
+const page = pages.order;
+const token = Astro.params.token ?? '';
+const data = features.db && /^[\w-]{20,60}$/.test(token) ? await getOrderByToken(token).catch(() => undefined) : undefined;
+if (!data) return Astro.redirect('/404');
+const { order, items, tickets } = data;
+const event = (id: string) => eventsFile.items.find((e) => e.id === id);
+const valid = tickets.filter((t) => t.status === 'valid');
+const qrs = order.status === 'paid' ? await Promise.all(valid.map((t) => qrSvg(t.code))) : [];
+const hasMerch = items.some((i) => i.kind === 'merch');
+const title = order.status === 'paid' ? page.paidTitle : order.status === 'pending' ? page.pendingTitle : page.otherTitle;
+Astro.response.headers.set('cache-control', 'no-store');
+// Label "Festival pass · 2 of 3" for multi-admission tickets.
+const seen = new Map<string, number>();
+const labels = valid.map((t) => {
+  const item = items.find((i) => i.id === t.orderItemId)!;
+  const per = findSku(item.sku)?.admissions ?? 1;
+  const n = seen.get(item.id) ?? 0;
+  seen.set(item.id, n + 1);
+  return per > 1 ? `${item.name} · ${(n % per) + 1} of ${per}` : item.name;
+});
+---
+
+<BaseLayout title={page.metaTitle} noindex>
+  {order.status === 'pending' && <meta http-equiv="refresh" content="4" slot="head" />}
+  <section class="container-page py-12 md:py-16" aria-labelledby="order-title">
+    <SectionHead title={title} kicker={`Order ${order.reference}`} id="order-title" />
+    <p class="max-w-[60ch] text-lg">
+      {order.status === 'paid' && page.paidText.replace('{email}', order.email)}
+      {order.status === 'pending' && page.pendingText}
+      {(order.status === 'expired' || order.status === 'cancelled') && page.expiredText}
+      {order.status === 'refunded' && page.refundedText}
+    </p>
+
+    {
+      order.status === 'paid' && valid.length > 0 && (
+        <section class="mt-10" aria-labelledby="tickets-title">
+          <h2 id="tickets-title" class="heading-condensed mb-6 text-3xl">{page.ticketsTitle}</h2>
+          <ul class="order-tickets m-0 list-none p-0">
+            {valid.map((t, i) => {
+              const ev = event(t.eventId);
+              return (
+                <li class="order-ticket" data-theme={ev?.theme}>
+                  <div class="order-ticket__qr" set:html={qrs[i]} role="img" aria-label={`QR code for ticket ${t.code}`} />
+                  <div class="order-ticket__info">
+                    <Kicker tone="accent">{ev?.name}</Kicker>
+                    <p class="order-ticket__label">{labels[i]}</p>
+                    <p class="m-0 text-sm">{ev?.dateLabel}<br />{ev?.venue}</p>
+                    <p class="order-ticket__code">{t.code}</p>
+                    {t.checkedInAt && <p class="order-ticket__used">Checked in</p>}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )
+    }
+
+    <section class="mt-12 max-w-2xl" aria-labelledby="items-title">
+      <h2 id="items-title" class="heading-condensed mb-4 text-3xl">{page.itemsTitle}</h2>
+      <ul class="cart-lines m-0 list-none p-0">
+        {items.map((i) => (
+          <li class="cart-line">
+            <p class="cart-line__name">{i.quantity} × {i.name}{i.variant && <span> · {i.variant}</span>}</p>
+            <span />
+            <p class="cart-line__total">{formatMoney(i.unitCents * i.quantity, order.currency)}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="cart-total"><span>Total</span><strong>{formatMoney(order.totalCents, order.currency)}</strong></p>
+      {hasMerch && order.status === 'paid' && <p class="font-typewriter text-sm">{merchPickup}</p>}
+    </section>
+  </section>
+</BaseLayout>

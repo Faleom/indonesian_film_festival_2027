@@ -4,7 +4,7 @@ import Field from './Field.astro';
 import pages from '../../content/pages.json';
 ---
 
-<Form name="contact" submitLabel="Send message">
+<Form name="contact" action="/api/contact" submitLabel="Send message">
   <div class="grid gap-5 sm:grid-cols-2">
     <Field formId="contact" name="name" label="Name" required autocomplete="name" />
     <Field formId="contact" name="email" label="Email" type="email" required autocomplete="email" />

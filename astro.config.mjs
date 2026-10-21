@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
+import vercel from '@astrojs/vercel';
 
 // Public URL, used for canonical links, social share tags and the sitemap.
 // Set SITE_URL in Vercel once the domain is decided; until then Vercel's own
@@ -11,13 +12,16 @@ const site =
 
 // https://astro.build/config
 export default defineConfig({
+  // Pages are prerendered; routes with `export const prerender = false`
+  // (/api/*, /admin, /tickets, /merch, /cart, /order) run as Vercel functions.
   output: 'static',
+  adapter: vercel(),
   site,
   // Clean URLs without a trailing slash (/sfc), matching internal links and
   // vercel.json (cleanUrls + trailingSlash: false).
   trailingSlash: 'never',
   build: { format: 'file' },
-  integrations: [sitemap({ filter: (page) => !page.includes('/styleguide') })],
+  integrations: [sitemap({ filter: (page) => !/\/(styleguide|admin|cart|order|thanks)/.test(page) })],
   vite: {
     plugins: [tailwindcss()],
     // Pre-bundle the lazily imported 3D/motion libraries at startup. Without this,

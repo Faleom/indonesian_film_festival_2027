@@ -73,6 +73,7 @@ const icons = { ico: pub('favicon.ico'), svg: pub('icon.svg'), apple: pub('apple
     {icons.svg && <link rel="icon" href="/icon.svg" type="image/svg+xml" />}
     {icons.apple && <link rel="apple-touch-icon" href="/apple-touch-icon.png" />}
     {icons.manifest && <link rel="manifest" href="/site.webmanifest" />}
+    <slot name="head" />
     <MotionHead />
     <Fonts />
     <ClientRouter />

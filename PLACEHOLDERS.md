@@ -9,7 +9,7 @@ Until the real file exists, `<Media id="key" />` renders a halftone placeholder 
 
 Then run `npm run placeholders` to refresh this list. To use a different filename, change `src` for that key in `media.json`.
 
-_54 of 54 still pending. Generated from media.json; don't edit by hand._
+_61 of 61 still pending. Generated from media.json; don't edit by hand._
 
 | Key | Type | Location | Ratio | Recommended size | File path (as-is) | Status |
 |---|---|---|---|---|---|---|
@@ -67,6 +67,13 @@ _54 of 54 still pending. Generated from media.json; don't edit by hand._
 | `support-valentines-hampers` | image | "Support us" card (home + /sponsors) | 4:3 | 1200x900 | `public/images/support/valentines-hampers.jpg` | ⬜ placeholder |
 | `support-uts-booth` | image | "Support us" card (home + /sponsors) | 4:3 | 1200x900 | `public/images/support/uts-booth.jpg` | ⬜ placeholder |
 | `support-food-po-2` | image | "Support us" card (home + /sponsors) | 4:3 | 1200x900 | `public/images/support/food-po-2.jpg` | ⬜ placeholder |
+| `merch-tee` | image | /merch product photo | 4:5 | 1600x2000, product on a plain background | `public/images/merch-tee.jpg` | ⬜ placeholder |
+| `merch-tote` | image | /merch product photo | 4:5 | 1600x2000, product on a plain background | `public/images/merch-tote.jpg` | ⬜ placeholder |
+| `merch-posters` | image | /merch product photo | 4:5 | 1600x2000, product on a plain background | `public/images/merch-posters.jpg` | ⬜ placeholder |
+| `merch-pin` | image | /merch product photo | 4:5 | 1600x2000, product on a plain background | `public/images/merch-pin.jpg` | ⬜ placeholder |
+| `merch-zine` | image | /merch product photo | 4:5 | 1600x2000, product on a plain background | `public/images/merch-zine.jpg` | ⬜ placeholder |
+| `tickets-hero` | image | /tickets hero | 4:5 | 1600x2000 | `public/images/tickets-hero.jpg` | ⬜ placeholder |
+| `merch-hero` | image | /merch hero | 4:5 | 1600x2000 | `public/images/merch-hero.jpg` | ⬜ placeholder |
 
 ## Other placeholders
 

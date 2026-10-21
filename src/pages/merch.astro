@@ -1,0 +1,50 @@
+---
+/** Merch shop (shop.json merch), live stock. Server-rendered. */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import Media from '../components/media/Media.astro';
+import AddToCart from '../components/shop/AddToCart.astro';
+import pages from '../content/pages.json';
+import { formatMoney, merchPickup } from '../server/catalog';
+import { merchItems, shopState } from '../lib/shop';
+
+export const prerender = false;
+
+const page = pages.merch;
+const { status, remaining, payments } = await shopState();
+const open = payments && status.merch;
+Astro.response.headers.set('cache-control', 'no-store');
+---
+
+<BaseLayout title={page.metaTitle} description={page.metaDescription}>
+  <Hero title={page.title} kicker={page.kicker} intro={page.intro} media={page.hero} />
+
+  <section class="container-page pb-16" aria-label="Merch">
+    {!open && <p class="shop-banner" role="note">{payments ? page.closed : pages.tickets.paymentsOff}</p>}
+    <p class="mb-8 max-w-[60ch] font-typewriter text-sm">{merchPickup}</p>
+    <ul class="merch-grid m-0 list-none p-0" data-reveal="fold" data-reveal-children data-reveal-stagger="0.1">
+      {
+        merchItems.map((item) => {
+          const prices = [...new Set(item.variants.map((v) => v.price))];
+          return (
+            <li class="merch-card">
+              <Media id={item.media} sizes="(min-width: 1024px) 30vw, 90vw" />
+              <h2 class="merch-card__name">{item.name}</h2>
+              <p class="merch-card__price">{prices.map((p) => formatMoney(p)).join(' / ')}</p>
+              <p class="merch-card__desc">{item.description}</p>
+              <AddToCart
+                idPrefix={item.id}
+                options={item.variants.map((v) => ({ sku: v.sku, label: v.variant ?? v.name, left: remaining[v.sku] ?? v.limit }))}
+                optionLabel={page.sizeLabel}
+                label={page.addLabel}
+                back={`/merch#${item.id}`}
+                disabled={!open}
+                disabledLabel={pages.tickets.soldOut}
+              />
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
+</BaseLayout>

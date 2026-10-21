@@ -1,0 +1,109 @@
+---
+/** Dashboard: money, tickets per event, check-ins, merch, entries, messages, page views. */
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import Off from '../../components/admin/Off.astro';
+import { adminState } from '../../server/admin/guard';
+import { dashboard, stockTable } from '../../server/admin/queries';
+import { formatMoney, ticketEvents } from '../../server/catalog';
+import { getStatus } from '../../server/settings';
+import { env, features } from '../../server/env';
+
+export const prerender = false;
+
+const state = adminState(Astro.cookies);
+if (state === 'login') return Astro.redirect('/admin/login');
+const [d, stock, status] = state === 'ok' ? await Promise.all([dashboard(), stockTable(), getStatus()]) : [];
+const maxViews = d ? Math.max(1, ...d.views.map((v) => v.n)) : 1;
+const ticketsSold = d ? Object.values(d.ticketsByEvent).reduce((a, b) => a + b, 0) : 0;
+---
+
+<AdminLayout title="Dashboard">
+  {
+    state === 'off' || !d || !stock || !status ? (
+      <Off />
+    ) : (
+      <Fragment>
+        <h1>Dashboard</h1>
+        <div class="kpis">
+          <div class="kpi"><span>Revenue (paid)</span><strong>{formatMoney(d.revenueCents)}</strong></div>
+          <div class="kpi"><span>Paid orders</span><strong>{d.paidOrders}</strong><small>{d.pendingOrders} paying right now</small></div>
+          <div class="kpi"><span>Tickets issued</span><strong>{ticketsSold}</strong></div>
+          <div class="kpi"><span>SFC entries (paid)</span><strong>{d.submissions.submitted ?? 0}</strong><small>{d.submissions.pending_payment ?? 0} unpaid</small></div>
+          <div class="kpi"><span>Open messages</span><strong>{d.openMessages}</strong></div>
+          <div class="kpi"><span>Subscribers</span><strong>{d.subscribers}</strong></div>
+          <div class="kpi"><span>Emails failed</span><strong>{d.emailsFailed}</strong><small>{features.email ? 'Resend connected' : 'Email not set up'}</small></div>
+        </div>
+
+        {!features.payments && <p class="shop-banner mt-6">Stripe isn't connected yet (STRIPE_SECRET_KEY), so nothing can be bought.</p>}
+        {env.adminNotifyEmails.length === 0 && <p class="shop-banner mt-3">No committee addresses in ADMIN_NOTIFY_EMAILS: nobody is told about new orders.</p>}
+
+        <h2>Tickets by event</h2>
+        <div class="atable-wrap">
+          <table class="atable">
+            <thead><tr><th>Event</th><th>Sales</th><th class="num">Issued</th><th class="num">Checked in</th></tr></thead>
+            <tbody>
+              {ticketEvents.map((e) => (
+                <tr>
+                  <td>{e.eventName}</td>
+                  <td>{status.tickets[e.eventId] ? <span class="pill pill--ok">On sale</span> : <span class="pill pill--muted">Off</span>}</td>
+                  <td class="num">{d.ticketsByEvent[e.eventId] ?? 0}</td>
+                  <td class="num">{d.checkedInByEvent[e.eventId] ?? 0}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Stock and sales per item</h2>
+        <div class="atable-wrap">
+          <table class="atable">
+            <thead><tr><th>Item</th><th>SKU</th><th class="num">Price</th><th class="num">Sold</th><th class="num">Held + sold / limit</th><th class="num">Revenue</th></tr></thead>
+            <tbody>
+              {stock.map((s) => (
+                <tr>
+                  <td>{s.name}{s.variant ? ` · ${s.variant}` : ''}</td>
+                  <td><code>{s.sku}</code></td>
+                  <td class="num">{formatMoney(s.price)}</td>
+                  <td class="num">{d.soldBySku[s.sku]?.qty ?? 0}</td>
+                  <td class="num">{s.taken} / {s.limit ?? '∞'}</td>
+                  <td class="num">{formatMoney(d.soldBySku[s.sku]?.cents ?? 0)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Page views, last 30 days</h2>
+        {d.views.length === 0 ? (
+          <p class="muted">No visits recorded yet.</p>
+        ) : (
+          <Fragment>
+            <div class="bars" aria-label="Daily page views">
+              {d.views.map((v) => <div style={`height: ${(v.n / maxViews) * 100}%`} title={`${v.day}: ${v.n}`} />)}
+            </div>
+            <p class="muted">{d.views[0].day} to {d.views.at(-1)!.day} · {d.views.reduce((a, v) => a + v.n, 0)} views</p>
+            <div class="atable-wrap mt-3">
+              <table class="atable">
+                <thead><tr><th>Top pages</th><th class="num">Views</th></tr></thead>
+                <tbody>{d.topPages.map((p) => <tr><td>{p.path}</td><td class="num">{p.n}</td></tr>)}</tbody>
+              </table>
+            </div>
+          </Fragment>
+        )}
+
+        <h2>Latest orders</h2>
+        <div class="atable-wrap">
+          <table class="atable">
+            <thead><tr><th>Ref</th><th>Buyer</th><th>Email</th><th class="num">Total</th><th>Paid</th></tr></thead>
+            <tbody>
+              {d.recentOrders.map((o) => (
+                <tr><td>{o.reference}</td><td>{o.name}</td><td>{o.email}</td><td class="num">{formatMoney(o.totalCents)}</td><td>{o.paidAt?.toLocaleString('en-AU', { timeZone: 'Australia/Melbourne' })}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-3"><a href="/admin/orders">All orders →</a></p>
+      </Fragment>
+    )
+  }
+</AdminLayout>

@@ -1,0 +1,73 @@
+---
+/** Live switches: ticket sales per event, merch shop, SFC submissions. No rebuild needed. */
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import Off from '../../components/admin/Off.astro';
+import { adminState } from '../../server/admin/guard';
+import { getStatus } from '../../server/settings';
+import { merchOnSaleDefault, sfcConfig, sfcWindow, ticketEvents } from '../../server/catalog';
+
+export const prerender = false;
+
+const state = adminState(Astro.cookies);
+if (state === 'login') return Astro.redirect('/admin/login');
+const status = state === 'ok' ? await getStatus() : undefined;
+---
+
+<AdminLayout title="Sales on/off">
+  {
+    !status ? (
+      <Off />
+    ) : (
+      <Fragment>
+        <h1>Sales on / off</h1>
+        <p class="muted max-w-[70ch]">Changes are live within a few seconds, no rebuild needed. "Default" goes back to what src/content/shop.json says.</p>
+
+        <h2>Tickets</h2>
+        <div class="atable-wrap">
+          <table class="atable">
+            <thead><tr><th>Event</th><th>Now</th><th>Default</th><th>Switch</th></tr></thead>
+            <tbody>
+              {ticketEvents.map((e) => (
+                <tr>
+                  <td>{e.eventName}<br /><span class="muted">{e.dateLabel}</span></td>
+                  <td>{status.tickets[e.eventId] ? <span class="pill pill--ok">On sale</span> : <span class="pill pill--muted">Off sale</span>}</td>
+                  <td class="muted">{e.onSaleDefault ? 'on' : 'off'}</td>
+                  <td>
+                    <form method="post" action="/api/admin/settings" class="admin-row">
+                      <input type="hidden" name="what" value="tickets" />
+                      <input type="hidden" name="event" value={e.eventId} />
+                      <button class="btn btn--primary cursor-pointer" name="value" value="on">Open sales</button>
+                      <button class="btn btn--ghost cursor-pointer" name="value" value="off">Close sales</button>
+                      <button class="btn btn--ghost cursor-pointer" name="value" value="default">Default</button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Merch shop</h2>
+        <form method="post" action="/api/admin/settings" class="admin-row">
+          <input type="hidden" name="what" value="merch" />
+          <span>{status.merch ? <span class="pill pill--ok">Open</span> : <span class="pill pill--muted">Closed</span>} <span class="muted">(default: {merchOnSaleDefault ? 'open' : 'closed'})</span></span>
+          <button class="btn btn--primary cursor-pointer" name="value" value="on">Open</button>
+          <button class="btn btn--ghost cursor-pointer" name="value" value="off">Close</button>
+          <button class="btn btn--ghost cursor-pointer" name="value" value="default">Default</button>
+        </form>
+
+        <h2>SFC submissions</h2>
+        <form method="post" action="/api/admin/settings" class="admin-row">
+          <input type="hidden" name="what" value="sfc" />
+          <span>
+            <span class:list={['pill', status.sfc.state === 'open' ? 'pill--ok' : 'pill--muted']}>{status.sfc.state}</span>
+            <span class="muted">mode: {status.sfc.mode} · by dates ({sfcConfig.opens} to {sfcConfig.closes}): {sfcWindow()}</span>
+          </span>
+          <button class="btn btn--primary cursor-pointer" name="value" value="open">Force open</button>
+          <button class="btn btn--ghost cursor-pointer" name="value" value="closed">Force closed</button>
+          <button class="btn btn--ghost cursor-pointer" name="value" value="auto">By dates</button>
+        </form>
+      </Fragment>
+    )
+  }
+</AdminLayout>

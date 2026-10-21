@@ -1,0 +1,29 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import Off from '../../components/admin/Off.astro';
+import { adminState } from '../../server/admin/guard';
+
+export const prerender = false;
+
+const state = adminState(Astro.cookies);
+if (state === 'ok') return Astro.redirect('/admin');
+const error = Astro.url.searchParams.get('error');
+---
+
+<AdminLayout title="Sign in" bare>
+  {
+    state === 'off' ? (
+      <Off />
+    ) : (
+      <form method="post" action="/api/admin/login" class="mx-auto mt-12 flex max-w-sm flex-col gap-4">
+        <h1>Committee sign in</h1>
+        {error && <p class="shop-banner shop-banner--error">{error === 'wait' ? 'Too many tries. Wait 15 minutes.' : "That keyword isn't right."}</p>}
+        <label class="field">
+          <span class="field__label">Keyword</span>
+          <input class="field__input" type="password" name="key" required autocomplete="current-password" autofocus />
+        </label>
+        <button type="submit" class="btn btn--primary cursor-pointer">Unlock</button>
+      </form>
+    )
+  }
+</AdminLayout>

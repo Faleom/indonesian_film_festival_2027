@@ -1,0 +1,31 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import Off from '../../components/admin/Off.astro';
+import { adminState } from '../../server/admin/guard';
+import { listSubscribers } from '../../server/admin/queries';
+
+export const prerender = false;
+
+const state = adminState(Astro.cookies);
+if (state === 'login') return Astro.redirect('/admin/login');
+const list = state === 'ok' ? await listSubscribers() : undefined;
+---
+
+<AdminLayout title="Subscribers">
+  {
+    !list ? (
+      <Off />
+    ) : (
+      <Fragment>
+        <h1>Newsletter subscribers</h1>
+        <p class="admin-row"><a class="btn btn--ghost" href="/api/admin/export/subscribers.csv">Download CSV</a> <span class="muted">{list.filter((s) => !s.unsubscribedAt).length} subscribed. Import the CSV into your mailing tool to send a newsletter.</span></p>
+        <div class="atable-wrap">
+          <table class="atable">
+            <thead><tr><th>Email</th><th>From</th><th>Since</th></tr></thead>
+            <tbody>{list.map((s) => <tr><td>{s.email}</td><td class="muted">{s.source}</td><td class="muted">{s.createdAt.toLocaleDateString('en-AU')}</td></tr>)}</tbody>
+          </table>
+        </div>
+      </Fragment>
+    )
+  }
+</AdminLayout>

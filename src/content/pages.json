@@ -260,6 +260,91 @@
       "social": "Follow on Instagram"
     },
     "aboutTitle": "About",
-    "atAGlance": "At a glance"
+    "atAGlance": "At a glance",
+    "cta": {
+      "tickets": "Get tickets",
+      "sfc": "Submit your film",
+      "edu": "Book for your school",
+      "eduSubject": "Educational Screening booking"
+    }
+  },
+  "tickets": {
+    "metaTitle": "Tickets · IFF 21",
+    "metaDescription": "Tickets for the 21st Indonesian Film Festival in Melbourne.",
+    "kicker": "Box office",
+    "title": [
+      "Get",
+      "Tickets"
+    ],
+    "script": "your",
+    "hero": "tickets-hero",
+    "intro": "Pick your tickets, add some merch if you like, and pay in one go. Your tickets arrive by email with a QR code for the door.",
+    "notOnSale": "Not on sale yet",
+    "soldOut": "Sold out",
+    "left": "{n} left",
+    "addLabel": "Add to cart",
+    "noTickets": "No tickets needed: see the event page for how to take part.",
+    "paymentsOff": "Online sales open soon. Join the newsletter to hear when tickets go on sale."
+  },
+  "merch": {
+    "metaTitle": "Merch · IFF 21",
+    "metaDescription": "Festival tees, totes, posters and more. Every sale supports the Indonesian Film Festival.",
+    "kicker": "The merch table",
+    "title": [
+      "Festival",
+      "Merch"
+    ],
+    "hero": "merch-hero",
+    "intro": "Wear the glow. Every piece is printed in festival inks and every sale helps keep the festival running.",
+    "closed": "The merch shop is closed right now.",
+    "addLabel": "Add to cart",
+    "sizeLabel": "Option"
+  },
+  "cart": {
+    "metaTitle": "Your cart · IFF 21",
+    "kicker": "Checkout",
+    "title": "Your cart",
+    "empty": "Your cart is empty.",
+    "emptyCta": "See tickets",
+    "emptyCta2": "Browse merch",
+    "detailsTitle": "Your details",
+    "detailsText": "Your tickets and receipt are sent to this email.",
+    "pay": "Pay securely with Stripe",
+    "payNote": "You'll pay on Stripe's secure page (cards, Apple Pay, Google Pay). Items are held for 30 minutes while you pay.",
+    "cancelled": "Payment cancelled. Your items are still in the cart."
+  },
+  "order": {
+    "metaTitle": "Your order · IFF 21",
+    "paidTitle": "You're in",
+    "pendingTitle": "Payment pending",
+    "otherTitle": "Order",
+    "paidText": "Thank you! A confirmation is on its way to {email}. Show these QR codes (or the codes) at the door.",
+    "pendingText": "We're waiting for Stripe to confirm your payment. This page updates by itself; it usually takes a few seconds.",
+    "expiredText": "This order was not paid and has expired.",
+    "refundedText": "This order was refunded. Its tickets can no longer be used.",
+    "ticketsTitle": "Your tickets",
+    "itemsTitle": "Order summary"
+  },
+  "thanks": {
+    "metaTitle": "Thanks · IFF 21",
+    "contact": "Thanks! We've got your message and emailed you a copy.",
+    "newsletter": "You're on the list! Check your inbox.",
+    "sfc": "Thanks! Your submission has been received.",
+    "error": "Something went wrong",
+    "back": "Go back"
+  },
+  "sfcSubmit": {
+    "kicker": "Enter the competition",
+    "title": "Submit your film",
+    "intro": "Upload your film to YouTube or Vimeo (public or unlisted), paste the link, fill in the details and pay the entry fee. No big uploads needed.",
+    "soon": "Submissions open on {opens}.",
+    "closed": "Submissions are closed. Thank you to everyone who entered!",
+    "fee": "Entry fee",
+    "rules": "I confirm this film is our original work, it was made by students, and I agree to the competition rules (to be published with the topic).",
+    "previewTitle": "Preview",
+    "previewEmpty": "Paste a YouTube or Vimeo link to preview your film here.",
+    "submit": "Continue to payment",
+    "paymentsOff": "Online entries open soon. Email us if you'd like to submit now.",
+    "off": "Online entries open soon. Email us if you'd like to submit now."
   }
 }

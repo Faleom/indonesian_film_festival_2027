@@ -13,7 +13,7 @@ import Button from '../ui/Button.astro';
 import Kicker from '../typography/Kicker.astro';
 import DisplayTitle from '../typography/DisplayTitle.astro';
 import pages from '../../content/pages.json';
-import type { EventEntry } from '../../lib/content';
+import { eventCta, type EventEntry } from '../../lib/content';
 
 interface Props {
   event: EventEntry;
@@ -22,6 +22,7 @@ interface Props {
 
 const { event, hasLineup } = Astro.props;
 const e = event.data;
+const cta = eventCta(event);
 ---
 
 <section
@@ -48,7 +49,7 @@ const e = event.data;
         ]}
       >
         <Fragment slot="actions">
-          <Button href={e.ticketUrl} external>Get tickets</Button>
+          <Button href={cta.href} external={cta.external}>{cta.label}</Button>
           {hasLineup && <Button href="#lineup" variant="ghost">{e.lineupTitle}</Button>}
         </Fragment>
       </Hero>
@@ -80,7 +81,7 @@ const e = event.data;
           <div><dt>Venue</dt><dd>{e.venue}</dd></div>
         </dl>
         <div class="flex flex-wrap gap-3">
-          <Button href={e.ticketUrl} external>Get tickets</Button>
+          <Button href={cta.href} external={cta.external}>{cta.label}</Button>
           {hasLineup && <Button href="#lineup" variant="ghost">{e.lineupTitle}</Button>}
         </div>
         <p class="ev3d__cue" aria-hidden="true">{pages.event.scrollCue} <span>↓</span></p>

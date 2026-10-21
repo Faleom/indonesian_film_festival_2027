@@ -1,0 +1,44 @@
+---
+/** Every email the site sent (or tried to): who has been emailed, and whether it worked. */
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import Off from '../../components/admin/Off.astro';
+import { adminState } from '../../server/admin/guard';
+import { listEmails } from '../../server/admin/queries';
+
+export const prerender = false;
+
+const state = adminState(Astro.cookies);
+if (state === 'login') return Astro.redirect('/admin/login');
+const list = state === 'ok' ? await listEmails() : undefined;
+const when = (d?: Date | null) => d?.toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', dateStyle: 'medium', timeStyle: 'short' }) ?? '';
+---
+
+<AdminLayout title="Emails">
+  {
+    !list ? (
+      <Off />
+    ) : (
+      <Fragment>
+        <h1>Emails sent</h1>
+        <p class="muted">Latest 300. "skipped" = email isn't set up (RESEND_API_KEY) or no committee addresses.</p>
+        <div class="atable-wrap">
+          <table class="atable">
+            <thead><tr><th>When</th><th>Status</th><th>To</th><th>Type</th><th>Subject</th><th>Problem</th></tr></thead>
+            <tbody>
+              {list.map((m) => (
+                <tr>
+                  <td class="muted">{when(m.createdAt)}</td>
+                  <td><span class={`pill pill--${m.status === 'sent' ? 'ok' : m.status === 'failed' ? 'bad' : 'muted'}`}>{m.status}</span></td>
+                  <td>{m.to}</td>
+                  <td class="muted">{m.template}</td>
+                  <td>{m.subject}</td>
+                  <td class="muted">{m.error}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Fragment>
+    )
+  }
+</AdminLayout>

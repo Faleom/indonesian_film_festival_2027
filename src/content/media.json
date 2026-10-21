@@ -477,6 +477,22 @@
       "alt": "Festival zine",
       "location": "/merch product photo",
       "recommended": "1600x2000, product on a plain background"
+    },
+    "tickets-hero": {
+      "type": "image",
+      "src": "/images/tickets-hero.jpg",
+      "ratio": "4:5",
+      "alt": "Festival audience",
+      "location": "/tickets hero",
+      "recommended": "1600x2000"
+    },
+    "merch-hero": {
+      "type": "image",
+      "src": "/images/merch-hero.jpg",
+      "ratio": "4:5",
+      "alt": "Festival merch laid out on a table",
+      "location": "/merch hero",
+      "recommended": "1600x2000"
     }
   }
 }

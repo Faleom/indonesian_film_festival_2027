@@ -1,45 +1,12 @@
 ---
 /**
- * "Coming soon" toast. Any <form data-coming-soon> shows it on a valid submit
- * instead of sending anything; any <a data-coming-soon> (e.g. a ticket link
- * whose URL is still "#") shows it on click.
- * TODO(backend): replace with real submission handling.
+ * Message strip for form replies, cart updates and "coming soon" links.
+ * Driven by scripts/forms.ts (toast()).
  */
-import site from '../../content/site.json';
 ---
 
-<div id="toast" class="toast" role="status" aria-live="polite" hidden data-message={site.formsComingSoon}></div>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
 <script>
-  let timer: number | undefined;
-
-  // Looked up each time: page transitions replace the body, toast included.
-  const show = (message?: string) => {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-    toast.textContent = message || toast.dataset.message || 'Coming soon.';
-    toast.hidden = false;
-    window.clearTimeout(timer);
-    timer = window.setTimeout(() => (toast.hidden = true), 6000);
-  };
-
-  document.addEventListener('submit', (e) => {
-    const form = e.target;
-    if (!(form instanceof HTMLFormElement) || !form.hasAttribute('data-coming-soon')) return;
-    // TODO(backend): POST the form data here instead of showing the toast.
-    e.preventDefault();
-    show(form.dataset.comingSoon);
-  });
-
-  // Capture phase, so it runs before the page-transition router handles the link.
-  document.addEventListener(
-    'click',
-    (e) => {
-      const link = (e.target as Element | null)?.closest?.('a[data-coming-soon]');
-      if (!(link instanceof HTMLAnchorElement)) return;
-      e.preventDefault();
-      show(link.dataset.comingSoon);
-    },
-    true,
-  );
+  import '../../scripts/forms';
 </script>

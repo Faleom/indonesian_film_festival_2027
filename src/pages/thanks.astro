@@ -1,0 +1,24 @@
+---
+/** Result page for forms sent without JS (/thanks?form=contact|newsletter|sfc[&error=…]). */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHead from '../components/ui/SectionHead.astro';
+import pages from '../content/pages.json';
+
+export const prerender = false;
+
+const page = pages.thanks;
+const form = Astro.url.searchParams.get('form') ?? '';
+const error = Astro.url.searchParams.get('error');
+const message = error ?? (page as Record<string, string>)[form] ?? page.contact;
+// Back to the form's page (same site only).
+const ref = Astro.request.headers.get('referer');
+const back = ref && new URL(ref).host === Astro.url.host ? new URL(ref).pathname : '/';
+---
+
+<BaseLayout title={page.metaTitle} noindex>
+  <section class="container-page py-16 md:py-24" aria-labelledby="thanks-title">
+    <SectionHead title={error ? page.error : 'Thank you'} id="thanks-title" />
+    <p class="max-w-[60ch] text-xl">{message}</p>
+    <p class="mt-8"><a href={back} class="btn btn--ghost">{page.back}</a> <a href="/" class="btn btn--primary">Home</a></p>
+  </section>
+</BaseLayout>

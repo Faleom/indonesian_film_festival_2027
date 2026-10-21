@@ -3,15 +3,22 @@
 interface Props {
   name: string;
   label: string;
-  type?: 'text' | 'email' | 'tel' | 'textarea' | 'select';
+  type?: 'text' | 'email' | 'tel' | 'url' | 'number' | 'textarea' | 'select';
   required?: boolean;
   autocomplete?: string;
   placeholder?: string;
   options?: string[];
   formId: string;
+  /** Small help text under the field. */
+  hint?: string;
+  maxlength?: number;
+  min?: number;
+  max?: number;
+  rows?: number;
 }
 
-const { name, label, type = 'text', required = false, autocomplete, placeholder, options = [], formId } = Astro.props;
+const { name, label, type = 'text', required = false, autocomplete, placeholder, options = [], formId, hint, maxlength, min, max, rows } = Astro.props;
+const hintId = hint ? `${formId}-${name}-hint` : undefined;
 const id = `${formId}-${name}`;
 ---
 
@@ -21,7 +28,7 @@ const id = `${formId}-${name}`;
   </label>
   {
     type === 'textarea' ? (
-      <textarea id={id} name={name} class="field__input" required={required} placeholder={placeholder} />
+      <textarea id={id} name={name} class="field__input" required={required} placeholder={placeholder} maxlength={maxlength} rows={rows} aria-describedby={hintId} />
     ) : type === 'select' ? (
       <select id={id} name={name} class="field__input" required={required}>
         <option value="">Select…</option>
@@ -38,7 +45,12 @@ const id = `${formId}-${name}`;
         required={required}
         autocomplete={autocomplete}
         placeholder={placeholder}
+        maxlength={maxlength}
+        min={min}
+        max={max}
+        aria-describedby={hintId}
       />
     )
   }
+  {hint && <p id={hintId} class="field__hint">{hint}</p>}
 </div>

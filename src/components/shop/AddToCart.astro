@@ -1,0 +1,58 @@
+---
+/**
+ * "Add to cart" for one sku, or a choice of skus (merch sizes). A real form
+ * (POST /api/cart) so it works without JS; scripts/forms.ts keeps you on the
+ * page with JS. Disabled when not on sale or sold out.
+ */
+interface Option {
+  sku: string;
+  label: string;
+  /** Remaining stock; null = unlimited. */
+  left: number | null;
+}
+
+interface Props {
+  options: Option[];
+  label: string;
+  /** Where to come back to without JS. */
+  back: string;
+  disabled?: boolean;
+  disabledLabel?: string;
+  optionLabel?: string;
+  idPrefix: string;
+}
+
+const { options, label, back, disabled = false, disabledLabel, optionLabel = 'Option', idPrefix } = Astro.props;
+const available = options.filter((o) => o.left === null || o.left > 0);
+const off = disabled || available.length === 0;
+const maxQty = Math.min(10, ...available.map((o) => o.left ?? 10), 10);
+---
+
+<form method="post" action="/api/cart" data-cart data-astro-reload class="add-cart">
+  <input type="hidden" name="op" value="add" />
+  <input type="hidden" name="back" value={back} />
+  {
+    options.length > 1 ? (
+      <label class="add-cart__field">
+        <span class="sr-only">{optionLabel}</span>
+        <select name="sku" class="field__input" id={`${idPrefix}-sku`} disabled={off}>
+          {options.map((o) => (
+            <option value={o.sku} disabled={o.left !== null && o.left <= 0}>
+              {o.label}
+              {o.left !== null && o.left <= 0 ? ' (sold out)' : ''}
+            </option>
+          ))}
+        </select>
+      </label>
+    ) : (
+      <input type="hidden" name="sku" value={options[0]?.sku} />
+    )
+  }
+  <label class="add-cart__field add-cart__qty">
+    <span class="sr-only">Quantity</span>
+    <select name="quantity" class="field__input" id={`${idPrefix}-qty`} disabled={off}>
+      {Array.from({ length: Math.max(1, maxQty) }, (_, i) => <option value={i + 1}>{i + 1}</option>)}
+    </select>
+  </label>
+  <button type="submit" class="btn btn--primary cursor-pointer" disabled={off}>{off && disabledLabel ? disabledLabel : label}</button>
+</form>

@@ -22,7 +22,8 @@ const formId = compact ? 'newsletter-footer' : 'newsletter';
     )
   }
   <p class="m-0 max-w-[48ch] text-[0.9375rem]">{newsletterText}</p>
-  <Form name={formId} submitLabel="Subscribe">
+  <Form name={formId} action="/api/newsletter" submitLabel="Subscribe">
+    <input type="hidden" name="source" value={compact ? 'footer' : 'page'} />
     <Field formId={formId} name="email" label="Email" type="email" required autocomplete="email" />
   </Form>
 </div>

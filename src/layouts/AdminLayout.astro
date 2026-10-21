@@ -1,0 +1,113 @@
+---
+/**
+ * Committee admin pages: plain and fast (no motion, no 3D), never indexed.
+ * Every admin page calls guard() first.
+ */
+import '@fontsource/special-elite/latin-400.css';
+import '@fontsource/oswald/latin-400.css';
+import '@fontsource/oswald/latin-600.css';
+import '@fontsource/jost/latin-400.css';
+import '@fontsource/jost/latin-500.css';
+import '../styles/global.css';
+import Fonts from '../components/layout/Fonts.astro';
+import site from '../content/site.json';
+
+interface Props {
+  title: string;
+  /** Hide the menu (login page). */
+  bare?: boolean;
+}
+
+const { title, bare = false } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '');
+const nav = [
+  ['/admin', 'Dashboard'],
+  ['/admin/settings', 'Sales on/off'],
+  ['/admin/orders', 'Orders'],
+  ['/admin/checkin', 'Check-in'],
+  ['/admin/submissions', 'SFC entries'],
+  ['/admin/emails', 'Emails'],
+  ['/admin/messages', 'Messages'],
+  ['/admin/subscribers', 'Subscribers'],
+];
+const msg = Astro.url.searchParams.get('msg');
+---
+
+<!doctype html>
+<html lang="en" data-motion="off">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} · {site.shortName} {site.editionNumber} admin</title>
+    <Fonts />
+  </head>
+  <body class="paper admin" data-theme="base">
+    <header class="admin-bar">
+      <a href="/admin" class="admin-bar__brand">{site.shortName} {site.editionNumber} <span>Committee</span></a>
+      {
+        !bare && (
+          <nav aria-label="Admin" class="admin-bar__nav">
+            {nav.map(([href, label]) => (
+              <a href={href} aria-current={path === href ? 'page' : undefined}>
+                {label}
+              </a>
+            ))}
+            <form method="post" action="/api/admin/logout">
+              <button type="submit">Log out</button>
+            </form>
+          </nav>
+        )
+      }
+    </header>
+    <main class="admin-main">
+      {msg && <p class="shop-banner" role="status">{msg}</p>}
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  .admin { min-height: 100vh; }
+  .admin-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    padding: 0.9rem 1.25rem;
+    border-bottom: 3px double var(--c-black);
+    background: var(--c-offwhite);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .admin-bar__brand { font-family: var(--ff-display); font-size: 1.8rem; color: var(--c-primary); text-decoration: none; text-transform: uppercase; }
+  .admin-bar__brand span { font-family: var(--ff-typewriter); font-size: 0.75rem; letter-spacing: 0.12em; color: var(--c-black); }
+  .admin-bar__nav { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; align-items: center; font-family: var(--ff-typewriter); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .admin-bar__nav a { color: var(--c-black); text-decoration: none; border-bottom: 2px solid transparent; }
+  .admin-bar__nav a[aria-current='page'], .admin-bar__nav a:hover { border-color: var(--c-primary); }
+  .admin-bar__nav button { font: inherit; text-transform: inherit; background: none; border: 1px solid var(--c-black); padding: 0.15rem 0.5rem; cursor: pointer; }
+  .admin-main { padding: 1.5rem 1.25rem 4rem; max-width: 90rem; margin: 0 auto; }
+  .admin h1 { font-family: var(--ff-condensed); font-weight: 600; text-transform: uppercase; font-size: 2rem; margin: 0 0 1.25rem; }
+  .admin h2 { font-family: var(--ff-condensed); font-weight: 600; text-transform: uppercase; font-size: 1.35rem; margin: 2rem 0 0.75rem; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 0.75rem; }
+  .kpi { padding: 0.9rem 1rem; border: 1.5px solid var(--c-black); background: #fff8; }
+  .kpi span { display: block; font-family: var(--ff-typewriter); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-text-accent); }
+  .kpi strong { display: block; margin-top: 0.3rem; font-family: var(--ff-display); font-weight: 400; font-size: 2.1rem; line-height: 1; }
+  .kpi small { font-size: 0.8rem; }
+  .atable-wrap { overflow-x: auto; border: 1.5px solid var(--c-black); background: #fff8; }
+  .atable { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  .atable th, .atable td { padding: 0.5rem 0.65rem; border-bottom: 1px solid #0002; text-align: left; vertical-align: top; }
+  .atable th { font-family: var(--ff-typewriter); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; background: var(--c-offwhite); position: sticky; top: 0; }
+  .atable td.num, .atable th.num { text-align: right; white-space: nowrap; }
+  .pill { display: inline-block; padding: 0.05rem 0.45rem; border: 1px solid currentColor; font-family: var(--ff-typewriter); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+  .pill--ok { color: #1b6e3c; } .pill--warn { color: #8a5a00; } .pill--bad { color: #b3261e; } .pill--muted { color: #666; }
+  .bars { display: flex; align-items: flex-end; gap: 3px; height: 8rem; padding: 0.5rem; border: 1.5px solid var(--c-black); background: #fff8; }
+  .bars div { flex: 1; min-width: 3px; background: var(--c-primary); position: relative; }
+  .admin-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+  .admin form.inline { display: inline; }
+  .admin .btn { padding: 0.35rem 0.7rem; font-size: 0.8rem; }
+  .admin .field__input { min-height: 2.3rem; padding: 0.3rem 0.6rem; }
+  .muted { color: #555; font-size: 0.8rem; }
+</style>

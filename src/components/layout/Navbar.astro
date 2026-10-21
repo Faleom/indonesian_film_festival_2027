@@ -81,7 +81,11 @@ const onEventPage = events.some((e) => isCurrent(e.href));
     </nav>
 
     <div class="flex items-center gap-3">
-      <a href={site.ticketUrl} data-coming-soon={site.ticketUrl === '#' ? site.ticketsComingSoon : undefined} class="btn btn--primary hidden sm:inline-flex">Tickets</a>
+      <a href="/cart" class="nav-cart" aria-label={site.cartLabel}>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 4h2.2l2.3 10.2a1 1 0 0 0 1 .8h8.7a1 1 0 0 0 1-.8L20 7.5H6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="9.5" cy="19" r="1.5" fill="currentColor"/><circle cx="16.5" cy="19" r="1.5" fill="currentColor"/></svg>
+        <span class="nav-cart__count" data-cart-count hidden>0</span>
+      </a>
+      <a href={site.ticketUrl} class="btn btn--primary hidden sm:inline-flex">Tickets</a>
       <details class="nav-menu xl:hidden">
         <summary class="btn btn--ghost" aria-label="Menu">
           <span class="nav-menu__icon-open">Menu</span>
@@ -119,7 +123,7 @@ const onEventPage = events.some((e) => isCurrent(e.href));
               )
             }
           </ul>
-          <a href={site.ticketUrl} data-coming-soon={site.ticketUrl === '#' ? site.ticketsComingSoon : undefined} class="btn btn--primary mt-5 w-full sm:hidden">Tickets</a>
+          <a href={site.ticketUrl} class="btn btn--primary mt-5 w-full sm:hidden">Tickets</a>
         </nav>
       </details>
     </div>

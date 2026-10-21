@@ -56,7 +56,8 @@ import InkRule from '../ui/InkRule.astro';
       <p class="m-0 max-w-[70ch] text-sm leading-relaxed">{site.acknowledgement}</p>
       <div class="flex flex-col gap-3 md:items-end">
         <p class="m-0 font-typewriter text-xs leading-relaxed uppercase md:text-right">
-          © {site.year} {site.name}<br />Non-profit · Student-run · {site.city}
+          {/* The © is the committee's hidden door to /admin (keyword-protected). */}
+          <a href="/admin" class="admin-door" rel="nofollow">©</a> {site.year} {site.name}<br />Non-profit · Student-run · {site.city}
         </p>
       </div>
     </div>

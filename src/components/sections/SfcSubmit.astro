@@ -1,0 +1,120 @@
+---
+/**
+ * Short Film Competition entry form on /sfc. The film itself stays on YouTube
+ * or Vimeo (public or unlisted); we only store the link, and preview it here.
+ * Posts to /api/sfc, which saves the entry and sends the filmmaker to Stripe
+ * for the entry fee (shop.json sfc). Open between shop.json sfc.opens and
+ * sfc.closes, unless the admin page overrides it; the page checks the live
+ * state on load (/api/status), the server checks again on submit.
+ */
+import Field from '../forms/Field.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import pages from '../../content/pages.json';
+import shop from '../../content/shop.json';
+import { formatMoney, sfcWindow } from '../../server/catalog';
+
+const copy = pages.sfcSubmit;
+const state = sfcWindow();
+const fmt = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const opens = fmt(shop.sfc.opens);
+---
+
+<section id="submit" class="container-page py-12 md:py-20" data-sfc-submit data-state={state} aria-labelledby="submit-title">
+  <SectionHead title={copy.title} kicker={copy.kicker} id="submit-title" />
+  <div class="sfc-submit">
+    <div class="flex flex-col gap-5">
+      <p class="m-0 max-w-[55ch] text-lg">{copy.intro}</p>
+      <p class="sfc-fee"><span>{copy.fee}</span><strong>{formatMoney(shop.sfc.entryFee)}</strong><em>{shop.sfc.feeNote}</em></p>
+      <p class="sfc-state sfc-state--soon shop-banner" role="note">{copy.soon.replace('{opens}', opens)}</p>
+      <p class="sfc-state sfc-state--closed shop-banner" role="note">{copy.closed}</p>
+      <p class="sfc-state sfc-state--off shop-banner" role="note">{copy.off}</p>
+      <figure class="sfc-preview m-0">
+        <figcaption class="field__label mb-2">{copy.previewTitle}</figcaption>
+        <div class="sfc-preview__frame" data-sfc-preview>
+          <p class="sfc-preview__empty">{copy.previewEmpty}</p>
+        </div>
+      </figure>
+    </div>
+
+    <form method="post" action="/api/sfc" data-api data-astro-reload class="sfc-form" aria-labelledby="submit-title">
+      <fieldset class="sfc-form__fields" disabled={state !== 'open'} data-sfc-fields>
+        <legend class="sr-only">{copy.title}</legend>
+        <div class="hp-field" aria-hidden="true">
+          <label for="sfc-website">Leave this empty</label>
+          <input id="sfc-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        <Field formId="sfc" name="videoUrl" label="Link to your film (YouTube or Vimeo)" type="url" required placeholder="https://youtu.be/…" hint="Public or unlisted. Keep it up until the winners are announced." maxlength={300} />
+        <div class="grid gap-5 sm:grid-cols-[1fr_9rem]">
+          <Field formId="sfc" name="filmTitle" label="Film title" required maxlength={160} />
+          <Field formId="sfc" name="runtime" label="Minutes" type="number" required min={1} max={60} />
+        </div>
+        <Field formId="sfc" name="synopsis" label="Short synopsis" type="textarea" required maxlength={1500} rows={4} />
+        <div class="grid gap-5 sm:grid-cols-2">
+          <Field formId="sfc" name="name" label="Your name" required autocomplete="name" maxlength={120} />
+          <Field formId="sfc" name="email" label="Email" type="email" required autocomplete="email" maxlength={200} />
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <Field formId="sfc" name="school" label="School or university" required autocomplete="organization" maxlength={160} />
+          <Field formId="sfc" name="country" label="Country" required autocomplete="country-name" maxlength={80} />
+        </div>
+        <Field formId="sfc" name="phone" label="Mobile (optional)" type="tel" autocomplete="tel" maxlength={40} />
+        <Field formId="sfc" name="team" label="Team members and roles (optional)" type="textarea" maxlength={1000} rows={3} />
+        <label class="check">
+          <input type="checkbox" name="rules" required />
+          <span>{copy.rules}</span>
+        </label>
+        <button type="submit" class="btn btn--primary cursor-pointer self-start">{copy.submit} · {formatMoney(shop.sfc.entryFee)}</button>
+      </fieldset>
+    </form>
+  </div>
+</section>
+
+<script>
+  /** Same rules as the server (server/forms.ts parseVideoUrl), for the preview only. */
+  function embedFor(input: string): string | null {
+    let u: URL;
+    try {
+      u = new URL(input.trim());
+    } catch {
+      return null;
+    }
+    const host = u.hostname.replace(/^www\.|^m\./, '');
+    let id: string | null = null;
+    if (host === 'youtu.be') id = u.pathname.slice(1).split('/')[0];
+    else if (host === 'youtube.com') id = u.searchParams.get('v') ?? u.pathname.match(/^\/(?:embed|shorts|live)\/([^/?]+)/)?.[1] ?? null;
+    if (id && /^[\w-]{6,20}$/.test(id)) return `https://www.youtube-nocookie.com/embed/${id}`;
+    if (host === 'vimeo.com' || host === 'player.vimeo.com') {
+      const m = u.pathname.match(/(?:\/video)?\/(\d{6,12})(?:\/([\da-f]{6,20}))?/);
+      if (m) return `https://player.vimeo.com/video/${m[1]}${m[2] ? `?h=${m[2]}` : ''}`;
+    }
+    return null;
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    const root = document.querySelector<HTMLElement>('[data-sfc-submit]');
+    if (!root) return;
+    const input = root.querySelector<HTMLInputElement>('input[name="videoUrl"]');
+    const frame = root.querySelector<HTMLElement>('[data-sfc-preview]');
+    const empty = frame?.innerHTML ?? '';
+    let shown = '';
+    input?.addEventListener('input', () => {
+      const src = embedFor(input.value);
+      if (!frame || src === shown) return;
+      shown = src ?? '';
+      frame.innerHTML = src
+        ? `<iframe src="${src}" title="Preview of your film" allow="fullscreen; picture-in-picture" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+        : empty;
+    });
+    // Live window (the admin page can open or close it early).
+    fetch('/api/status', { headers: { Accept: 'application/json' } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((s) => {
+        if (!s?.sfc) return;
+        const state = s.payments ? s.sfc.state : 'off';
+        root.dataset.state = state;
+        const fields = root.querySelector<HTMLFieldSetElement>('[data-sfc-fields]');
+        if (fields) fields.disabled = state !== 'open';
+      })
+      .catch(() => {});
+  });
+</script>

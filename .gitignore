@@ -4,6 +4,7 @@ dist/
 .vercel/
 .DS_Store
 .env*
+!.env.example
 public/images/halftone/
 public/.favicons-stamp
 public/favicon.ico

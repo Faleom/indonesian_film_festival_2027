@@ -1,0 +1,79 @@
+---
+/** Cart + buyer details -> Stripe Checkout. Server-rendered from the cart cookie. */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHead from '../components/ui/SectionHead.astro';
+import Field from '../components/forms/Field.astro';
+import pages from '../content/pages.json';
+import { readCart } from '../server/cart';
+import { findSku, formatMoney } from '../server/catalog';
+import { features } from '../server/env';
+
+export const prerender = false;
+
+const page = pages.cart;
+const cart = readCart(Astro.cookies);
+const lines = Object.entries(cart).map(([sku, quantity]) => ({ item: findSku(sku)!, quantity }));
+const total = lines.reduce((s, l) => s + l.item.price * l.quantity, 0);
+const error = Astro.url.searchParams.get('error');
+const cancelled = Astro.url.searchParams.has('cancelled');
+Astro.response.headers.set('cache-control', 'no-store');
+---
+
+<BaseLayout title={page.metaTitle} noindex>
+  <section class="container-page py-12 md:py-16" aria-labelledby="cart-title">
+    <SectionHead title={page.title} kicker={page.kicker} id="cart-title" />
+    {cancelled && <p class="shop-banner" role="status">{page.cancelled}</p>}
+    {error && <p class="shop-banner shop-banner--error" role="alert">{error}</p>}
+    {
+      lines.length === 0 ? (
+        <div class="flex flex-col items-start gap-5 py-8">
+          <p class="text-lg">{page.empty}</p>
+          <p class="flex flex-wrap gap-3">
+            <a href="/tickets" class="btn btn--primary">{page.emptyCta}</a>
+            <a href="/merch" class="btn btn--ghost">{page.emptyCta2}</a>
+          </p>
+        </div>
+      ) : (
+        <div class="cart-layout">
+          <div>
+            <ul class="cart-lines m-0 list-none p-0">
+              {lines.map(({ item, quantity }) => (
+                <li class="cart-line">
+                  <div>
+                    <p class="cart-line__name">{item.name}{item.variant && <span> · {item.variant}</span>}</p>
+                    <p class="cart-line__unit">{formatMoney(item.price)} each</p>
+                  </div>
+                  <form method="post" action="/api/cart" class="cart-line__qty" data-astro-reload>
+                    <input type="hidden" name="op" value="set" />
+                    <input type="hidden" name="sku" value={item.sku} />
+                    <input type="hidden" name="back" value="/cart" />
+                    <label class="sr-only" for={`q-${item.sku}`}>Quantity</label>
+                    <select id={`q-${item.sku}`} name="quantity" class="field__input" onchange="this.form.submit()">
+                      {Array.from({ length: 11 }, (_, i) => <option value={i} selected={i === quantity}>{i === 0 ? 'Remove' : i}</option>)}
+                    </select>
+                    <noscript><button type="submit" class="btn btn--ghost">Update</button></noscript>
+                  </form>
+                  <p class="cart-line__total">{formatMoney(item.price * quantity)}</p>
+                </li>
+              ))}
+            </ul>
+            <p class="cart-total"><span>Total</span><strong>{formatMoney(total)}</strong></p>
+          </div>
+          <form method="post" action="/api/checkout" data-api data-astro-reload class="cart-pay" aria-labelledby="details-title">
+            <h2 id="details-title" class="heading-condensed m-0 text-3xl">{page.detailsTitle}</h2>
+            <p class="m-0 text-sm">{page.detailsText}</p>
+            <div class="hp-field" aria-hidden="true">
+              <label for="checkout-website">Leave this empty</label>
+              <input id="checkout-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+            <Field formId="checkout" name="name" label="Full name" required autocomplete="name" maxlength={120} />
+            <Field formId="checkout" name="email" label="Email" type="email" required autocomplete="email" maxlength={200} />
+            <Field formId="checkout" name="phone" label="Mobile (optional)" type="tel" autocomplete="tel" maxlength={40} />
+            <button type="submit" class="btn btn--primary w-full cursor-pointer" disabled={!features.payments}>{page.pay} · {formatMoney(total)}</button>
+            <p class="m-0 font-typewriter text-xs leading-relaxed">{features.payments ? page.payNote : pages.tickets.paymentsOff}</p>
+          </form>
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>

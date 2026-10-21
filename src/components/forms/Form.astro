@@ -1,23 +1,31 @@
 ---
 /**
- * Form shell. UI only for now: a valid submit shows the "coming soon" toast
- * (see layout/Toast.astro) instead of sending anything.
- * data-astro-reload stops the page router from treating the submit as a navigation.
- * TODO(backend): point `action` at the real endpoint and drop data-coming-soon.
+ * Form shell. Posts to a real endpoint (src/pages/api/*). Works without JS
+ * (the server redirects to /thanks); with JS, scripts/forms.ts sends it with
+ * fetch and shows the reply in the toast. `website` is a honeypot: hidden from
+ * people, filled in by bots, and those posts are ignored.
  */
 interface Props {
   name: string;
+  /** Endpoint, e.g. /api/contact */
+  action: string;
   submitLabel: string;
   class?: string;
+  /** Clear the fields after a successful send (default true). */
+  reset?: boolean;
 }
 
-const { name, submitLabel, class: className } = Astro.props;
+const { name, action, submitLabel, class: className, reset = true } = Astro.props;
 ---
 
-<form class:list={['flex flex-col gap-5', className]} id={name} name={name} method="get" action="#" data-coming-soon data-astro-reload>
+<form class:list={['flex flex-col gap-5', className]} id={name} name={name} method="post" action={action} data-api data-reset={reset ? '' : undefined} data-astro-reload>
+  <div class="hp-field" aria-hidden="true">
+    <label for={`${name}-website`}>Leave this empty</label>
+    <input id={`${name}-website`} name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
   <slot />
   <div class="flex flex-wrap items-center gap-4">
     <button type="submit" class="btn btn--primary cursor-pointer">{submitLabel}</button>
-    <noscript><span class="font-typewriter text-xs">Online forms are coming soon.</span></noscript>
+    <slot name="after" />
   </div>
 </form>

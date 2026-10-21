@@ -167,13 +167,16 @@ export const buildExhibition: EventBuilder = ({ scene, camera, lite, portrait })
 
   return {
     dotSize: 4.6,
+    screen: bigCanvas,
     update({ p, t, mx, my }) {
       const walk = smooth(0.06, 0.86, p);
       const z = lerp(8, endZ + (portrait() ? 9.5 : 7), walk);
       // Glance at the walls as we pass (alternating), straighten up at the end.
       const glance = Math.sin(walk * bays * Math.PI) * 0.38 * (1 - smooth(0.78, 0.88, p));
       camera.position.set(Math.sin(walk * 6) * 0.35 + mx * 0.3, 1.75 + Math.sin(walk * 40) * 0.025 + my * -0.15, z);
-      camera.lookAt(camera.position.x + Math.sin(glance + mx * 0.25) * 6, 1.8 - my * 0.4, z - Math.cos(glance) * 6);
+      // Arriving: look up to the middle of the big frame so it sits centred in the shot.
+      const arrive = smooth(0.8, 1, p);
+      camera.lookAt(camera.position.x + Math.sin(glance + mx * 0.25) * 6, lerp(1.8, 2.75, arrive) - my * 0.4, z - Math.cos(glance) * 6);
       exhibits.forEach((g, i) => (g.rotation.y = t * 0.35 + i));
       lights.forEach((l, i) => {
         const on = smooth(i * 0.03, i * 0.03 + 0.04, p);

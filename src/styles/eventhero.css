@@ -45,7 +45,7 @@
 
 .ev3d__top {
   position: absolute;
-  top: 1.25rem;
+  top: 4.75rem; /* below the compact site header when it comes back */
   left: 1rem;
   right: 1rem;
   display: flex;
@@ -143,10 +143,22 @@
   color: var(--c-on-primary);
   background: var(--c-primary);
 }
-/* Per scene: where the "screen" sits in the final shot. */
+/* Per scene: where the "screen" sits in the final shot (fallback before the
+   engine has projected it). */
 .ev3d[data-scene='book'] .ev3d__title--final { top: 50%; }
 .ev3d[data-scene='theatre'] .ev3d__title--final { top: 44%; }
 .ev3d[data-scene='gallery'] .ev3d__title--final { top: 42%; }
+/* Projected screen (eventScene.ts: --sx/--sy centre, --sw/--sh size, in px):
+   the title is centred on it and sized to fit inside it, on any screen shape. */
+.ev3d[data-screen] .ev3d__title--final {
+  left: var(--sx, 50%);
+  top: var(--sy, 46%);
+  width: calc(var(--sw, 64rem) * 0.9);
+}
+.ev3d[data-screen] .ev3d__title--final .display-title[data-size='xl'] {
+  font-size: clamp(1.4rem, min(16cqi, calc((var(--sh, 30rem) * 0.82 - 3rem) / 1.8)), 10rem);
+}
+.ev3d[data-screen] .ev3d__final-date { margin-top: 0.4rem; font-size: clamp(0.65rem, 1.2vw, 0.85rem); }
 
 /* Bottom bar: facts + tickets, always clickable. */
 .ev3d__bar {

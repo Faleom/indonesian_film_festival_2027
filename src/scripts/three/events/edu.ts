@@ -3,7 +3,7 @@
  *
  * A giant open book on the paper. Pages are hinged at the spine and curl as
  * they turn (three linked strips per page). Paper planes loop over it and a
- * pencil rolls across the spread.
+ * pencil rolls on the desk in front of it.
  *
  * Scroll map (p):
  *   0.00-0.15  the book drops open from above
@@ -26,12 +26,14 @@ export const buildEdu: EventBuilder = ({ scene, camera, lite, portrait }) => {
 
   // Covers and page blocks.
   const coverMat = grey(0.22);
+  let rightPage = box(0, 0, 0, coverMat);
   for (const side of [-1, 1]) {
     const cover = box(W + 0.3, 0.12, H + 0.3, coverMat);
     cover.position.set(side * (W / 2 + 0.05), -0.12, 0);
     const block = box(W, 0.35, H, grey(0.9));
     block.position.set(side * W / 2, 0.06, 0);
     book.add(cover, block);
+    if (side === 1) rightPage = block;
   }
   // Text lines on the resting pages (left page only: the right page stays clear for the title).
   const lineMat = grey(0.35);
@@ -113,6 +115,7 @@ export const buildEdu: EventBuilder = ({ scene, camera, lite, portrait }) => {
 
   return {
     dotSize: 4.8,
+    screen: rightPage,
     update({ p, t, mx, my }) {
       // Closed-ish book tilted toward us, then it settles flat on the desk.
       const drop = smooth(0, 0.12, p);
@@ -131,10 +134,12 @@ export const buildEdu: EventBuilder = ({ scene, camera, lite, portrait }) => {
         strips[2].rotation.z = lift * 0.45;
       });
 
-      // Pencil rolls across the left page and back.
-      const roll = Math.sin(t * 0.6) * 1.3;
-      pencil.position.set(-W / 2 + roll * 0.4, 0.45 + book.position.y, 1.6);
-      pencil.rotation.set(roll * 2.2, 0.3, 0);
+      // Pencil rolls back and forth on the desk in front of the book, clear of the
+      // pages (they turn inside |z| < H/2, the pencil stays beyond H/2 + its radius).
+      // Rolling: it travels along z and turns about its own axis by distance / radius.
+      const roll = Math.sin(t * 0.6) * 0.3;
+      pencil.position.set(-W / 2 + 0.4, -0.02, H / 2 + 0.7 + roll);
+      pencil.rotation.set(roll / 0.16, 0, 0);
       pencil.visible = drop > 0.9;
 
       // Planes loop around the book.

@@ -10,7 +10,7 @@
  * time-based easing, renders only while visible (loader.ts), positions cached
  * (no layout reads per frame), lighter on phones, disposed on page leave.
  */
-import { AmbientLight, DirectionalLight, PerspectiveCamera, Scene, type Object3D } from 'three';
+import { AmbientLight, DirectionalLight, PerspectiveCamera, Scene, Vector3, type Mesh, type Object3D } from 'three';
 import { clamp01, createHalftonePass, createRenderer, cssVar, disposeObject, ease, frameLoop, releaseRenderer, setInk } from './post';
 import type { SceneHandle } from './scene';
 
@@ -45,6 +45,12 @@ export interface EventBuild {
   dotSize?: number;
   /** Key plate strength (default 0.8). */
   keyStrength?: number;
+  /**
+   * The "screen" the final title is printed on (cinema screen, big frame, page).
+   * The engine projects its bounding box every frame near the end and places the
+   * title on it (CSS --sx/--sy/--sw/--sh), so it stays centred on any screen shape.
+   */
+  screen?: Mesh;
 }
 
 export type EventBuilder = (ctx: BuildContext) => EventBuild | Promise<EventBuild>;
@@ -66,8 +72,48 @@ export async function mountEventScene(host: HTMLElement, builder: EventBuilder, 
   scene.add(key, rim);
 
   let portrait = false;
+  let vw = 1;
+  let vh = 1;
   const build = await builder({ scene, camera, lite: opts.lite, portrait: () => portrait });
   const baseDot = build.dotSize ?? 5;
+
+  // Final-title placement: the 8 corners of the screen's box, projected to the stage.
+  const corners: Vector3[] = [];
+  if (build.screen) {
+    const g = build.screen.geometry;
+    g.computeBoundingBox();
+    const { min, max } = g.boundingBox!;
+    for (const x of [min.x, max.x]) for (const y of [min.y, max.y]) for (const z of [min.z, max.z]) corners.push(new Vector3(x, y, z));
+    host.dataset.screen = '';
+  }
+  const v = new Vector3();
+  let screenCss = '';
+  const placeTitle = () => {
+    const obj = build.screen!;
+    obj.updateWorldMatrix(true, false);
+    camera.updateMatrixWorld();
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const c of corners) {
+      v.copy(c).applyMatrix4(obj.matrixWorld).project(camera);
+      const x = ((v.x + 1) / 2) * vw;
+      const y = ((1 - v.y) / 2) * vh;
+      x0 = Math.min(x0, x); x1 = Math.max(x1, x);
+      y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+    }
+    // Keep it on the visible part of the stage (phones crop wide screens at the sides).
+    const pad = 12;
+    x0 = Math.max(pad, x0); x1 = Math.min(vw - pad, x1);
+    y0 = Math.max(pad, y0); y1 = Math.min(vh - pad, y1);
+    if (x1 <= x0 || y1 <= y0) return;
+    const next = [(x0 + x1) / 2, (y0 + y1) / 2, x1 - x0, y1 - y0].map(Math.round).join(',');
+    if (next === screenCss) return;
+    screenCss = next;
+    const [sx, sy, sw, sh] = next.split(',');
+    host.style.setProperty('--sx', `${sx}px`);
+    host.style.setProperty('--sy', `${sy}px`);
+    host.style.setProperty('--sw', `${sw}px`);
+    host.style.setProperty('--sh', `${sh}px`);
+  };
 
   const { renderer, canvas, dpr: startDpr } = createRenderer(stage, { maxDpr: opts.maxDpr ?? (opts.lite ? 1.5 : 2) });
   let dpr = startDpr;
@@ -91,6 +137,9 @@ export async function mountEventScene(host: HTMLElement, builder: EventBuilder, 
     const { width, height } = stage.getBoundingClientRect();
     if (!width || !height) return;
     portrait = width / height < 1;
+    vw = width;
+    vh = height;
+    screenCss = '';
     renderer.setPixelRatio(dpr);
     renderer.setSize(width, height, false);
     pass.setSize(width, height, dpr);
@@ -132,6 +181,8 @@ export async function mountEventScene(host: HTMLElement, builder: EventBuilder, 
     state.print.dotScale = 1;
     state.print.tone = 1;
     build.update(state);
+    // Only near the end, when the final title is about to show.
+    if (corners.length && smoothP > 0.8) placeTitle();
 
     const next = smoothP.toFixed(3);
     if (next !== cssP) host.style.setProperty('--p', (cssP = next));

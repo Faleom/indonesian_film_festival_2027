@@ -151,6 +151,7 @@ export const buildUts: EventBuilder = ({ scene, camera, lite, portrait }) => {
   return {
     dotSize: 4.4,
     keyStrength: 0.7,
+    screen: panel,
     update({ p, t, mx, my }) {
       sky.rotation.y = t * 0.01 + p * 0.6;
       stars.rotation.y = sky.rotation.y;

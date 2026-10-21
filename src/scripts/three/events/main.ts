@@ -152,6 +152,7 @@ export const buildMain: EventBuilder = ({ scene, camera, lite, portrait }) => {
   const beamMats = beams.map((p) => (p.children[0] as unknown as { material: MeshBasicMaterial }).material);
 
   return {
+    screen,
     dotSize: 4.6,
     update({ p, t, mx, my }) {
       // Curtains: sway, then draw open.

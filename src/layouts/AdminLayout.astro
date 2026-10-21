@@ -11,6 +11,7 @@ import '@fontsource/jost/latin-500.css';
 import '../styles/global.css';
 import Fonts from '../components/layout/Fonts.astro';
 import site from '../content/site.json';
+import { features } from '../server/env';
 
 interface Props {
   title: string;
@@ -18,7 +19,9 @@ interface Props {
   bare?: boolean;
 }
 
-const { title, bare = false } = Astro.props;
+const { title, bare: bareProp = false } = Astro.props;
+// No menu until admin is set up.
+const bare = bareProp || !features.admin;
 const path = Astro.url.pathname.replace(/\/$/, '');
 const nav = [
   ['/admin', 'Dashboard'],

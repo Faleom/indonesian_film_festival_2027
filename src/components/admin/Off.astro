@@ -1,9 +1,25 @@
 ---
-/** Shown on admin pages until ADMIN_KEY and DATABASE_URL are set. */
+/**
+ * Shown on admin pages until ADMIN_KEY and a database are set. Says which one
+ * is missing (never the values), so the committee knows what to fix in Vercel.
+ */
+import { env } from '../../server/env';
+
+const raw = process.env.ADMIN_KEY?.trim() ?? '';
+const key = env.adminKey ? 'ok' : raw ? 'short' : 'missing';
+const db = env.databaseUrl ? 'ok' : 'missing';
+const deployment = process.env.VERCEL_ENV;
 ---
 
 <h1>Admin is switched off</h1>
-<p class="max-w-[60ch]">
-  Set <code>ADMIN_KEY</code> (a secret keyword, 12+ characters) and <code>DATABASE_URL</code> in Vercel, then redeploy. See
-  <code>docs/SETUP-BACKEND.md</code>.
-</p>
+<p class="max-w-[60ch]">It needs two settings in Vercel (Project → Settings → Environment Variables), then a redeploy:</p>
+<ul class="max-w-[60ch]">
+  <li>
+    <code>ADMIN_KEY</code>: {key === 'ok' ? '✅ set' : key === 'short' ? '❌ too short (use 12 or more characters)' : '❌ not set'}
+  </li>
+  <li>
+    Database (<code>DATABASE_URL</code> or <code>POSTGRES_URL</code> from the Supabase integration): {db === 'ok' ? '✅ set' : '❌ not set'}
+  </li>
+</ul>
+{deployment && <p class="muted">This deployment: <strong>{deployment}</strong>. Make sure the variables are ticked for this environment.</p>}
+<p class="muted">Variables only reach new deployments: after adding one, Deployments → ⋯ → Redeploy. Guide: <code>docs/SETUP-BACKEND.md</code></p>

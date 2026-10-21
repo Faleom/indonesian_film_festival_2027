@@ -1,5 +1,5 @@
 {
-  "$comment": "PLACEHOLDER films: titles, directors and details are invented for layout only. Replace with the real lineup. `id` is the URL slug (/films/<id>). `event` is sfc | uts | edu | main. `poster` and `trailer` are media keys in media.json (trailer can be null). `date` is YYYY-MM-DD, `time` is free text.",
+  "$comment": "PLACEHOLDER films: titles, directors and details are invented for layout only. Replace with the real lineup. `id` is the URL slug (/films/<id>). `event` is sfc | exhibition | uts | edu | main. Films only show once their event has `lineupAnnounced: true` in events.json. `poster` and `trailer` are media keys in media.json (trailer can be null). `date` is YYYY-MM-DD, `time` is free text.",
   "items": [
     {
       "id": "garam-dan-gula",

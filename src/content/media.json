@@ -1,5 +1,5 @@
 {
-  "$comment": "Single source of truth for every image/video. Photos: save as src/assets/raw/<key>.jpg and the halftone pipeline handles them. Videos and untreated files (set \"halftone\": false): put the file at `src` (relative to /public). Optional per image: \"tone\": \"theme\" | \"black\" | \"sfc\" | \"uts\" | \"main\" | \"base\". Run `npm run placeholders` to refresh PLACEHOLDERS.md. See README.",
+  "$comment": "Single source of truth for every image/video. Photos: save as src/assets/raw/<key>.jpg and the halftone pipeline handles them. Videos and untreated files (set \"halftone\": false): put the file at `src` (relative to /public). Optional per image: \"tone\": \"theme\" | \"black\" | \"sfc\" | \"exh\" | \"uts\" | \"main\" | \"base\". Run `npm run placeholders` to refresh PLACEHOLDERS.md. See README.",
   "media": {
     "hero-home": {
       "type": "image",

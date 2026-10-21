@@ -243,6 +243,8 @@ html.js { scroll-padding-top: 4.5rem; }
 }
 .nav-cart__count[hidden] { display: none; }
 .site-header.is-compact .nav-cart { width: 2.3rem; height: 2.3rem; }
+/* Narrow phones: logo, IFF, cart, tickets and menu must share 375px. */
+@media (max-width: 420px) { .site-brand__num { display: none; } }
 
 /* Mobile menu: <details>, so it opens without JS. */
 .nav-menu > summary {

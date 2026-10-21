@@ -10,9 +10,13 @@ const read = (name: string): string | undefined => {
 };
 
 export const env = {
-  /** Postgres connection string (Supabase → Project settings → Database → connection pooler URI). */
+  /**
+   * Postgres connection string. DATABASE_URL if set, otherwise POSTGRES_URL,
+   * which the Supabase integration in Vercel's marketplace adds by itself
+   * (the pooler URI, port 6543).
+   */
   get databaseUrl() {
-    return read('DATABASE_URL');
+    return read('DATABASE_URL') ?? read('POSTGRES_URL');
   },
   /** Stripe secret key (sk_test_… while testing, sk_live_… for real sales). */
   get stripeSecretKey() {

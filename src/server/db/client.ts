@@ -18,7 +18,7 @@ export function getDb(): Db | undefined {
   const url = env.databaseUrl;
   if (!url) return undefined;
   // prepare: false — required by Supabase's transaction pooler.
-  const client = postgres(url, { max: 3, prepare: false, idle_timeout: 20 });
+  const client = postgres(cleanUrl(url), { max: 3, prepare: false, idle_timeout: 20 });
   instance = drizzle(client, { schema });
   return instance;
 }
@@ -28,6 +28,24 @@ export function requireDb(): Db {
   const db = getDb();
   if (!db) throw new ServiceUnavailable('The database is not set up yet (DATABASE_URL).');
   return db;
+}
+
+/**
+ * Keeps only the parts of the URL postgres.js understands. Vercel's Supabase
+ * integration adds extra query parameters (e.g. supa=base-pooler.x) that
+ * would be sent to the server as unknown startup settings.
+ */
+export function cleanUrl(raw: string): string {
+  try {
+    const u = new URL(raw);
+    const ssl = u.searchParams.get('sslmode');
+    u.search = '';
+    if (ssl) u.searchParams.set('sslmode', ssl);
+    else if (!['localhost', '127.0.0.1'].includes(u.hostname)) u.searchParams.set('sslmode', 'require');
+    return u.toString();
+  } catch {
+    return raw;
+  }
 }
 
 export function setDb(db: Db | undefined) {

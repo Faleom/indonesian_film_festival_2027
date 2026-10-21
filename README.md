@@ -26,7 +26,8 @@ admin pages in `src/pages/admin/`. Setup for the committee: `docs/SETUP-BACKEND.
 | Piece | Where |
 |---|---|
 | Catalogue (prices are only ever read here) | `src/content/shop.json` → `src/server/catalog.ts` |
-| Tables | `src/server/db/schema.ts`, migrations in `drizzle/` |
+| Tables | `src/server/db/schema.ts`, migrations in `drizzle/` (applied by `scripts/migrate.mjs` before every build) |
+| Connection (`pg` pool + Vercel `attachDatabasePool`, timeouts) | `src/server/db/client.ts`; check a deployment at `/api/health` (`?deep=1` times each query type) |
 | Checkout → Stripe → webhook → tickets + emails | `src/server/orders.ts`, `src/server/webhook.ts` |
 | Live switches (sales on/off, SFC window) | `src/server/settings.ts` (tables `event_settings`, `site_settings`) |
 | Emails (Resend) + log | `src/server/email/*` |

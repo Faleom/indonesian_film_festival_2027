@@ -1,30 +1,52 @@
 /**
- * Database connection (postgres.js + Drizzle). One small pool per serverless
- * instance; with Supabase use the connection pooler URI (port 6543).
+ * Database connection (node-postgres pool + Drizzle). On Vercel, functions are
+ * frozen between requests; a connection left open across a freeze dies
+ * silently and the next query on it hangs. attachDatabasePool (Vercel's
+ * helper for `pg`) keeps the function alive just long enough to close idle
+ * connections first, and the timeouts below turn any remaining stall into an
+ * error instead of a page that loads forever.
+ * With Supabase use the transaction pooler URI (port 6543); `pg` doesn't use
+ * named prepared statements, which that pooler doesn't support.
  * Tests swap in an in-memory Postgres with setDb().
  */
-import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
+import pg from 'pg';
+import { attachDatabasePool } from '@vercel/functions';
 import * as schema from './schema';
 import { env } from '../env';
 
-export type Db = PostgresJsDatabase<typeof schema> | import('drizzle-orm/pglite').PgliteDatabase<typeof schema>;
+export type Db = NodePgDatabase<typeof schema> | import('drizzle-orm/pglite').PgliteDatabase<typeof schema>;
 
 let instance: Db | undefined;
 
-/** The database, or undefined when DATABASE_URL isn't set. */
+/** The database, or undefined when no connection string is set. */
 export function getDb(): Db | undefined {
   if (instance) return instance;
   const url = env.databaseUrl;
   if (!url) return undefined;
-  // prepare: false — required by Supabase's transaction pooler.
-  // connect_timeout: fail fast with an error instead of leaving a page loading forever.
-  const client = postgres(cleanUrl(url), { max: 3, prepare: false, idle_timeout: 20, connect_timeout: 10 });
-  instance = drizzle(client, { schema });
+  const clean = new URL(cleanUrl(url));
+  const local = ['localhost', '127.0.0.1'].includes(clean.hostname);
+  clean.searchParams.delete('sslmode'); // TLS is set below
+  const pool = new pg.Pool({
+    connectionString: clean.toString(),
+    // Supabase's pooler certificate isn't from a public CA; the connection is still encrypted.
+    ssl: local ? false : { rejectUnauthorized: false },
+    max: 3,
+    idleTimeoutMillis: 5_000,
+    connectionTimeoutMillis: 8_000,
+    query_timeout: 10_000,
+    keepAlive: true,
+  });
+  pool.on('error', (err) => console.error('[db] idle connection error', err.message));
+  try {
+    attachDatabasePool(pool);
+  } catch {
+    // Not on Vercel (local dev): nothing to attach to.
+  }
+  instance = drizzle(pool, { schema });
   return instance;
 }
 
-/** Same as getDb, but throws a clear error for routes that can't work without it. */
 export function requireDb(): Db {
   const db = getDb();
   if (!db) throw new ServiceUnavailable('The database is not set up yet (DATABASE_URL).');

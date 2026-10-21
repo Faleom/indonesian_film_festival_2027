@@ -30,7 +30,10 @@ Or by hand:
 1. Create a free account and a new project. Region: **Sydney**. Save the database password somewhere safe.
 2. Create the tables: **SQL Editor → New query**, paste the whole of
    [`drizzle/0000_init.sql`](../drizzle/0000_init.sql) (remove the `--> statement-breakpoint` lines
-   or leave them, they're comments), **Run**.
+   or leave them, they're comments), **Run**. If Supabase warns about Row Level Security,
+   choose **Run and enable RLS** (the site doesn't need the public keys; RLS keeps them out).
+   Then run [`drizzle/0001_enable_rls.sql`](../drizzle/0001_enable_rls.sql) the same way
+   (harmless if RLS is already on).
    (Developers can instead run `DATABASE_URL=<direct URI> npm run db:migrate`.)
 3. **Project Settings → Database → Connection string → URI**, choose the
    **Transaction pooler** (port **6543**). Put your password into it.

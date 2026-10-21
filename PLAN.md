@@ -242,3 +242,32 @@ I've added real assets to /src/assets/raw and /public/videos. Update media.json 
 
 ## Later (not now): backend
 - Contact form submissions, newsletter, possibly a CMS so committee members can edit without Git.
+
+---
+
+# Part 3: Feedback round + backend (Oct 2026)
+
+Feedback from the committee (21 Oct 2026). Order of work, one commit per step:
+
+1. **Darker inks.** Primary (and dark where needed) of every theme ~20% darker, same hue; the
+   purple base too. Pastel `light` tints stay. AA re-checked.
+2. **Header.** Full at the top; compact once scrolled; hides while scrolling down, comes back
+   when scrolling up, when scrolling stops, or when the pointer nears the top. Transform only.
+3. **Home + About.** Hide "Support us" (commented out, component kept). Temaram: the title stays
+   on home, the explanation moves to /about. About gets a "Past IFF" timeline (real info only).
+4. **Event pages.** "Lineup coming soon" block, switched per event by `lineupAnnounced` in
+   events.json (lineup code kept). Less empty space on desktop (key dates + at a glance).
+5. **3D event heroes.** Edu: pencil never cuts through the page. Exhibition / UTS / Main: the
+   final title is placed on the projected screen/frame (desktop + portrait phones).
+6. **Home film strip.** Not pinned any more: swipe / drag / arrows / dots / keys move between
+   events, with a clear "swipe" hint. Tilt from speed is clamped.
+7. **Cursor lag (Windows).** Cursor dot follows the pointer directly; lighter move handler.
+8. **Backend foundation.** Vercel adapter (pages stay static, `/api/*` on demand), Postgres
+   (Supabase) + Drizzle schema/migrations, Resend emails. Buyer emails go to the address in the
+   form; admin notifications go to `ADMIN_NOTIFY_EMAILS` (comma separated).
+9. **Forms.** Contact, newsletter, SFC submission (YouTube/Vimeo link, entry fee via Stripe).
+10. **Shop.** Tickets + placeholder merch through one Stripe Checkout route; webhook stores
+    orders, issues tickets with a QR code + code by email (no Apple/Google Wallet), notifies admins.
+11. **Hidden admin.** Unlocked with `ADMIN_KEY`: analytics, tickets on/off per event, orders,
+    buyers, emails sent, submissions, messages, subscribers, QR check-in.
+12. **Audit + docs.** Build, no-JS, Motion: Off, contrast, Lighthouse, screenshots; SETUP docs.

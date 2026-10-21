@@ -18,7 +18,7 @@ const logo = ['logo.svg', 'logo.png', 'logo.jpg', 'logo.webp'].map((f) => path.j
 
 // Until the real logo is added, use a neutral stand-in: a halftone dot disc in
 // the festival purple (the site's dot motif, not a logo).
-const INTERIM = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><pattern id="d" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="3" fill="#7200b8"/></pattern><clipPath id="c"><circle cx="32" cy="32" r="28"/></clipPath></defs><circle cx="32" cy="32" r="29" fill="none" stroke="#7200b8" stroke-width="3"/><rect width="64" height="64" fill="url(#d)" clip-path="url(#c)"/></svg>`;
+const INTERIM = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><pattern id="d" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="3" fill="#5b0093"/></pattern><clipPath id="c"><circle cx="32" cy="32" r="28"/></clipPath></defs><circle cx="32" cy="32" r="29" fill="none" stroke="#5b0093" stroke-width="3"/><rect width="64" height="64" fill="url(#d)" clip-path="url(#c)"/></svg>`;
 const source = logo ?? Buffer.from(INTERIM);
 if (!logo) console.log('[favicons] No src/assets/brand/logo.(svg|png) yet, using the interim dot icon.');
 
@@ -107,7 +107,7 @@ fs.writeFileSync(
         { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
         { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
       ],
-      theme_color: '#7200b8',
+      theme_color: '#5b0093',
       background_color: '#eae4d8',
       display: 'standalone',
     },

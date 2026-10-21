@@ -43,7 +43,7 @@ const cleanPath = Astro.url.pathname.replace(/\.html$/, '').replace(/(^|\/)index
 const canonical = new URL(cleanPath, Astro.site);
 // Social share image: the given media key or og-default, once the file exists.
 const shareImage = [ogImage, 'og-default'].map((k) => k && getMedia(k)).find((m) => m && m.type === 'image' && mediaExists(m));
-const themeColour = { base: '#7200b8', sfc: '#004bb6', uts: '#fa26b2', main: '#d80d1e' }[theme];
+const themeColour = { base: '#5b0093', sfc: '#003c92', exh: '#0b6352', uts: '#c81e8e', main: '#ad0a18' }[theme];
 const icons = { ico: pub('favicon.ico'), svg: pub('icon.svg'), apple: pub('apple-touch-icon.png'), manifest: pub('site.webmanifest') };
 ---
 

@@ -12,10 +12,13 @@
   - `base` theme: general festival brand (home, about, etc.)
 - Festival journey order: **SFC → Film Exhibition → Under the Stars → Educational Screening → Main Screening**.
 
-## Current scope: FRONTEND ONLY
-- No backend, no database, no auth, no CMS, no payments.
-- Tickets = external link (placeholder `#` or ACMI URL in content data).
-- Forms (contact, newsletter): build the UI only. Submit does nothing yet; show a "coming soon" toast. Leave a clear `TODO(backend)` comment.
+## Scope (changed Oct 2026: now frontend + a small backend)
+- Pages are still static (prerendered). Only `/api/*`, `/admin` and the order pages run on demand (Vercel functions, `@astrojs/vercel`).
+- Payments: **Stripe Checkout**, one route for tickets, merch and the SFC entry fee (`/api/checkout`, webhook `/api/stripe/webhook`). Prices are always read on the server from `src/content`, never trusted from the browser.
+- Database: Postgres (Supabase), Drizzle schema in `src/server/db/schema.ts`, SQL migrations in `drizzle/`.
+- Email: Resend. Buyer/sender emails go to the address typed in the form; admin notifications go to `ADMIN_NOTIFY_EMAILS` (comma separated). Tickets are emailed with a QR code + code (no Apple/Google Wallet).
+- Hidden admin (`/admin`, unlocked with `ADMIN_KEY`): analytics, ticket sales on/off per event, orders, emails, submissions, check-in.
+- Everything must still build and render without any env vars set (features just show "not available yet"). See `docs/SETUP-BACKEND.md`.
 - All content comes from local files in `src/content` (JSON / Markdown).
 
 ## Placeholders (IMPORTANT)
@@ -48,11 +51,13 @@ Source: `/docs/konsep_iff_21.pdf` (read it and the reference images in `/docs`).
 ### Color palettes (CSS variables, switched via `data-theme` on `<body>`)
 | theme | primary | dark | light | offwhite | black | beige |
 |---|---|---|---|---|---|---|
-| main | #D80D1E | #7B000B | #E47D86 | #EAE4D8 | #000000 | #E1C892 |
-| uts  | #FA26B2 | #DB41A6 | #FFBEE5 | #EAE4D8 | #000000 | #E1C892 |
-| sfc  | #004BB6 | #273E60 | #9DBED8 | #EAE4D8 | #000000 | #E1C892 |
-| base | #7200B8 | #632E89 | #C59DD8 | #EAE4D8 | #000000 | #E1C892 |
-| exh  | #0E7C66 | #0B5345 | #9FD3C4 | #EAE4D8 | #000000 | #E1C892 |
+| main | #AD0A18 | #7B000B | #E47D86 | #EAE4D8 | #000000 | #E1C892 |
+| uts  | #C81E8E | #A3166F | #FFBEE5 | #EAE4D8 | #000000 | #E1C892 |
+| sfc  | #003C92 | #273E60 | #9DBED8 | #EAE4D8 | #000000 | #E1C892 |
+| base | #5B0093 | #4A2267 | #C59DD8 | #EAE4D8 | #000000 | #E1C892 |
+| exh  | #0B6352 | #0B5345 | #9FD3C4 | #EAE4D8 | #000000 | #E1C892 |
+
+Primaries (and the base/uts darks) are ~20% darker than the concept doc (Oct 2026 feedback: too bright on the paper). Originals are noted in `src/styles/themes.css`.
 
 `exh` ("archive green") isn't in the concept PDF; proposed for the Film Exhibition in Oct 2026, replace if the Creative team makes one.
 

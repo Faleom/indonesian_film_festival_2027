@@ -91,12 +91,15 @@ Font files go in `/public/fonts` (Latin-subset .woff2; originals in `src/assets/
 - `/`: home (base theme)
 - `/sfc`, `/exhibition`, `/uts`, `/edu-screening`, `/main-screening`: event pages (own theme each, each with its own animated hero)
 - `/films/[slug]`: film detail
-- `/faq`, `/about`, `/sponsors`
+- `/faq`, `/about` (Temaram explanation + Past IFF), `/sponsors`
+- `/tickets`, `/merch`, `/cart`, `/order/[token]`, `/thanks`: shop (server-rendered)
+- `/admin/*`: hidden committee admin (footer ©, `ADMIN_KEY`); `/api/*`: endpoints
 - No `/program` (schedule) or `/volunteer` pages. Don't invent sessions, schedules or event details that aren't in the content or on the official site.
 - `/styleguide`: internal page showing all themes, fonts, components, and motion demos
 
 ## Content rules
-- **Never hardcode content in components.** Films, events, sponsors, FAQ, team, fundraisers (`support.json`) and media all live in `src/content`.
+- **Never hardcode content in components.** Films, events, sponsors, FAQ, team, fundraisers (`support.json`), shop (`shop.json`: tickets, merch, SFC fee) and media all live in `src/content`.
+- Lineups show "Coming soon" until `events.json` `lineupAnnounced` is true. "Support us" is hidden (commented out), not deleted.
 - Film fields: title, year, director, synopsis, runtime, rating, poster (media key), trailer (media key), event, date, venue, ticketUrl.
 - Next year's committee must be able to update the site by editing content files only (see `HANDOVER.md`).
 

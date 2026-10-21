@@ -41,7 +41,7 @@ Commit hashes refer to `main` on GitHub.
 | `802f729`, `82b3359` | Real IFF logo for the site icons and the header |
 | `74e0266` | Empty commit to re-trigger a Vercel deploy that never started |
 
-### 6 Oct 2026: Pleno 1 update (Part 2 of `PLAN.md`, Phases 11–15; not yet committed)
+### 6 Oct 2026: Pleno 1 update (Part 2 of `PLAN.md`, Phases 11–15; commit `d845cd6`)
 
 Source: `docs/IFF 21 Pleno 1.pdf`.
 
@@ -53,6 +53,25 @@ Source: `docs/IFF 21 Pleno 1.pdf`.
 - New `data-reveal` types `print` and `draw`; `KeyDates` timeline; `InkWipe` section breaks.
 - Fonts re-subset without hinting (`--desubroutinize`): Rushford 352 → 221 KB, Military Scribe 142 → 122 KB, about 0.8 s off mobile LCP.
 - Lighthouse mobile (throttled): accessibility/best practices/SEO 98–100; performance 74–85, held back by the display font size.
+
+### 21 Oct 2026: committee feedback round + backend (Part 3 of `PLAN.md`)
+
+- Inks ~20% darker (too bright on the paper). Header: compact once scrolled, hides
+  while scrolling down, returns on scroll up / pause / mouse at the top.
+- Support us hidden; Temaram explanation moved to /about (title stays on home);
+  Past IFF archive from ACMI listings and press (sources in `pages.json`).
+- Event pages: denser layout (about + at-a-glance card with key dates), lineup
+  "Coming soon" switch (`lineupAnnounced`).
+- 3D heroes: the final title is placed on the projected screen/frame/page (fixes
+  off-centre titles, phones too); the Edu pencil no longer cuts through the pages.
+- Home film strip is a sideways carousel (drag/swipe/arrows/tabs/keys), not pinned;
+  speed tilt capped. Cursor: system cursor drawn as an ink dot (no lag on Windows).
+- Backend: Supabase Postgres + Drizzle, Stripe Checkout (tickets, merch, SFC fee),
+  QR tickets by email (Resend), committee notifications, hidden admin with
+  analytics, sales switches, orders, email log, check-in. 18 backend tests.
+- Not verified here: real iPhone / Galaxy A56 / Windows laptop, and live Stripe /
+  Resend (no keys in this environment; the flow was tested with a local Postgres and
+  signed test webhooks).
 
 ---
 
@@ -97,7 +116,7 @@ Source: `docs/IFF 21 Pleno 1.pdf`.
 ## 4. Do
 
 - **Test on an iPhone and a mid-range Android** after any change to motion, the hero or the strip.
-- Keep the **four events** fixed and **only real content**; mark unknowns as TBC.
+- Keep the **five events** fixed and **only real content**; mark unknowns as TBC.
 - Put every image/video in `media.json` and every piece of copy in `src/content`.
 - Do heavy setup **before** the user scrolls (behind the loader, or when the browser is idle),
   never on the frame something enters the screen.

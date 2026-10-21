@@ -23,6 +23,8 @@ The site rebuilds and goes live on its own.
 | Photos and videos | `PLACEHOLDERS.md` lists every slot | Halftone placeholders until real files are added |
 | 3D camera model | `public/models/camera.glb` | Built from boxes until a real model is added |
 | Font licences | Rushford Printed, Military Scribe, Futura | **Need a web licence before launch** |
+| Ticket types, prices, capacities, merch, SFC fee | `src/content/shop.json` | **Invented.** Replace before opening sales |
+| Payments, emails, admin | Vercel environment variables | Off until set up: [`docs/SETUP-BACKEND.md`](docs/SETUP-BACKEND.md) |
 
 ---
 
@@ -39,7 +41,10 @@ All content lives in `src/content/`. Each file starts with a `$comment` explaini
 | FAQ | `faq.json` |
 | Sponsors | `sponsors.json` |
 | Team (60+ people is fine) | `team.json` |
-| Page titles and intro text (also small event-page labels: "Key dates", "Next up") | `pages.json` |
+| Page titles and intro text (also small event-page labels: "Key dates", "Next up"), shop/cart/SFC form wording | `pages.json` |
+| Ticket types, prices, capacities, merch, SFC entry fee and dates | `shop.json` |
+| Show an event's films instead of "Coming soon" | `events.json` → `lineupAnnounced: true` |
+| Past editions on /about | `pages.json` → `about.pastEditions` |
 | Which photo/video goes where | `media.json` |
 
 Rules that matter:
@@ -52,6 +57,20 @@ Rules that matter:
   comma is the usual cause. Paste the file into a JSON validator to find it.
 
 ---
+
+## 2b. Selling tickets and merch, SFC entries, the admin page
+
+Setup (once): [`docs/SETUP-BACKEND.md`](docs/SETUP-BACKEND.md). Day to day:
+
+- **Open/close sales:** footer **©** → keyword → *Sales on/off*. No rebuild needed.
+- **Who bought what, who got which email:** admin → *Orders* / *Emails*. CSV downloads there.
+- **At the door:** admin → *Check-in* on a phone. Scan the QR or type the code. Each code works once.
+- **Refunds:** in the Stripe dashboard; the tickets stop working automatically.
+- **SFC entries:** admin → *SFC entries* (film links, filmmakers, paid or not).
+- Ticket buyers get an email with a QR code per ticket. The committee addresses in
+  `ADMIN_NOTIFY_EMAILS` get an email for every order, entry and message.
+- The "Support us" section is hidden (commented out in `src/pages/index.astro` and
+  `src/pages/sponsors.astro`); un-comment it and add the nav link back to show it again.
 
 ## 3. Adding real photos and videos
 

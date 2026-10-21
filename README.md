@@ -13,6 +13,27 @@ Astro + Tailwind, static output. See `CLAUDE.md` for the design brief, `PLAN.md`
 | `npm run halftone` | Process photos only. Add `-- --force` to redo every photo |
 | `npm run placeholders` | Regenerate `PLACEHOLDERS.md` from `src/content/media.json` |
 | `npm run render:3d-fallback` | Re-render the static 3D fallback image (site must be running, needs Chrome) |
+| `npm test` | Backend tests (orders, stock, Stripe webhook, tickets, check-in, forms) against an in-memory Postgres |
+| `npm run db:generate` | After changing `src/server/db/schema.ts`: write a new SQL migration into `drizzle/` |
+| `npm run db:migrate` | Apply migrations to `DATABASE_URL` |
+
+## Backend (payments, emails, admin)
+
+Static pages + a few Vercel functions (`@astrojs/vercel`). Code in `src/server/`
+(no `astro:content` imports, so tests can load it), routes in `src/pages/api/`,
+admin pages in `src/pages/admin/`. Setup for the committee: `docs/SETUP-BACKEND.md`.
+
+| Piece | Where |
+|---|---|
+| Catalogue (prices are only ever read here) | `src/content/shop.json` → `src/server/catalog.ts` |
+| Tables | `src/server/db/schema.ts`, migrations in `drizzle/` |
+| Checkout → Stripe → webhook → tickets + emails | `src/server/orders.ts`, `src/server/webhook.ts` |
+| Live switches (sales on/off, SFC window) | `src/server/settings.ts` (tables `event_settings`, `site_settings`) |
+| Emails (Resend) + log | `src/server/email/*` |
+| Forms | `src/server/forms.ts`; client side `src/scripts/forms.ts` |
+| Admin auth (signed cookie from `ADMIN_KEY`) | `src/server/admin/*` |
+
+Every feature checks its env vars and degrades to "not available yet" without them.
 
 The design system lives at `/styleguide`.
 

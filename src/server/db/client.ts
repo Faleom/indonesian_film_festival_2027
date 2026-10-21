@@ -55,3 +55,30 @@ export function setDb(db: Db | undefined) {
 
 export class ServiceUnavailable extends Error {}
 export { schema };
+
+/** Rejects if `p` takes longer than `ms`: a slow database must never hang a page. */
+export function withTimeout<T>(p: Promise<T>, ms = 8000, what = 'Database'): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>;
+  return Promise.race([
+    p.finally(() => clearTimeout(timer)),
+    new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(Object.assign(new Error(`${what} did not answer within ${ms / 1000}s`), { code: 'TIMEOUT' })), ms);
+    }),
+  ]);
+}
+
+/** Where the connection string comes from and where it points (never the password). */
+export function describeDatabase() {
+  const source = process.env.DATABASE_URL?.trim() ? 'DATABASE_URL' : process.env.POSTGRES_URL?.trim() ? 'POSTGRES_URL' : null;
+  const url = env.databaseUrl;
+  let target: string | null = null;
+  try {
+    if (url) {
+      const u = new URL(cleanUrl(url));
+      target = `${u.protocol}//${u.username ? `${u.username.replace(/(.{12}).+/, '$1…')}@` : ''}${u.hostname}:${u.port || 5432}${u.pathname}${u.search}`;
+    }
+  } catch {
+    target = 'unparseable';
+  }
+  return { source, target };
+}

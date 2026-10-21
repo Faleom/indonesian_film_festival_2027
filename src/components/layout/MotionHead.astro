@@ -6,7 +6,7 @@
  * Content is never hidden here: reveals hide only off-screen elements, once
  * the motion engine has loaded (see scripts/motion/reveals.ts).
  *
- * Also sets data-loading="on" for the first page of a visit (motion on only),
+ * Also adds the `js` class (fixed auto-hiding header, see Navbar.astro) and sets data-loading="on" for the first page of a visit (motion on only),
  * which shows the loading screen (Loader.astro) while the 3D scenes build.
  * Without JS the attribute never exists, so the loader never shows. A
  * fail-safe removes it after 6 s whatever happens.
@@ -16,6 +16,8 @@
 <script is:inline>
   (function () {
     var d = document.documentElement;
+    // JS is on: the header becomes a fixed, auto-hiding bar (Navbar.astro). Without JS it stays in the flow.
+    d.classList.add('js');
     var stored = null;
     try {
       stored = localStorage.getItem('iff-motion');

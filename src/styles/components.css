@@ -133,6 +133,45 @@
   z-index: 50;
   border-bottom: 3px double var(--c-black);
 }
+.site-header__main { padding-block: 0.75rem; }
+.site-brand__iff { font-size: 3rem; }
+.site-brand__num { font-size: 1.875rem; }
+
+/* With JS: fixed, compact once scrolled, hides while scrolling down (Navbar.astro).
+   The page keeps the full header's height as padding, so nothing jumps.
+   Not sticky: sticky sections below must not get an overflow-clipping ancestor. */
+html.js .site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--c-offwhite); /* solid: text must not show through */
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
+}
+html.js .page { padding-top: var(--header-h, 8.25rem); }
+html.js .site-header__bar,
+html.js .site-header__main,
+html.js .site-logo,
+html.js .site-brand__iff,
+html.js .site-brand__num { transition: padding 0.25s ease, height 0.25s ease, font-size 0.25s ease, opacity 0.2s ease; }
+.site-header.is-compact { box-shadow: 0 6px 18px rgb(0 0 0 / 0.08); }
+.site-header.is-compact .site-header__bar { display: none; }
+.site-header.is-compact .site-header__main { padding-block: 0.35rem; }
+.site-header.is-compact .site-logo { height: 2rem; }
+.site-header.is-compact .site-brand__iff { font-size: 2rem; }
+.site-header.is-compact .site-brand__num { font-size: 1.35rem; }
+.site-header.is-compact .site-brand__full { display: none; }
+.site-header.is-compact .btn { padding-block: 0.4rem; }
+.site-header.is-hidden { transform: translateY(calc(-100% - 6px)); }
+html[data-motion='off'] .site-header { transition: none; }
+/* Long phone menu: scroll inside the panel, never past the screen. */
+html.js .nav-menu__panel {
+  max-height: calc(100svh - 4rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+/* In-page jumps (#lineup) land below the compact bar. */
+html.js { scroll-padding-top: 4.5rem; }
 .site-header__bar {
   border-bottom: 1px solid var(--c-black);
   font-family: var(--ff-typewriter);

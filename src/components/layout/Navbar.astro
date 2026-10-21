@@ -15,7 +15,7 @@ const events = (await getEvents()).map((e) => ({ ...e.data, href: eventHref(e) }
 const onEventPage = events.some((e) => isCurrent(e.href));
 ---
 
-<header class="site-header">
+<header class="site-header" data-site-header>
   <div class="site-header__bar">
     <div class="container-page flex items-center justify-between gap-4 py-1.5">
       <span>{site.edition} edition · {site.city}</span>
@@ -30,12 +30,12 @@ const onEventPage = events.some((e) => isCurrent(e.href));
     </div>
   </div>
 
-  <div class="container-page flex items-center justify-between gap-6 py-3">
-    <a href="/" class="flex items-baseline gap-3 text-ink no-underline">
+  <div class="site-header__main container-page flex items-center justify-between gap-6">
+    <a href="/" class="site-brand flex items-baseline gap-3 text-ink no-underline">
       {hasLogo && <img src="/brand/logo.png" alt="" width="34" height="48" class="site-logo" />}
-      <span class="font-display text-5xl leading-none uppercase" style="color: var(--c-display-top)">{site.shortName}</span>
-      <span class="font-script text-3xl leading-none" style="color: var(--c-display-bottom)">{site.editionNumber}</span>
-      <span class="hidden font-typewriter text-xs leading-tight uppercase tracking-widest md:block">
+      <span class="site-brand__iff font-display leading-none uppercase" style="color: var(--c-display-top)">{site.shortName}</span>
+      <span class="site-brand__num font-script leading-none" style="color: var(--c-display-bottom)">{site.editionNumber}</span>
+      <span class="site-brand__full hidden font-typewriter text-xs leading-tight uppercase tracking-widest md:block">
         {site.edition}<br />{site.name}
       </span>
       <span class="sr-only">, home</span>
@@ -139,4 +139,71 @@ const onEventPage = events.some((e) => isCurrent(e.href));
     open.querySelector('summary')?.focus();
   });
   document.addEventListener('astro:after-swap', () => close());
+
+  /*
+   * Auto-hiding header (JS only; without JS it simply sits at the top of the page).
+   * - At the top: the full header.
+   * - Scrolled past it: a compact bar that hides while scrolling down and comes
+   *   back when scrolling up, when scrolling stops, or when the mouse nears the top.
+   * - Stays put while a menu is open, the pointer is over it or it has focus.
+   * Only transform/opacity change (no layout), and nothing is measured per frame:
+   * the header height is read on load and on resize only.
+   */
+  const IDLE_MS = 350; // show again this long after scrolling stops
+  const NEAR_TOP_PX = 72; // mouse this close to the top edge reveals the bar
+  let header: HTMLElement | null = null;
+  let full = 0;
+  let lastY = 0;
+  let idle = 0;
+  let queued = false;
+  let hovering = false;
+
+  const set = (cls: string, on: boolean) => header && header.classList.contains(cls) !== on && header.classList.toggle(cls, on);
+  const pinned = () =>
+    !!header && (hovering || header.matches(':focus-within') || !!header.querySelector('details[open]'));
+  const measure = () => {
+    if (!header) return;
+    const was = header.classList.contains('is-compact');
+    header.classList.remove('is-compact');
+    full = header.offsetHeight;
+    document.documentElement.style.setProperty('--header-h', `${full}px`);
+    header.classList.toggle('is-compact', was);
+  };
+  const update = () => {
+    queued = false;
+    if (!header) return;
+    const y = Math.max(0, scrollY);
+    const dy = y - lastY;
+    lastY = y;
+    set('is-compact', y > full * 0.6);
+    if (y <= full) set('is-hidden', false);
+    else if (dy > 4 && !pinned()) set('is-hidden', true);
+    else if (dy < -4) set('is-hidden', false);
+    clearTimeout(idle);
+    idle = window.setTimeout(() => set('is-hidden', false), IDLE_MS);
+  };
+  const onScroll = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(update);
+  };
+  const onPointer = (e: PointerEvent) => {
+    if (e.pointerType === 'mouse' && e.clientY < NEAR_TOP_PX) set('is-hidden', false);
+  };
+
+  function setupHeader() {
+    header = document.querySelector<HTMLElement>('[data-site-header]');
+    if (!header) return;
+    hovering = false;
+    header.addEventListener('pointerenter', () => (hovering = true));
+    header.addEventListener('pointerleave', () => (hovering = false));
+    header.addEventListener('focusin', () => set('is-hidden', false));
+    measure();
+    lastY = scrollY;
+    update();
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('pointermove', onPointer, { passive: true });
+  addEventListener('resize', measure);
+  document.addEventListener('astro:page-load', setupHeader);
 </script>

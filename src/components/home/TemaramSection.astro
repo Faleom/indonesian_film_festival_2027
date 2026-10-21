@@ -5,23 +5,33 @@
  * paper. The word sits in the dark, and a warm lamp lights it up: it follows
  * the pointer on desktop, drifts on its own on touch screens, and flickers
  * like a candle. The lit layer is a decorative copy (aria-hidden); the real
- * heading and the blurb are always readable (offwhite on black).
+ * heading and the text are always readable (offwhite on black).
+ * Home shows the title and links to /about, which shows the full explanation.
  * Reduced motion / no JS: the lamp rests in the middle, no flicker.
  */
 import site from '../../content/site.json';
 import pages from '../../content/pages.json';
 
+interface Props {
+  /** home: the theme title only, linking to /about. about: title + dictionary entry + the full explanation. */
+  variant?: 'home' | 'about';
+}
+const { variant = 'home' } = Astro.props;
+
 const page = pages.home;
+const entry = pages.about.theme;
 const [word, ...rest] = site.theme.split(':');
 const subtitle = page.themeScript ?? rest.join(':').trim();
+// About: the explanation's first letter becomes a gold drop cap.
+const blurb = site.themeSubtitle;
 ---
 
-<section class="temaram" data-temaram aria-labelledby="temaram-title">
+<section class:list={['temaram', `temaram--${variant}`]} data-temaram id={variant === 'about' ? 'theme' : undefined} aria-labelledby="temaram-title">
   <div class="temaram__edge temaram__edge--top" aria-hidden="true"></div>
   <div class="temaram__ink">
     <div class="temaram__lamp" aria-hidden="true"></div>
     <div class="container-page temaram__inner">
-      <p class="kicker temaram__kicker" data-reveal="typewriter">{page.themeKicker}</p>
+      <p class="kicker temaram__kicker" data-reveal="typewriter">{variant === 'about' ? entry.kicker : page.themeKicker}</p>
       <h2 id="temaram-title" class="temaram__title" data-reveal="misregister">
         <span class="temaram__word">
           <span class="temaram__word-ink">{word.trim()}</span>
@@ -30,7 +40,26 @@ const subtitle = page.themeScript ?? rest.join(':').trim();
         <span class="sr-only">: </span>
         <span class="temaram__script">{subtitle}</span>
       </h2>
-      <p class="temaram__blurb" data-reveal="fade-up">{site.themeSubtitle}</p>
+      {
+        variant === 'home' ? (
+          <a href="/about#theme" class="temaram__more" data-reveal="fade-up">
+            {page.themeLink} <span aria-hidden="true">→</span>
+          </a>
+        ) : (
+          <div class="temaram__story">
+            <p class="temaram__entry" data-reveal="typewriter">
+              <span class="temaram__entry-word">{entry.word}</span>
+              <span class="temaram__entry-say">/{entry.pronunciation}/</span>
+              <span class="temaram__entry-pos">{entry.partOfSpeech}.</span>{' '}
+              <span class="temaram__entry-def">{entry.definition}</span>
+            </p>
+            <p class="temaram__blurb temaram__blurb--lead" data-reveal="fade-up">{blurb}</p>
+            <blockquote class="temaram__pull" data-reveal="misregister">
+              <p>{entry.pullQuote}</p>
+            </blockquote>
+          </div>
+        )
+      }
     </div>
   </div>
   <div class="temaram__edge temaram__edge--bottom" aria-hidden="true"></div>

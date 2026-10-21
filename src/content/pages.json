@@ -1,5 +1,5 @@
 {
-  "$comment": "Copy for each page: hero title lines, script word, kicker, intro text, SEO title/description. Event pages take most of their copy from events.json. A `script` word must be part of the real title (it is read between the lines: Frequently *Asked* Questions).",
+  "$comment": "Copy for each page: hero title lines, script word, kicker, intro text, SEO title/description. Event pages take most of their copy from events.json. A `script` word must be part of the real title (it is read between the lines: Frequently *Asked* Questions). about.pastEditions: past festivals, newest first; only facts from a source (listed in `sources`, not shown on the page). `title`, `dates` can be null; `films` can be empty. about.theme: the dictionary-style entry shown with the Temaram theme on /about.",
   "home": {
     "metaTitle": "21st Indonesian Film Festival · Melbourne",
     "kicker": "Melbourne · Nov 2026 to May 2027",
@@ -23,7 +23,8 @@
     "themeTitle": [
       "Temaram"
     ],
-    "themeScript": "The Unwavering Glow of Indonesian Cinema"
+    "themeScript": "The Unwavering Glow of Indonesian Cinema",
+    "themeLink": "What Temaram means"
   },
   "faq": {
     "metaTitle": "FAQ · IFF 21",
@@ -58,22 +59,9 @@
     "script": "the",
     "hero": "about-hero",
     "story": [
-      "The Indonesian Film Festival (IFF) is a non-profit festival run entirely by students in Melbourne. For more than two decades, it has brought the best of Indonesian cinema to Australian audiences, usually at ACMI in Federation Square.",
+      "The Indonesian Film Festival (IFF) is a non-profit festival run entirely by students in Melbourne. Since 2006, it has brought the best of Indonesian cinema to Australian audiences, usually at ACMI in Federation Square.",
       "Each year a new committee programs the festival from scratch: choosing films, inviting filmmakers, and bringing the community together.",
       "We exist to share Indonesian stories, support emerging filmmakers through our Short Film Competition, and connect the Indonesian community in Melbourne with everyone curious about its cinema."
-    ],
-    "editionsTitle": "Editions",
-    "editions": [
-      {
-        "label": "20th",
-        "year": "2026",
-        "title": "Arunika: The Ascending Light of Cinema"
-      },
-      {
-        "label": "21st",
-        "year": "2027",
-        "title": "Temaram: The Unwavering Glow of Indonesian Cinema"
-      }
     ],
     "teamKicker": "The committee",
     "teamTitle": "Who makes it happen",
@@ -88,7 +76,128 @@
         "Maintaining and strengthening relationships with external stakeholders through transparency and active communication.",
         "Building a united team prioritizing clear communication and collaboration."
       ]
-    }
+    },
+    "factsTitle": "At a glance",
+    "facts": [
+      {
+        "label": "Since",
+        "value": "2006"
+      },
+      {
+        "label": "This year",
+        "value": "21st edition"
+      },
+      {
+        "label": "Home",
+        "value": "ACMI, Federation Square"
+      },
+      {
+        "label": "Run by",
+        "value": "Students, non-profit"
+      }
+    ],
+    "theme": {
+      "kicker": "The 21st edition theme",
+      "word": "temaram",
+      "pronunciation": "tə·ma·ram",
+      "partOfSpeech": "Indonesian, adjective",
+      "definition": "dim; softly lit, like the last light at dusk.",
+      "pullQuote": "Our stories, and our hope, continue to shine."
+    },
+    "pastKicker": "The archive",
+    "pastTitle": "Past IFF",
+    "pastIntro": "Two decades of Indonesian cinema in Melbourne, one committee at a time. Here's what we know so far.",
+    "pastNote": "Have photos, programs or stories from an earlier edition? Email us and help us fill the archive.",
+    "pastEditions": [
+      {
+        "edition": "21st",
+        "year": "2027",
+        "title": "Temaram: The Unwavering Glow of Indonesian Cinema",
+        "dates": "Nov 2026 to May 2027",
+        "venue": "ACMI and around Melbourne",
+        "films": [],
+        "current": true,
+        "sources": []
+      },
+      {
+        "edition": "20th",
+        "year": "2026",
+        "title": "Arunika: The Ascending Light of Cinema",
+        "dates": "8 to 10 May 2026",
+        "venue": "ACMI, Federation Square",
+        "films": [
+          "Rangga & Cinta",
+          "Tunggu Aku Sukses Nanti",
+          "Agak Laen: Menyala Pantiku! (closing film)"
+        ],
+        "sources": [
+          "https://www.acmi.net.au/whats-on/indonesian-film-festival-2026/",
+          "https://umsu.unimelb.edu.au/news/article/7797/INDONESIAN-FILM-FESTIVAL-2026-Adaptation-Melancholy-and-Detective-Hijinks/"
+        ]
+      },
+      {
+        "edition": "19th",
+        "year": "2025",
+        "title": "An Odyssey through Indonesia's Cinematic Renaissance",
+        "dates": "2 to 4 May 2025",
+        "venue": "ACMI, Federation Square",
+        "films": [
+          "Perayaan Mati Rasa"
+        ],
+        "sources": [
+          "https://www.acmi.net.au/whats-on/indonesian-film-festival-2025/"
+        ]
+      },
+      {
+        "edition": "18th",
+        "year": "2024",
+        "title": "Chronicles of Indonesia's Visual Storytelling",
+        "dates": "26 to 28 April 2024",
+        "venue": "ACMI, Federation Square",
+        "films": [],
+        "sources": [
+          "https://www.acmi.net.au/whats-on/indonesian-film-festival-2024/"
+        ]
+      },
+      {
+        "edition": "17th",
+        "year": "2023",
+        "title": "Spectacles of Indonesia's Silver Screen",
+        "dates": "27 to 30 April 2023",
+        "venue": "ACMI, Federation Square",
+        "films": [],
+        "sources": [
+          "https://www.acmi.net.au/whats-on/indonesian-film-festival-2023/"
+        ]
+      },
+      {
+        "edition": "14th",
+        "year": "2019",
+        "title": null,
+        "dates": "5 to 10 April 2019",
+        "venue": "ACMI, Federation Square",
+        "films": [
+          "Foxtrot Six (opening night)",
+          "Night Bus",
+          "Terbang: Menembus Langit"
+        ],
+        "sources": [
+          "https://flicks.com.au/news/a-gnarly-looking-sci-fi-headlines-the-indonesian-film-festival",
+          "https://asianfilmfestivals.com/indonesian-film-festival/"
+        ]
+      },
+      {
+        "edition": "1st",
+        "year": "2006",
+        "title": "Where it all began",
+        "dates": null,
+        "venue": "Melbourne",
+        "films": [],
+        "sources": [
+          "https://asianfilmfestivals.com/indonesian-film-festival/"
+        ]
+      }
+    ]
   },
   "sponsors": {
     "metaTitle": "Sponsors · IFF 21",

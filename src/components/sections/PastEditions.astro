@@ -1,0 +1,48 @@
+---
+/**
+ * "Past IFF" archive on /about: one newspaper-ledger row per edition, newest
+ * first, from pages.json about.pastEditions. Only sourced facts; any field can
+ * be missing and the row still reads well. Rows print in as they scroll in.
+ */
+import SectionHead from '../ui/SectionHead.astro';
+import site from '../../content/site.json';
+import pages from '../../content/pages.json';
+
+const page = pages.about;
+type Edition = (typeof page.pastEditions)[number];
+const editions = page.pastEditions as Edition[];
+---
+
+<section class="container-page py-16 md:py-24" aria-labelledby="past-iff">
+  <SectionHead title={page.pastTitle} kicker={page.pastKicker} id="past-iff" />
+  <p class="mb-10 max-w-[60ch] text-lg">{page.pastIntro}</p>
+  <ol class="archive m-0 list-none p-0" data-reveal="print" data-reveal-children data-reveal-stagger="0.12">
+    {
+      editions.map((ed) => (
+        <li class:list={['archive__row', { 'archive__row--current': 'current' in ed && ed.current }]}>
+          <div class="archive__year">
+            <span class="archive__yy">{ed.year}</span>
+            <span class="archive__ed">{ed.edition} edition</span>
+          </div>
+          <div class="archive__body">
+            <h3 class="archive__title">{ed.title ?? `The ${ed.edition} ${site.name}`}</h3>
+            {(ed.dates || ed.venue) && (
+              <p class="archive__meta">{[ed.dates, ed.venue].filter(Boolean).join(' · ')}</p>
+            )}
+            {ed.films.length > 0 && (
+              <ul class="archive__films" aria-label={`Films at the ${ed.edition} edition`}>
+                {ed.films.map((f) => (
+                  <li>{f}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+          {'current' in ed && ed.current && <span class="archive__stamp">Now showing</span>}
+        </li>
+      ))
+    }
+  </ol>
+  <p class="mt-8 font-typewriter text-sm">
+    {page.pastNote} <a href={`mailto:${site.email}?subject=IFF archive`}>{site.email}</a>
+  </p>
+</section>

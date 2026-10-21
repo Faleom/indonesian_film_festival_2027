@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/sections/Hero.astro';
 import TeamGrid from '../components/sections/TeamGrid.astro';
+import TemaramSection from '../components/home/TemaramSection.astro';
+import PastEditions from '../components/sections/PastEditions.astro';
 import SectionHead from '../components/ui/SectionHead.astro';
 import BodyText from '../components/typography/BodyText.astro';
 import Kicker from '../components/typography/Kicker.astro';
@@ -19,23 +21,23 @@ const team = await getTeam();
     <BodyText size="lead" dropcap>
       {page.story.map((p) => <p>{p}</p>)}
     </BodyText>
-    <aside class="self-start border-y-[3px] border-double border-ink py-6" aria-labelledby="editions">
-      <h2 id="editions" class="kicker mb-4" data-tone="accent">{page.editionsTitle}</h2>
-      <ol data-reveal="fade-up" data-reveal-children data-reveal-stagger="0.1" class="m-0 flex list-none flex-col gap-4 p-0">
+    <aside class="self-start border-t-[3px] border-double border-ink pt-4" aria-labelledby="facts">
+      <h2 id="facts" class="kicker mb-2" data-tone="accent">{page.factsTitle}</h2>
+      <dl data-reveal="print" data-reveal-children data-reveal-stagger="0.1" class="about-facts">
         {
-          page.editions.map((ed) => (
-            <li class="grid grid-cols-[4.5rem_1fr] gap-3">
-              <span class="font-display text-4xl leading-none uppercase" style="color: var(--c-display-top)">{ed.label}</span>
-              <span>
-                <span class="block font-typewriter text-xs">{ed.year}</span>
-                <span class="font-condensed text-lg leading-tight uppercase">{ed.title}</span>
-              </span>
-            </li>
+          page.facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
           ))
         }
-      </ol>
+      </dl>
+      <a href="#past-iff" class="mt-4 inline-block font-typewriter text-sm uppercase underline underline-offset-4">{page.pastTitle} ↓</a>
     </aside>
   </section>
+
+  <TemaramSection variant="about" />
 
   <section class="container-page py-16 md:py-24" aria-labelledby="vision">
     <div class="grid gap-12 border-t-[3px] border-double border-ink pt-12 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
@@ -60,6 +62,8 @@ const team = await getTeam();
       </div>
     </div>
   </section>
+
+  <PastEditions />
 
   <section class="container-page py-16 md:py-24" aria-labelledby="team">
     <SectionHead title={page.teamTitle} kicker={page.teamKicker} id="team" />

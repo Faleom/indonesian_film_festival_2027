@@ -1,5 +1,5 @@
 {
-  "$comment": "Festival-wide settings: name, edition, dates, links. Placeholder values are marked TBC. `nav`: an item with \"events\": true becomes the Events dropdown (built from events.json, in journey order).",
+  "$comment": "Festival-wide settings: name, edition, dates, links. Placeholder values are marked TBC. `nav`: an item with \"events\": true becomes the Events dropdown (built from events.json, in journey order). The \"Support us\" item (href /#support) is hidden for now; add it back together with <SupportSection /> in pages/index.astro and pages/sponsors.astro.",
   "name": "Indonesian Film Festival",
   "shortName": "IFF",
   "edition": "21st",
@@ -25,10 +25,6 @@
     {
       "label": "About",
       "href": "/about"
-    },
-    {
-      "label": "Support us",
-      "href": "/#support"
     },
     {
       "label": "FAQ",

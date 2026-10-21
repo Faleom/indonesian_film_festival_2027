@@ -1456,8 +1456,8 @@ html[data-motion='on'] .key-dates.is-visible .key-dates__stop.is-next .key-dates
   100% { transform: scale(2.2); opacity: 0; }
 }
 @media (min-width: 768px) {
-  .key-dates { padding: 2.25rem 0 0; }
-  .key-dates__line {
+  .key-dates:not(.key-dates--vertical) { padding: 2.25rem 0 0; }
+  .key-dates:not(.key-dates--vertical) .key-dates__line {
     top: 0.95rem;
     bottom: auto;
     left: calc(50% / var(--stops));
@@ -1468,12 +1468,20 @@ html[data-motion='on'] .key-dates.is-visible .key-dates__stop.is-next .key-dates
     transform: scaleX(var(--draw));
     transform-origin: left;
   }
-  .key-dates__list { grid-template-columns: repeat(var(--stops), 1fr); gap: 1rem; }
-  .key-dates__stop { justify-items: center; text-align: center; }
-  .key-dates__dot { top: -1.85rem; left: 50%; translate: -50% 0; }
+  .key-dates:not(.key-dates--vertical) .key-dates__list { grid-template-columns: repeat(var(--stops), 1fr); gap: 1rem; }
+  .key-dates:not(.key-dates--vertical) .key-dates__stop { justify-items: center; text-align: center; }
+  .key-dates:not(.key-dates--vertical) .key-dates__dot { top: -1.85rem; left: 50%; translate: -50% 0; }
 }
+/* Side-column list: stamp and label on one row. */
+.key-dates--vertical .key-dates__list { gap: 1.25rem; }
+.key-dates--vertical .key-dates__stop { grid-template-columns: auto 1fr; align-items: center; column-gap: 0.9rem; }
+.key-dates--vertical .key-dates__next { grid-column: 2; justify-self: start; }
+.key-dates--vertical .key-dates__day { font-size: 2.1rem; }
+.key-dates--vertical .key-dates__label { font-size: 1.1rem; line-height: 1.1; }
 /* One stop: no rule, just the stamp. */
 .key-dates[data-single] .key-dates__line { display: none; }
+.key-dates--vertical[data-single] { padding-left: 0; }
+.key-dates--vertical[data-single] .key-dates__dot { display: none; }
 
 /* ---------- Ink wipe section break (InkWipe) ---------- */
 @property --w { syntax: '<number>'; inherits: false; initial-value: 1; }
@@ -1587,3 +1595,94 @@ html[data-motion='on'] .key-dates.is-visible .key-dates__stop.is-next .key-dates
   line-height: 1.15;
   text-transform: uppercase;
 }
+
+/* ---------- Event page: intro row (about + at a glance + key dates) ---------- */
+.event-intro {
+  display: grid;
+  gap: 3rem;
+}
+@media (min-width: 1024px) {
+  .event-intro { grid-template-columns: minmax(0, 1.55fr) minmax(19rem, 1fr); gap: 4.5rem; align-items: start; }
+}
+.event-card {
+  position: relative;
+  display: grid;
+  gap: 1.75rem;
+  padding: 1.75rem;
+  border: 1px solid var(--c-black);
+  background: color-mix(in srgb, var(--c-offwhite) 70%, transparent);
+  box-shadow: 6px 6px 0 color-mix(in srgb, var(--c-primary) 85%, transparent);
+}
+@media (min-width: 1024px) { .event-card { position: sticky; top: 5rem; } }
+.event-card__section + .event-card__section { padding-top: 1.5rem; border-top: 1px dashed color-mix(in srgb, var(--c-black) 45%, transparent); }
+.event-card dl { display: grid; gap: 0.85rem; margin: 0; }
+.event-card dt { font-family: var(--ff-typewriter); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-text-accent); }
+.event-card dd { margin: 0.1rem 0 0; font-family: var(--ff-condensed); font-size: 1.3rem; line-height: 1.15; text-transform: uppercase; }
+
+/* ---------- Lineup "Coming soon" (LineupSoon) ---------- */
+.lineup-soon {
+  display: grid;
+  gap: 3rem;
+  padding-block: 3rem 4rem;
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .lineup-soon { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 4rem; padding-block: 4rem 6rem; }
+}
+.lineup-soon__copy { display: grid; gap: 1.25rem; justify-items: start; }
+/* The title sizes itself from its container (container query units): give it the full column. */
+.lineup-soon__title { justify-self: stretch; }
+.lineup-soon__text { margin: 0; max-width: 46ch; font-size: 1.125rem; line-height: 1.6; }
+.lineup-soon__cards {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  min-height: 19rem;
+}
+.lineup-soon__card {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: clamp(9.5rem, 15vw, 13rem);
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.7rem 0.7rem 1rem;
+  background: var(--c-offwhite);
+  border: 1px solid color-mix(in srgb, var(--c-black) 35%, transparent);
+  box-shadow: 4px 6px 0 rgb(0 0 0 / 0.12);
+  translate: calc(-50% + (var(--i) - 1) * 62%) calc(var(--i) * 0.6rem);
+  rotate: calc((var(--i) - 1) * 7deg);
+}
+.lineup-soon__poster {
+  aspect-ratio: 2 / 3;
+  background:
+    radial-gradient(circle, var(--c-primary) 38%, transparent 42%) 0 0 / 9px 9px,
+    linear-gradient(180deg, transparent 55%, color-mix(in srgb, var(--c-primary) 35%, transparent));
+  -webkit-mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.25), #000);
+  mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.25), #000);
+}
+.lineup-soon__tba {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  translate: -50% -50%;
+  rotate: -10deg;
+  padding: 0.15rem 0.6rem;
+  border: 3px double var(--c-text-accent);
+  background: var(--c-offwhite);
+  color: var(--c-text-accent);
+  font-family: var(--ff-display);
+  font-size: 2rem;
+  line-height: 1;
+}
+.lineup-soon__line { height: 0.55rem; background: color-mix(in srgb, var(--c-black) 70%, transparent); }
+.lineup-soon__line--short { width: 60%; height: 0.4rem; background: color-mix(in srgb, var(--c-black) 35%, transparent); }
+.lineup-soon--compact { padding-block: 1rem 2rem; }
+@media (max-width: 899px) {
+  .lineup-soon__cards { min-height: 16rem; }
+  .lineup-soon__card { width: 8.5rem; }
+}
+
+/* ---------- Event page: a single announced film, shown large ---------- */
+.film-feature { display: grid; gap: 2rem; align-items: start; }
+@media (min-width: 768px) { .film-feature { grid-template-columns: minmax(14rem, 22rem) minmax(0, 1fr); gap: 3.5rem; } }

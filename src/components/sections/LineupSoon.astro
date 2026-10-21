@@ -1,0 +1,50 @@
+---
+/**
+ * "Coming soon" stand-in for an event's film lineup, shown while events.json
+ * `lineupAnnounced` is false. The lineup code (FilmCard grid) stays in place
+ * and comes back by setting it to true. Blank "TBA" clippings fan out on the
+ * right so the section never looks empty on wide screens.
+ */
+import DisplayTitle from '../typography/DisplayTitle.astro';
+import Kicker from '../typography/Kicker.astro';
+import pages from '../../content/pages.json';
+import site from '../../content/site.json';
+
+interface Props {
+  /** e.g. "The lineup" */
+  lineupTitle: string;
+  /** Event name, used in the sentence. */
+  eventName: string;
+  id?: string;
+  /** Smaller variant for the home page. */
+  compact?: boolean;
+}
+
+const { lineupTitle, eventName, id = 'lineup', compact = false } = Astro.props;
+const copy = pages.event.lineupSoon;
+const instagram = site.socials.find((s) => s.label === 'Instagram');
+const text = copy.text.replace('{lineup}', lineupTitle).replace('{event}', eventName);
+---
+
+<section id={id} class:list={['lineup-soon container-page', { 'lineup-soon--compact': compact }]} aria-labelledby={`${id}-title`}>
+  <div class="lineup-soon__copy">
+    <Kicker tone="accent" typewriter>{lineupTitle}</Kicker>
+    <h2 id={`${id}-title`} class="sr-only">{lineupTitle}: {copy.title.join(' ')}</h2>
+    <DisplayTitle as="p" lines={copy.title} size={compact ? 'md' : 'lg'} class="lineup-soon__title" />
+    <p class="lineup-soon__text">{text}</p>
+    <p class="m-0 flex flex-wrap gap-3">
+      <a href="#newsletter-footer" class="btn btn--primary">{copy.cta}</a>
+      {instagram && <a href={instagram.href} class="btn btn--ghost">{copy.social}</a>}
+    </p>
+  </div>
+  <div class="lineup-soon__cards" aria-hidden="true" data-reveal="fold" data-reveal-children data-reveal-stagger="0.12">
+    {[0, 1, 2].map((i) => (
+      <div class="lineup-soon__card" style={`--i: ${i}`}>
+        <span class="lineup-soon__poster"></span>
+        <span class="lineup-soon__tba">TBA</span>
+        <span class="lineup-soon__line"></span>
+        <span class="lineup-soon__line lineup-soon__line--short"></span>
+      </div>
+    ))}
+  </div>
+</section>

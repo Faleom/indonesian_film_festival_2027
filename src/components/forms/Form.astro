@@ -14,7 +14,7 @@ interface Props {
 const { name, submitLabel, class: className } = Astro.props;
 ---
 
-<form class:list={['flex flex-col gap-5', className]} name={name} method="get" action="#" data-coming-soon data-astro-reload>
+<form class:list={['flex flex-col gap-5', className]} id={name} name={name} method="get" action="#" data-coming-soon data-astro-reload>
   <slot />
   <div class="flex flex-wrap items-center gap-4">
     <button type="submit" class="btn btn--primary cursor-pointer">{submitLabel}</button>

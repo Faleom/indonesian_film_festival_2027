@@ -246,6 +246,17 @@
   "event": {
     "keyDatesTitle": "Key dates",
     "nextUpLabel": "Next up",
-    "scrollCue": "Scroll"
+    "scrollCue": "Scroll",
+    "lineupSoon": {
+      "title": [
+        "Coming",
+        "Soon"
+      ],
+      "text": "{lineup} for {event} will be announced soon. Join the newsletter and you'll hear it first.",
+      "cta": "Get the announcement",
+      "social": "Follow on Instagram"
+    },
+    "aboutTitle": "About",
+    "atAGlance": "At a glance"
   }
 }

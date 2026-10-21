@@ -7,56 +7,66 @@ import VideoPlayer from '../sections/VideoPlayer.astro';
 import SectionHead from '../ui/SectionHead.astro';
 import KeyDates from '../sections/KeyDates.astro';
 import InkWipe from '../ui/InkWipe.astro';
+import LineupSoon from '../sections/LineupSoon.astro';
 import BodyText from '../typography/BodyText.astro';
 import Kicker from '../typography/Kicker.astro';
 import site from '../../content/site.json';
 import pages from '../../content/pages.json';
-import { eventHref, getEvent, getEvents, getFilms, type EventId } from '../../lib/content';
+import { eventHref, filmHref, getEvent, getEvents, getFilms, type EventId } from '../../lib/content';
 
 interface Props {
   id: EventId;
+  /** Skip the "Coming soon" lineup block (e.g. the exhibition shows its own content instead). */
+  hideLineupSoon?: boolean;
 }
 
+const { hideLineupSoon = false } = Astro.props;
 const event = await getEvent(Astro.props.id);
 const e = event.data;
 const [films, events] = await Promise.all([getFilms(event.id as EventId), getEvents()]);
+// Lineup is shown only once announced (events.json `lineupAnnounced`) and there are films.
+const showLineup = e.lineupAnnounced && films.length > 0;
 const index = events.findIndex((x) => x.id === event.id);
 const next = events[index + 1];
 const prev = events[index - 1];
 ---
 
 <BaseLayout title={`${e.name} · ${site.shortName} ${site.editionNumber}`} description={e.summary} theme={e.theme} reprint ogImage={e.hero}>
-  <EventHero3D event={event} hasLineup={films.length > 0} />
+  <EventHero3D event={event} hasLineup={showLineup || !hideLineupSoon} />
 
   <section class="container-page py-12 md:py-20" aria-labelledby="about-event">
-    <SectionHead title={`About ${e.shortName}`} id="about-event" />
-    <div class="grid gap-12 lg:grid-cols-[1.6fr_1fr]">
-      <BodyText size="lead" dropcap>
-        {e.description.map((p) => <p>{p}</p>)}
-      </BodyText>
-      <aside data-reveal="print" class="self-start border border-ink p-6" aria-label="Event details">
-        <Kicker tone="accent" class="mb-4">At a glance</Kicker>
-        <dl class="m-0 grid gap-3 font-typewriter text-sm">
-          <div><dt class="uppercase tracking-widest">Date</dt><dd class="m-0 text-base">{e.dateLabel}</dd></div>
-          <div><dt class="uppercase tracking-widest">Time</dt><dd class="m-0 text-base">{e.time}</dd></div>
-          <div><dt class="uppercase tracking-widest">Venue</dt><dd class="m-0 text-base">{e.venue}</dd></div>
-          {films.length > 0 && <div><dt class="uppercase tracking-widest">Films</dt><dd class="m-0 text-base">{films.length}</dd></div>}
-        </dl>
+    <div class="event-intro">
+      <div>
+        <SectionHead title={`${pages.event.aboutTitle} ${e.shortName}`} id="about-event" />
+        <BodyText size="lead" dropcap>
+          {e.description.map((p) => <p>{p}</p>)}
+        </BodyText>
+        <slot name="intro" />
+      </div>
+      <aside data-reveal="print" class="event-card" aria-label="Event details">
+        <div class="event-card__section">
+          <Kicker tone="accent" class="mb-4">{pages.event.atAGlance}</Kicker>
+          <dl>
+            <div><dt>Date</dt><dd>{e.dateLabel}</dd></div>
+            <div><dt>Time</dt><dd>{e.time}</dd></div>
+            <div><dt>Venue</dt><dd>{e.venue}</dd></div>
+            {showLineup && <div><dt>Films</dt><dd>{films.length}</dd></div>}
+          </dl>
+        </div>
+        {
+          e.keyDates && e.keyDates.length > 0 && (
+            <div class="event-card__section">
+              <Kicker tone="accent" class="mb-4">{pages.event.keyDatesTitle}</Kicker>
+              <KeyDates dates={e.keyDates} nextLabel={pages.event.nextUpLabel} vertical />
+            </div>
+          )
+        }
+        <slot name="card" />
       </aside>
     </div>
   </section>
 
-  {
-    e.keyDates && e.keyDates.length > 0 && (
-      <Fragment>
-      <InkWipe />
-      <section class="container-page py-12 md:py-16" aria-labelledby="key-dates">
-        <SectionHead title={pages.event.keyDatesTitle} kicker={e.shortName} id="key-dates" />
-        <KeyDates dates={e.keyDates} nextLabel={pages.event.nextUpLabel} />
-      </section>
-      </Fragment>
-    )
-  }
+  <slot />
 
   {
     e.trailer && (
@@ -67,10 +77,32 @@ const prev = events[index - 1];
     )
   }
 
+  <InkWipe />
+
+  {/* Lineup: while events.json `lineupAnnounced` is false, a "Coming soon" block stands in.
+      The film list below is kept as is and comes back when it's set to true. */}
+  {!showLineup && !hideLineupSoon && <LineupSoon lineupTitle={e.lineupTitle} eventName={e.name} />}
+
   {
-    films.length > 0 && (
-      <section class="container-page py-12 md:py-20" aria-labelledby="lineup">
-        <SectionHead title={e.lineupTitle} kicker={`${films.length} ${films.length === 1 ? 'film' : 'films'}`} id="lineup" />
+    showLineup && films.length === 1 && (
+      <section id="lineup" class="container-page py-12 md:py-20" aria-labelledby="lineup-title">
+        <SectionHead title={e.lineupTitle} kicker="1 film" id="lineup-title" />
+        <div class="film-feature">
+          <FilmCard film={films[0]} />
+          <div class="flex flex-col gap-5">
+            <p class="heading-condensed m-0 text-3xl" style="color: var(--c-display-top)">{films[0].data.title}</p>
+            <BodyText size="lead"><p>{films[0].data.synopsis}</p></BodyText>
+            <p class="m-0"><a href={filmHref(films[0])} class="btn btn--ghost">Film details</a></p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    showLineup && films.length > 1 && (
+      <section id="lineup" class="container-page py-12 md:py-20" aria-labelledby="lineup-title">
+        <SectionHead title={e.lineupTitle} kicker={`${films.length} films`} id="lineup-title" />
         <ul data-reveal="fold" data-reveal-children data-reveal-stagger="0.1" class="clipping-grid m-0 grid list-none grid-cols-2 gap-x-4 gap-y-10 p-0 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-3 xl:grid-cols-4">
           {films.map((film) => (
             <li>

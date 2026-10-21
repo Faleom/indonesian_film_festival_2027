@@ -9,16 +9,18 @@ interface Props {
   dates: { date: string; label: string }[];
   /** Flag on the next upcoming stop, e.g. "Next up". */
   nextLabel: string;
+  /** Always a vertical list (e.g. in a side column), even on wide screens. */
+  vertical?: boolean;
 }
 
-const { dates, nextLabel } = Astro.props;
+const { dates, nextLabel, vertical = false } = Astro.props;
 const day = new Intl.DateTimeFormat('en-AU', { day: 'numeric', timeZone: 'UTC' });
 const month = new Intl.DateTimeFormat('en-AU', { month: 'short', timeZone: 'UTC' });
 const year = new Intl.DateTimeFormat('en-AU', { year: 'numeric', timeZone: 'UTC' });
 const at = (iso: string) => new Date(`${iso}T00:00:00Z`);
 ---
 
-<div class="key-dates" data-reveal="draw" data-single={dates.length === 1 ? '' : undefined} style={`--stops: ${dates.length}`}>
+<div class:list={['key-dates', { 'key-dates--vertical': vertical }]} data-reveal="draw" data-single={dates.length === 1 ? '' : undefined} style={`--stops: ${dates.length}`}>
   <span class="key-dates__line" data-draw-line aria-hidden="true"></span>
   <ol class="key-dates__list">
     {

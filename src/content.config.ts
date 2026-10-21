@@ -23,6 +23,8 @@ const events = defineCollection({
     kicker: z.string(),
     tagline: z.string(),
     lineupTitle: z.string(),
+    /** false: "Coming soon" instead of the films (films.json entries are kept). */
+    lineupAnnounced: z.boolean().default(false),
     summary: z.string(),
     description: z.array(z.string()),
     date,

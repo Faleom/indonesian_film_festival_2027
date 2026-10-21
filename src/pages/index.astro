@@ -5,6 +5,7 @@ import FilmStripJourney from '../components/home/FilmStripJourney.astro';
 import TemaramSection from '../components/home/TemaramSection.astro';
 import SupportSection from '../components/sections/SupportSection.astro';
 import InkWipe from '../components/ui/InkWipe.astro';
+import LineupSoon from '../components/sections/LineupSoon.astro';
 import VideoPlayer from '../components/sections/VideoPlayer.astro';
 import FilmCard from '../components/sections/FilmCard.astro';
 import SponsorStrip from '../components/sections/SponsorStrip.astro';
@@ -37,6 +38,14 @@ const [mainEvent, mainFilms, sponsors] = await Promise.all([
     )
   }
 
+  {/* Main Screening lineup: "Coming soon" until events.json main.lineupAnnounced is true. */}
+  {!mainEvent.data.lineupAnnounced && (
+    <div data-theme="main">
+      <LineupSoon id="films" lineupTitle={page.filmsTitle} eventName={mainEvent.data.name} compact />
+    </div>
+  )}
+
+  {mainEvent.data.lineupAnnounced && (
   <section class="container-page py-12 md:py-20" aria-labelledby="films" data-theme="main">
     <SectionHead title={page.filmsTitle} kicker={page.filmsKicker} id="films">
       <a href="/main-screening" class="font-typewriter text-sm uppercase underline underline-offset-4">All Main Screening films →</a>
@@ -51,6 +60,7 @@ const [mainEvent, mainFilms, sponsors] = await Promise.all([
       }
     </ul>
   </section>
+  )}
 
   {/* Support us: hidden for now (Oct 2026). To bring it back, un-comment the
       two lines below and add the "Support us" link back to site.json nav.

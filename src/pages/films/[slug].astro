@@ -15,7 +15,9 @@ import site from '../../content/site.json';
 import { eventHref, formatDate, formatRuntime, getEvent, getFilms, themeOf, type EventId, type FilmEntry } from '../../lib/content';
 
 export const getStaticPaths = (async () => {
-  const films = await getCollection('films');
+  // Only films whose event has announced its lineup (events.json `lineupAnnounced`) get a page.
+  const announced = new Set((await getCollection('events')).filter((e) => e.data.lineupAnnounced).map((e) => e.id));
+  const films = (await getCollection('films')).filter((f) => announced.has(f.data.event.id));
   return films.map((film) => ({ params: { slug: film.id }, props: { film } }));
 }) satisfies GetStaticPaths;
 

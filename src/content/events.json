@@ -1,5 +1,5 @@
 {
-  "$comment": "The five festival events, in journey order by date (SFC -> Film Exhibition -> Under the Stars -> Educational Screening -> Main Screening). `id` is used in films/schedule; `theme` is the colour theme (sfc | exh | uts | main | base). `title` lines build the big display title; `script` (optional) is a word that is genuinely part of the name, drawn in script between the lines (e.g. Under *the* Stars). Media keys refer to media.json. `strip` is the list of media keys shown on that event's frames in the home film strip (video or image, any number); add keys to media.json first. `badge` (optional) is a small label next to the name, e.g. \"New\". `shortDate` is the short date in the navbar Events menu. `heroScene` picks the scroll-driven 3D hero: clapper | gallery | open-air | book | theatre (leave it out for a plain hero). `keyDates` (optional): the dates shown on the event page timeline, YYYY-MM-DD + a short label; only confirmed dates. `heroSlate` (optional): the small label in the corner of the 3D hero.",
+  "$comment": "The five festival events, in journey order by date (SFC -> Film Exhibition -> Under the Stars -> Educational Screening -> Main Screening). `id` is used in films/schedule; `theme` is the colour theme (sfc | exh | uts | main | base). `title` lines build the big display title; `script` (optional) is a word that is genuinely part of the name, drawn in script between the lines (e.g. Under *the* Stars). Media keys refer to media.json. `strip` is the list of media keys shown on that event's frames in the home film strip (video or image, any number); add keys to media.json first. `badge` (optional) is a small label next to the name, e.g. \"New\". `shortDate` is the short date in the navbar Events menu. `heroScene` picks the scroll-driven 3D hero: clapper | gallery | open-air | book | theatre (leave it out for a plain hero). `keyDates` (optional): the dates shown on the event page timeline, YYYY-MM-DD + a short label; only confirmed dates. `heroSlate` (optional): the small label in the corner of the 3D hero. `lineupAnnounced`: false shows a \"Coming soon\" block instead of the films (and skips their /films pages); set it to true once the films in films.json are real.",
   "items": [
     {
       "id": "sfc",
@@ -30,6 +30,7 @@
       "trailer": "trailer-sfc",
       "ticketUrl": "#",
       "lineupTitle": "The finalists",
+      "lineupAnnounced": false,
       "strip": [
         "broll-sfc",
         "still-sfc-1",
@@ -81,7 +82,8 @@
       "heroSlate": "Room 02 · Now open",
       "trailer": null,
       "ticketUrl": "#",
-      "lineupTitle": "The exhibition",
+      "lineupTitle": "The works on show",
+      "lineupAnnounced": false,
       "strip": [
         "broll-exhibition",
         "still-exhibition-1",
@@ -128,6 +130,7 @@
       "trailer": null,
       "ticketUrl": "#",
       "lineupTitle": "The film",
+      "lineupAnnounced": false,
       "strip": [
         "broll-uts",
         "still-uts-1",
@@ -171,6 +174,7 @@
       "trailer": null,
       "ticketUrl": "#",
       "lineupTitle": "The film",
+      "lineupAnnounced": false,
       "strip": [
         "broll-edu",
         "still-edu-1",
@@ -217,6 +221,7 @@
       "trailer": "trailer-main",
       "ticketUrl": "#",
       "lineupTitle": "The lineup",
+      "lineupAnnounced": false,
       "strip": [
         "broll-main",
         "still-main-1",

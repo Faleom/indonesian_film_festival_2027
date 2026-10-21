@@ -1,6 +1,8 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import Off from '../../components/admin/Off.astro';
+import DbError from '../../components/admin/DbError.astro';
+import { adminLoad } from '../../server/admin/load';
 import { adminState } from '../../server/admin/guard';
 import { listSubscribers } from '../../server/admin/queries';
 
@@ -8,11 +10,13 @@ export const prerender = false;
 
 const state = adminState(Astro.cookies);
 if (state === 'login') return Astro.redirect('/admin/login');
-const list = state === 'ok' ? await listSubscribers() : undefined;
+const loaded = state === 'ok' ? await adminLoad(listSubscribers) : {};
+const list = loaded.data;
 ---
 
 <AdminLayout title="Subscribers">
   {
+    loaded.error ? <DbError error={loaded.error} /> :
     !list ? (
       <Off />
     ) : (

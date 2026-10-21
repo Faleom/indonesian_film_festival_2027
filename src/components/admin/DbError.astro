@@ -1,0 +1,21 @@
+---
+/** Admin pages: the database could not be reached or a table is missing. */
+interface Props {
+  error: string;
+}
+const { error } = Astro.props;
+const missingTables = /relation .* does not exist|42P01/.test(error);
+---
+
+<h1>Can't reach the database</h1>
+<p class="shop-banner shop-banner--error"><code>{error}</code></p>
+{
+  missingTables ? (
+    <p class="max-w-[60ch]">The tables aren't there yet: in Supabase open SQL Editor, paste <code>drizzle/0000_init.sql</code> and Run.</p>
+  ) : (
+    <ul class="max-w-[70ch]">
+      <li>Supabase paused? Open the project in Supabase and press Restore.</li>
+      <li>Check <code>POSTGRES_URL</code> / <code>DATABASE_URL</code> in Vercel (pooler URI, port 6543, right password), then Redeploy.</li>
+    </ul>
+  )
+}

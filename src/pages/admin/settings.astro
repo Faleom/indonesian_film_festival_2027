@@ -2,6 +2,8 @@
 /** Live switches: ticket sales per event, merch shop, SFC submissions. No rebuild needed. */
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import Off from '../../components/admin/Off.astro';
+import DbError from '../../components/admin/DbError.astro';
+import { adminLoad } from '../../server/admin/load';
 import { adminState } from '../../server/admin/guard';
 import { getStatus } from '../../server/settings';
 import { merchOnSaleDefault, sfcConfig, sfcWindow, ticketEvents } from '../../server/catalog';
@@ -10,11 +12,13 @@ export const prerender = false;
 
 const state = adminState(Astro.cookies);
 if (state === 'login') return Astro.redirect('/admin/login');
-const status = state === 'ok' ? await getStatus() : undefined;
+const loaded = state === 'ok' ? await adminLoad(getStatus) : {};
+const status = loaded.data;
 ---
 
 <AdminLayout title="Sales on/off">
   {
+    loaded.error ? <DbError error={loaded.error} /> :
     !status ? (
       <Off />
     ) : (

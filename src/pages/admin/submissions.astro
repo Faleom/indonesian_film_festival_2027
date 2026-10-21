@@ -1,6 +1,8 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import Off from '../../components/admin/Off.astro';
+import DbError from '../../components/admin/DbError.astro';
+import { adminLoad } from '../../server/admin/load';
 import { adminState } from '../../server/admin/guard';
 import { listSubmissions } from '../../server/admin/queries';
 
@@ -8,12 +10,14 @@ export const prerender = false;
 
 const state = adminState(Astro.cookies);
 if (state === 'login') return Astro.redirect('/admin/login');
-const list = state === 'ok' ? await listSubmissions() : undefined;
+const loaded = state === 'ok' ? await adminLoad(listSubmissions) : {};
+const list = loaded.data;
 const when = (d?: Date | null) => d?.toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', dateStyle: 'medium', timeStyle: 'short' }) ?? '';
 ---
 
 <AdminLayout title="SFC entries">
   {
+    loaded.error ? <DbError error={loaded.error} /> :
     !list ? (
       <Off />
     ) : (

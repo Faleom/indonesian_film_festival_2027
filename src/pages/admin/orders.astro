@@ -2,6 +2,8 @@
 /** Orders: who bought what, payment status, tickets, and every email sent for it. */
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import Off from '../../components/admin/Off.astro';
+import DbError from '../../components/admin/DbError.astro';
+import { adminLoad } from '../../server/admin/load';
 import { adminState } from '../../server/admin/guard';
 import { listOrders } from '../../server/admin/queries';
 import { formatMoney } from '../../server/catalog';
@@ -12,13 +14,15 @@ const state = adminState(Astro.cookies);
 if (state === 'login') return Astro.redirect('/admin/login');
 const q = Astro.url.searchParams.get('q') ?? '';
 const status = Astro.url.searchParams.get('status') ?? 'paid';
-const list = state === 'ok' ? await listOrders({ q, status: status === 'all' ? undefined : status }) : undefined;
+const loaded = state === 'ok' ? await adminLoad(() => listOrders({ q, status: status === 'all' ? undefined : status })) : {};
+const list = loaded.data;
 const when = (d?: Date | null) => d?.toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', dateStyle: 'medium', timeStyle: 'short' }) ?? '';
 const pill = { paid: 'ok', pending: 'warn', expired: 'muted', cancelled: 'muted', refunded: 'bad' } as const;
 ---
 
 <AdminLayout title="Orders">
   {
+    loaded.error ? <DbError error={loaded.error} /> :
     !list ? (
       <Off />
     ) : (

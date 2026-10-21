@@ -2,6 +2,8 @@
 /** Dashboard: money, tickets per event, check-ins, merch, entries, messages, page views. */
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import Off from '../../components/admin/Off.astro';
+import DbError from '../../components/admin/DbError.astro';
+import { adminLoad } from '../../server/admin/load';
 import { adminState } from '../../server/admin/guard';
 import { dashboard, stockTable } from '../../server/admin/queries';
 import { formatMoney, ticketEvents } from '../../server/catalog';
@@ -12,13 +14,15 @@ export const prerender = false;
 
 const state = adminState(Astro.cookies);
 if (state === 'login') return Astro.redirect('/admin/login');
-const [d, stock, status] = state === 'ok' ? await Promise.all([dashboard(), stockTable(), getStatus()]) : [];
+const loaded = state === 'ok' ? await adminLoad(() => Promise.all([dashboard(), stockTable(), getStatus()])) : {};
+const [d, stock, status] = loaded.data ?? [];
 const maxViews = d ? Math.max(1, ...d.views.map((v) => v.n)) : 1;
 const ticketsSold = d ? Object.values(d.ticketsByEvent).reduce((a, b) => a + b, 0) : 0;
 ---
 
 <AdminLayout title="Dashboard">
   {
+    loaded.error ? <DbError error={loaded.error} /> :
     state === 'off' || !d || !stock || !status ? (
       <Off />
     ) : (

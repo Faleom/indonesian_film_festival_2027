@@ -18,7 +18,8 @@ export function getDb(): Db | undefined {
   const url = env.databaseUrl;
   if (!url) return undefined;
   // prepare: false — required by Supabase's transaction pooler.
-  const client = postgres(cleanUrl(url), { max: 3, prepare: false, idle_timeout: 20 });
+  // connect_timeout: fail fast with an error instead of leaving a page loading forever.
+  const client = postgres(cleanUrl(url), { max: 3, prepare: false, idle_timeout: 20, connect_timeout: 10 });
   instance = drizzle(client, { schema });
   return instance;
 }

@@ -1,0 +1,176 @@
+{
+  "$comment": "Everything that can be bought on the site, paid through Stripe Checkout (prices in Australian cents: 2300 = A$23.00). PLACEHOLDERS: every ticket type, price, capacity and merch item below is invented for layout and must be replaced before sales open (marked TBC). `sku` must be unique and must never change once something has been sold (orders keep it). Tickets: `onSale` is the default; the hidden admin page can switch sales on/off per event without a rebuild. `capacity` is the most that can ever be sold (null = no limit). `admissions` (default 1): how many QR tickets one purchase issues (a 3-day pass = 3). Merch: `variants` (e.g. sizes) each have their own sku and stock. `media` keys refer to media.json. `sfc.entryFee`: the Short Film Competition entry fee per film; submissions are open between `sfc.opens` and `sfc.closes` (inclusive, Melbourne time) unless the admin page overrides it.",
+  "currency": "aud",
+  "tickets": [
+    {
+      "event": "exhibition",
+      "onSale": false,
+      "types": [
+        {
+          "sku": "exh-entry",
+          "name": "Exhibition entry (both days)",
+          "description": "Entry on 27 and 28 February. Price TBC.",
+          "price": 1000,
+          "capacity": 300
+        }
+      ]
+    },
+    {
+      "event": "uts",
+      "onSale": false,
+      "types": [
+        {
+          "sku": "uts-general",
+          "name": "General admission",
+          "description": "Open-air screening and cultural festival. Price TBC.",
+          "price": 2000,
+          "capacity": 400
+        },
+        {
+          "sku": "uts-student",
+          "name": "Student",
+          "description": "Bring your student ID on the night. Price TBC.",
+          "price": 1500,
+          "capacity": 400
+        }
+      ]
+    },
+    {
+      "event": "main",
+      "onSale": false,
+      "types": [
+        {
+          "sku": "main-day1",
+          "name": "General · Fri 14 May",
+          "description": "Day 1 screening. Price TBC.",
+          "price": 2300,
+          "capacity": 200
+        },
+        {
+          "sku": "main-day2",
+          "name": "General · Sat 15 May",
+          "description": "Day 2 screening. Price TBC.",
+          "price": 2300,
+          "capacity": 200
+        },
+        {
+          "sku": "main-day3",
+          "name": "General · Sun 16 May",
+          "description": "Day 3 screening. Price TBC.",
+          "price": 2300,
+          "capacity": 200
+        },
+        {
+          "sku": "main-pass",
+          "name": "Festival pass · all 3 days",
+          "description": "Three tickets, one for each day. Price TBC.",
+          "price": 6000,
+          "capacity": 100,
+          "admissions": 3
+        }
+      ]
+    }
+  ],
+  "merch": {
+    "onSale": true,
+    "pickup": "Pick up your order at any festival event (bring your order email), or we'll get in touch to arrange it.",
+    "items": [
+      {
+        "id": "tee",
+        "name": "Temaram festival tee",
+        "description": "Heavy cotton tee with the Temaram print. PLACEHOLDER item.",
+        "media": "merch-tee",
+        "variants": [
+          {
+            "sku": "tee-s",
+            "label": "S",
+            "price": 3500,
+            "stock": 20
+          },
+          {
+            "sku": "tee-m",
+            "label": "M",
+            "price": 3500,
+            "stock": 30
+          },
+          {
+            "sku": "tee-l",
+            "label": "L",
+            "price": 3500,
+            "stock": 30
+          },
+          {
+            "sku": "tee-xl",
+            "label": "XL",
+            "price": 3500,
+            "stock": 20
+          }
+        ]
+      },
+      {
+        "id": "tote",
+        "name": "Riso tote bag",
+        "description": "Canvas tote, two-colour riso print. PLACEHOLDER item.",
+        "media": "merch-tote",
+        "variants": [
+          {
+            "sku": "tote",
+            "label": "One size",
+            "price": 2000,
+            "stock": 50
+          }
+        ]
+      },
+      {
+        "id": "posters",
+        "name": "Poster set",
+        "description": "Five A3 riso posters, one per event. PLACEHOLDER item.",
+        "media": "merch-posters",
+        "variants": [
+          {
+            "sku": "posters",
+            "label": "Set of 5",
+            "price": 2500,
+            "stock": 40
+          }
+        ]
+      },
+      {
+        "id": "pin",
+        "name": "Enamel pin",
+        "description": "The festival camera as a hard enamel pin. PLACEHOLDER item.",
+        "media": "merch-pin",
+        "variants": [
+          {
+            "sku": "pin",
+            "label": "One size",
+            "price": 1000,
+            "stock": 100
+          }
+        ]
+      },
+      {
+        "id": "zine",
+        "name": "Festival zine",
+        "description": "Stories, stills and interviews from the 21st edition. PLACEHOLDER item.",
+        "media": "merch-zine",
+        "variants": [
+          {
+            "sku": "zine",
+            "label": "A5, 32 pages",
+            "price": 800,
+            "stock": 80
+          }
+        ]
+      }
+    ]
+  },
+  "sfc": {
+    "sku": "sfc-entry",
+    "name": "Short Film Competition entry",
+    "entryFee": 1500,
+    "feeNote": "Entry fee per film (amount TBC).",
+    "opens": "2026-11-02",
+    "closes": "2027-02-08"
+  }
+}

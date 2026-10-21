@@ -437,6 +437,46 @@
       "alt": "Homemade treats from Food Pre-Order 2",
       "location": "\"Support us\" card (home + /sponsors)",
       "recommended": "1200x900"
+    },
+    "merch-tee": {
+      "type": "image",
+      "src": "/images/merch-tee.jpg",
+      "ratio": "4:5",
+      "alt": "Temaram festival tee",
+      "location": "/merch product photo",
+      "recommended": "1600x2000, product on a plain background"
+    },
+    "merch-tote": {
+      "type": "image",
+      "src": "/images/merch-tote.jpg",
+      "ratio": "4:5",
+      "alt": "Riso tote bag",
+      "location": "/merch product photo",
+      "recommended": "1600x2000, product on a plain background"
+    },
+    "merch-posters": {
+      "type": "image",
+      "src": "/images/merch-posters.jpg",
+      "ratio": "4:5",
+      "alt": "Poster set",
+      "location": "/merch product photo",
+      "recommended": "1600x2000, product on a plain background"
+    },
+    "merch-pin": {
+      "type": "image",
+      "src": "/images/merch-pin.jpg",
+      "ratio": "4:5",
+      "alt": "Enamel pin",
+      "location": "/merch product photo",
+      "recommended": "1600x2000, product on a plain background"
+    },
+    "merch-zine": {
+      "type": "image",
+      "src": "/images/merch-zine.jpg",
+      "ratio": "4:5",
+      "alt": "Festival zine",
+      "location": "/merch product photo",
+      "recommended": "1600x2000, product on a plain background"
     }
   }
 }
